@@ -4,10 +4,12 @@ Game mô phỏng kiểm tra không phá hủy (NDT) chạy trên trình duyệt.
 
 **Bản chơi thử v0.3:** có mô hình 3D tương tác và trang Giới thiệu.  4 hợp đồng hiện trường PT → MT → UT → RT, kèm **Học viện NDE** gồm 17 chương: 8 chương vật lý nền tảng và 9 chương phương pháp (VT, UT, MT, ET, vi ba, RT, PT, AE, nhiệt ảnh), cấu trúc theo NDE-Ed.org.
 
+👉 **Chơi tại: https://hvflaw.hlvsuckhoe.com/**
+
 ## Chạy
 - Mở `index.html` trực tiếp (chạy được qua `file://`), hoặc
 - `python3 -m http.server` rồi vào http://localhost:8000
-- GitHub Pages: Settings → Pages → Deploy from branch `main` / thư mục gốc.
+- GitHub Pages: Settings → Pages → Deploy from branch `main` / thư mục gốc. Tên miền riêng `hvflaw.hlvsuckhoe.com` (tệp `CNAME`; bản ghi CNAME `hvflaw` trên Cloudflare trỏ về `nguyenducdungvn.github.io`).
 
 ## Cấu trúc
 | Tệp | Vai trò |

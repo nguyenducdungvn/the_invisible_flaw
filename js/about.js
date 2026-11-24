@@ -4,7 +4,8 @@
   const G = root.Game, { h, toast, page, hud } = G;
   const REPO = 'https://github.com/nguyenducdungvn/the_invisible_flaw';
   const ACC = { name: 'NGUYEN DUC DUNG', no: '3210256468', bank: 'Ngân hàng TMCP Đầu tư và Phát triển Việt Nam (BIDV)' };
-  const shareURL = () => /github\.io$/.test(location.hostname) ? location.href.split('#')[0] : REPO;
+  const SITE = 'https://hvflaw.hlvsuckhoe.com/';
+  const shareURL = () => SITE;
   async function copy(text, what) {
     try { await navigator.clipboard.writeText(text); toast(`Đã sao chép ${what}`, 'ok'); }
     catch (e) { try { const t = h('textarea', { style: 'position:fixed;opacity:0' }); t.value = text; document.body.append(t); t.select(); const okk = document.execCommand('copy'); t.remove(); toast(okk ? `Đã sao chép ${what}` : `Hãy chép tay: ${text}`, okk ? 'ok' : 'hi'); } catch (e2) { toast(`Hãy chép tay: ${text}`, 'hi'); } }
