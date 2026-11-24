@@ -33,7 +33,7 @@
 
   /* ---------- trạng thái & lưu ---------- */
   const KEY = 'invisible-flaw-v1';
-  const fresh = () => ({ name: '', money: 50, rep: 30, certs: {}, done: {}, atlas: {}, cards: {}, runs: 0, log: [] });
+  const fresh = () => ({ name: '', money: 50, rep: 30, certs: {}, done: {}, atlas: {}, cards: {}, acad: {}, runs: 0, log: [] });
   let S = fresh();
   function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) S = Object.assign(fresh(), s); } catch (e) { /* bỏ qua */ } }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* trình duyệt chặn lưu */ } }
@@ -66,11 +66,42 @@
       calc: v => `Ḣ = ${fmt(P.doseRate(v[0], v[1]) * 1000 / v[2], 1)} µSv/h` },
     exposure: { t: 'Thời gian chiếu', f: 't = E₁ₘ · SFD² / A   (E₁ₘ: GBq·h quy về 1 m)', lab: 'radiation',
       ins: [['E₁ₘ', 'Phơi sáng yêu cầu (GBq·h)', 220], ['SFD', 'Nguồn – phim (m)', 0.5], ['A', 'Hoạt độ (GBq)', 800]],
-      calc: v => `t = ${fmt(P.exposureMinutes(v[0], v[1], v[2]), 1)} phút` }
+      calc: v => `t = ${fmt(P.exposureMinutes(v[0], v[1], v[2]), 1)} phút` },
+    /* thẻ mở từ Học viện */
+    impedance: { t: 'Trở kháng cuộn dây', f: 'XL = 2πfL · Z = √(R² + XL²) · tanφ = XL/R', lab: 'academy',
+      ins: [['R', 'Điện trở (Ω)', 3], ['f', 'Tần số (kHz)', 100], ['L', 'Độ tự cảm (µH)', 6.4]],
+      calc: v => { const XL = P.inductiveReactance(v[1] * 1e3, v[2] * 1e-6); return `XL = ${fmt(XL, 2)} Ω · Z = ${fmt(P.impedanceZ(v[0], XL), 2)} Ω · φ = ${fmt(P.phaseDeg(v[0], XL), 1)}°`; } },
+    skindepth: { t: 'Độ sâu thấm chuẩn', f: 'δ = 1/√(π·f·μ₀μr·σ) · trễ pha β = x/δ', lab: 'academy',
+      ins: [['f', 'Tần số (kHz)', 100], ['σ', 'Độ dẫn điện (% IACS)', 40], ['μr', 'Độ từ thẩm tương đối', 1]],
+      calc: v => `δ = ${fmt(P.skinDepth(v[0] * 1e3, v[1] / 100 * P.IACS, v[2]) * 1000, 3)} mm · 3δ = ${fmt(3 * P.skinDepth(v[0] * 1e3, v[1] / 100 * P.IACS, v[2]) * 1000, 3)} mm` },
+    wavelength: { t: 'Bước sóng', f: 'λ = v/f · khuyết tật nhỏ nhất ≈ λ/2', lab: 'academy',
+      ins: [['v', 'Vận tốc (m/s)', 5920], ['f', 'Tần số (MHz)', 5]],
+      calc: v => `λ = ${fmt(P.wavelength(v[0], v[1] * 1e6) * 1000, 3)} mm · λ/2 = ${fmt(P.wavelength(v[0], v[1] * 1e6) * 500, 3)} mm` },
+    acimp: { t: 'Trở kháng âm & phản xạ', f: 'Z = ρ·v · R = ((Z₂ − Z₁)/(Z₂ + Z₁))² · T = 1 − R', lab: 'academy',
+      ins: [['Z₁', 'Trở kháng 1 (MRayl)', 1.48], ['Z₂', 'Trở kháng 2 (MRayl)', 46.5]],
+      calc: v => `R = ${fmt(P.reflectionCoef(v[0], v[1]) * 100, 2)} % · T = ${fmt(P.transmissionCoef(v[0], v[1]) * 100, 2)} %` },
+    nearfield: { t: 'Trường gần đầu dò', f: 'N = D²·f / (4v)', lab: 'academy',
+      ins: [['D', 'Đường kính biến tử (mm)', 10], ['f', 'Tần số (MHz)', 5], ['v', 'Vận tốc (m/s)', 5920]],
+      calc: v => `N = ${fmt(P.nearField(v[0], v[1], v[2]), 1)} mm` },
+    hvlmu: { t: 'Suy giảm tuyến tính', f: 'I = I₀·e^(−μx) · HVL = 0,693/μ', lab: 'academy',
+      ins: [['μ', 'Hệ số suy giảm (/mm)', 0.0693], ['x', 'Chiều dày (mm)', 20]],
+      calc: v => `HVL = ${fmt(P.hvlFromMu(v[0]), 2)} mm · I/I₀ = ${fmt(P.linearAtten(1, v[0], v[1]) * 100, 2)} %` },
+    hooke: { t: 'Định luật Hooke', f: 'σ = E·ε (vùng đàn hồi)', lab: 'academy',
+      ins: [['E', 'Mô đun đàn hồi (GPa)', 200], ['ε', 'Biến dạng', 0.001]],
+      calc: v => `σ = ${fmt(P.hooke(v[0] * 1000, v[1]), 1)} MPa` },
+    aeloc: { t: 'Định vị nguồn phát xạ âm', f: 'x = (D + v·Δt)/2, Δt = t₁ − t₂, x tính từ cảm biến 1', lab: 'academy',
+      ins: [['D', 'Khoảng cách cảm biến (m)', 2], ['v', 'Vận tốc sóng (m/s)', 3000], ['Δt', 'Δt (ms)', -0.4]],
+      calc: v => `x = ${fmt(P.aeLocate(v[0], v[1], v[2] / 1000), 3)} m` },
+    irdepth: { t: 'Độ sâu theo thời gian (nhiệt ảnh)', f: 'z ≈ √(α·t)', lab: 'academy',
+      ins: [['α', 'Khuếch tán nhiệt (×10⁻⁷ m²/s)', 4], ['t', 'Thời gian (s)', 10]],
+      calc: v => `z ≈ ${fmt(P.thermalDepth(v[1], v[0] * 1e-7) * 1000, 2)} mm` },
+    mwgamma: { t: 'Phản xạ vi ba', f: 'Γ = (1 − √ε)/(1 + √ε) · λ = c/f', lab: 'academy',
+      ins: [['ε', 'Hằng số điện môi', 4.5], ['f', 'Tần số (GHz)', 10]],
+      calc: v => `|Γ| = ${fmt(Math.abs(P.mwGamma(v[0])), 3)} · công suất ${fmt(P.mwGamma(v[0]) ** 2 * 100, 1)} % · λ₀ = ${fmt(300 / v[1], 1)} mm` }
   };
   function cardView(id, calcable) {
     const c = CARDS[id], have = !!S.cards[id];
-    const box = h('div', { class: 'fcard' + (have ? '' : ' locked') }, h('b', null, c.t), h('div', { class: 'formula' }, have ? c.f : '— mở khóa ở phòng thí nghiệm —'));
+    const box = h('div', { class: 'fcard' + (have ? '' : ' locked') }, h('b', null, c.t), h('div', { class: 'formula' }, have ? c.f : '— chưa mở khóa —'));
     if (have && calcable) {
       const inputs = c.ins.map(([k, lab, def]) => h('input', { class: 'f', value: String(def).replace('.', ','), 'aria-label': lab, title: lab }));
       const out = h('div', { class: 'mono ok' }, '');
@@ -153,7 +184,7 @@
           h('button', { class: 'btn', onclick: () => { S.name = name.value.trim().normalize('NFC') || 'Kỹ sư tập sự'; save(); hub(); } }, S.name ? 'Tiếp tục' : 'Nhận việc')),
         S.name ? h('p', null, h('button', { class: 'btn ghost sm', style: 'margin-top:14px', onclick: () => ask('Xóa toàn bộ tiến trình và chơi lại từ đầu?', () => { S = fresh(); save(); title(); }) }, 'Chơi lại từ đầu')) : null),
       h('div', { class: 'grid g3' },
-        h('div', { class: 'card' }, h('h3', null, 'Học đúng lúc cần'), h('p', { class: 'dim' }, 'Mỗi phòng thí nghiệm vật lý mở ra ngay trước nhiệm vụ cần đến nó, không phải học hết rồi mới được làm.')),
+        h('div', { class: 'card' }, h('h3', null, 'Học đúng lúc cần'), h('p', { class: 'dim' }, 'Phòng thí nghiệm mở ra ngay trước nhiệm vụ cần đến nó. Muốn học kỹ hơn thì vào Học viện NDE: 17 chương từ nguyên tử tới nhiệt ảnh.')),
         h('div', { class: 'card' }, h('h3', null, 'Dự đoán rồi mới đo'), h('p', { class: 'dim' }, 'Bạn tính trước bằng công thức, máy chỉ xác nhận. Dự đoán trúng được thưởng; đoán bừa thì tốn thời gian dừng máy.')),
         h('div', { class: 'card' }, h('h3', null, 'Hậu quả có thật'), h('p', { class: 'dim' }, 'Bỏ sót, báo động giả và vi phạm an toàn đều có giá. Cái sai nguy hiểm nhất thường là lựa chọn hấp dẫn nhất.')))));
   }
@@ -170,6 +201,10 @@
       h('div', { class: 'row' }, h('h2', { style: 'margin:0' }, `Trung tâm Giám định · ${S.name}`), h('span', { class: 'spacer' }),
         ['PT', 'MT', 'UT', 'RT'].map(m => h('span', { class: 'chip' + (S.certs[m] ? ' ok' : '') }, `${m}: ${certName(m)}`))),
       h('p', { class: 'dim' }, 'Chứng chỉ tính theo từng phương pháp, giống thực tế (SNT-TC-1A, ISO 9712): có Bậc II UT không có nghĩa là được ký kết quả RT.'),
+      (() => { const AC = root.ACADEMY || [], n = AC.filter(c => Game.mastered && Game.mastered(c.id)).length;
+        return h('div', { class: 'card contract', onclick: () => Game.academy(), style: 'border-color:#2d5c48' }, h('div', { class: 'row' }, h('span', { class: 'meth', style: 'color:var(--ok)' }, 'HV'),
+          h('div', null, h('h3', { style: 'margin:0' }, 'Học viện NDE'), h('div', { class: 'dim', style: 'font-size:.88rem' }, `8 chương vật lý nền tảng · 9 chương phương pháp (VT, UT, MT, ET, vi ba, RT, PT, AE, nhiệt ảnh) · đã thành thạo ${n}/${AC.length}`)),
+          h('span', { class: 'spacer' }), h('span', { class: 'btn sm' }, 'Vào học'))); })(),
       allDone ? h('div', { class: 'callout ok' }, 'Bạn đã hoàn thành cả 4 hợp đồng của bản chơi thử. Chơi lại để lấy 3 sao: vị trí khuyết tật thay đổi mỗi lần.') : null,
       h('div', { class: 'grid g2' }, L.map(l => {
         const ok = unlocked(l), d = S.done[l.id];
@@ -177,10 +212,11 @@
           h('div', { class: 'row' }, h('span', { class: 'meth' }, l.method), h('div', null, h('h3', { style: 'margin:0' }, l.title), h('div', { class: 'dim', style: 'font-size:.88rem' }, l.client)),
             h('span', { class: 'spacer' }), d ? stars(d.stars) : h('span', { class: 'chip' + (ok ? ' hi' : '') }, ok ? 'Mới' : 'Khóa')),
           h('p', { class: 'dim', style: 'margin-top:8px' }, l.part),
+          root.PREREQ && root.PREREQ[l.id] ? h('div', { class: 'row', style: 'font-size:.82rem;margin-bottom:6px' }, h('span', { class: 'dim' }, 'Nên học:'), root.PREREQ[l.id].map(cid => { const c = root.ACADEMY.find(x => x.id === cid); const m = Game.mastered && Game.mastered(cid); return h('span', { class: 'chip' + (m ? ' ok' : ''), title: 'Học viện NDE' }, (m ? '✓ ' : '') + c.title); })) : null,
           h('div', { class: 'row', style: 'font-size:.85rem' }, h('span', { class: 'chip' }, `Hợp đồng ${l.budget} tr₫`), h('span', { class: 'chip' }, `Cho phép dừng máy ${l.downtime} phút`), d ? h('span', { class: 'chip' }, `Điểm cao nhất ${d.score}`) : null));
       })),
       h('div', { class: 'card flat' }, h('h3', null, 'Lộ trình bản đầy đủ (theo GDD)'),
-        h('p', { class: 'dim' }, 'Bản chơi thử gồm PT → MT → UT → RT. Các hợp đồng ET (mặt phẳng trở kháng), VT, LT và kỹ thuật chuyên sâu (nhiệt ảnh, phát xạ âm, vi ba) dùng cùng khung dữ liệu, thêm vào levels.js.'))));
+        h('p', { class: 'dim' }, 'Bản chơi thử gồm 4 hợp đồng PT → MT → UT → RT và Học viện 17 chương. Hợp đồng hiện trường cho ET, AE, nhiệt ảnh và vi ba sẽ dùng chung khung dữ liệu (thêm vào levels.js); hiện các phương pháp này đã có bài học và mô phỏng trong Học viện.'))));
   }
 
   /* ---------- vòng lặp nhiệm vụ ---------- */

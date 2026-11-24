@@ -77,7 +77,30 @@
   const filmDensity = (ratio, D0 = 2.6, G = 3.5) => Math.max(0.2, D0 + G * Math.log10(Math.max(ratio, 1e-3)));
   const geomUnsharpness = (F, d, D) => F * d / D;
 
+  /* ---------- Học viện: bổ sung ---------- */
+  const IACS = 5.8e7;                                   // 100 % IACS = 5,8·10⁷ S/m
+  const ohmI = (V, R) => V / R;
+  const resistance = (rho, L, A) => rho * L / A;
+  const inductiveReactance = (f, L) => 2 * Math.PI * f * L;
+  const impedanceZ = (R, XL) => Math.hypot(R, XL);
+  const phaseDeg = (R, XL) => Math.atan2(XL, R) * R2D;
+  const currentDensityAt = (x, delta) => Math.exp(-x / delta);      // J/J0
+  const phaseLagDeg = (x, delta) => x / delta * R2D;                  // β = x/δ (rad)
+  const wavelength = (v, f) => v / f;                                 // m
+  const transmissionCoef = (Z1, Z2) => 1 - reflectionCoef(Z1, Z2);
+  const linearAtten = (I0, mu, x) => I0 * Math.exp(-mu * x);
+  const hvlFromMu = mu => Math.LN2 / mu;
+  const hooke = (E, eps) => E * eps;
+  const beamSpreadHalfDeg = (v, f, Dm) => Math.asin(Math.min(1, 1.2 * v / (f * Dm))) * R2D; // tới điểm không (null)
+  const aeLocate = (D, v, dt) => (D + v * dt) / 2;                    // vị trí tính từ cảm biến 1; dt = t1 − t2
+  const thermalTime = (z, alpha) => z * z / alpha;                   // thời điểm đặc trưng khuyết tật ở độ sâu z hiện lên (mô hình bậc nhất)
+  const thermalDepth = (t, alpha) => Math.sqrt(alpha * t);
+  const mwGamma = eps => (1 - Math.sqrt(eps)) / (1 + Math.sqrt(eps)); // hệ số phản xạ biên độ, tới vuông góc từ không khí
+  const filmDensityFromT = T => -Math.log10(T);                      // D = log10(I0/It)
+
   const api = { MAT, D2R, R2D, g,
+    IACS, ohmI, resistance, inductiveReactance, impedanceZ, phaseDeg, currentDensityAt, phaseLagDeg, wavelength, transmissionCoef,
+    linearAtten, hvlFromMu, hooke, beamSpreadHalfDeg, aeLocate, thermalTime, thermalDepth, mwGamma, filmDensityFromT,
     capillaryRiseSlit, washburnTimeSlit, wets,
     leakageFactor, MT_DETECT, skinDepth,
     snell, criticalAngle, incidentFor, angleBeam, skipDistance, spToDepth, dB, ampFromDb, nearField,

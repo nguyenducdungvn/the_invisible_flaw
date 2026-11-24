@@ -3,11 +3,11 @@
   'use strict';
   const { h, fmt, parseNum, slider, fitCanvas, toast } = root.Game; const P = root.Physics;
 
-  function challenges(list, done) {
+  function challenges(list, done, btn) {
     let i = 0, pts = 0; const box = h('div', { class: 'card' });
     const next = () => {
       box.innerHTML = '';
-      if (i >= list.length) { const sc = pts / list.length; box.append(h('h3', null, `Kết quả dự đoán: ${Math.round(sc * 100)} %`), h('p', { class: 'dim' }, 'Thẻ công thức đã vào sổ tay. Bạn có thể mở “Sổ tay” trên thanh trên cùng bất cứ lúc nào.'), h('button', { class: 'btn', onclick: () => done(sc) }, 'Ra hiện trường')); return; }
+      if (i >= list.length) { const sc = pts / list.length; box.append(h('h3', null, `Kết quả dự đoán: ${Math.round(sc * 100)} %`), h('p', { class: 'dim' }, 'Thẻ công thức đã vào sổ tay. Bạn có thể mở “Sổ tay” trên thanh trên cùng bất cứ lúc nào.'), h('button', { class: 'btn', onclick: () => done(sc) }, btn || 'Ra hiện trường')); return; }
       const q = list[i]; let tries = 0; const fb = h('div');
       box.append(h('div', { class: 'row' }, h('span', { class: 'chip hi' }, `Dự đoán ${i + 1}/${list.length}`), h('span', { class: 'dim' }, 'Tính trước, mô phỏng phía trên dùng để kiểm chứng')), h('p', { class: 'serif', style: 'font-size:1.05rem' }, q.q));
       const ok = (good, expl) => {
@@ -31,7 +31,7 @@
   function labHead(title, sub, f) { return h('div', { class: 'card' }, h('div', { class: 'row' }, h('span', { class: 'chip hi' }, 'Phòng thí nghiệm 60 giây'), h('h2', { style: 'margin:0' }, title)), h('p', { class: 'dim' }, sub), f ? h('div', { class: 'formula' }, f) : null); }
 
   const LABS = {
-    capillary(el, done) {
+    capillary(el, done, opt) {
       let th = 10, w = 20, eta = 5; const cv = h('canvas'); const read = h('div', { class: 'mono' });
       const draw = () => {
         const { ctx, W, H } = fitCanvas(cv, 230); ctx.clearRect(0, 0, W, H);
@@ -51,11 +51,11 @@
         challenges([
           { q: 'Chất thấm có γ = 0,030 N/m, θ = 10°, ρ = 900 kg/m³. Khe nứt rộng 20 µm. Chiều cao mao dẫn cân bằng h là bao nhiêu milimét?', num: P.capillaryRiseSlit(0.03, 10, 900, 20e-6) * 1000, rel: 0.05, unit: 'mm', e: `h = 2·0,03·cos10° / (900·9,81·20·10⁻⁶) ≈ ${fmt(P.capillaryRiseSlit(0.03, 10, 900, 20e-6) * 1000, 0)} mm. Lực mao dẫn rất mạnh so với kích thước vết nứt.` },
           { q: 'Đổi sang chất thấm có độ nhớt gấp đôi (các thông số khác giữ nguyên). Điều gì xảy ra?', o: ['Chiều cao cân bằng không đổi, thời gian thấm gấp đôi', 'Chiều cao giảm một nửa, thời gian không đổi', 'Cả chiều cao và thời gian đều giảm một nửa', 'Không thấm được nữa'], e: 'h không có η; Washburn cho t tỉ lệ thuận với η. Độ nhớt chỉ quyết định tốc độ (theo NDE-Ed.org: độ nhớt ít ảnh hưởng tới khả năng thấm, chủ yếu tới tốc độ).' }
-        ], done));
+        ], done, opt && opt.btn));
       setTimeout(draw);
     },
 
-    magnet(el, done) {
+    magnet(el, done, opt) {
       let fd = 0, cd = 30; const cv = h('canvas'); const read = h('div', { class: 'mono' });
       const draw = () => {
         const { ctx, W, H } = fitCanvas(cv, 240); ctx.clearRect(0, 0, W, H); const cx = W / 2, cy = H / 2;
@@ -73,11 +73,11 @@
         challenges([
           { q: 'Mối hàn nằm ngang (0°). Có một vết nứt chéo 30° so với trục mối hàn. Ách từ đặt hai chân DỌC theo mối hàn tạo từ trường 0°; đặt CẮT NGANG mối hàn tạo từ trường 90°. Cách nào phát hiện tốt vết nứt?', o: ['Chỉ cách đặt cắt ngang (từ trường 90°)', 'Chỉ cách đặt dọc (từ trường 0°)', 'Cả hai như nhau', 'Không cách nào'], e: 'Từ trường 0° lệch 30° → |sin30°| = 0,5 < 0,71; từ trường 90° lệch 60° → 0,87. Vì không biết trước hướng nứt, phải kiểm tra hai lần với đường sức gần vuông góc nhau.' },
           { q: 'Vì sao quy trình MT (ASME V Điều 7) yêu cầu mỗi vùng phải kiểm tra ít nhất hai lần với đường sức gần vuông góc nhau?', o: ['Để vết nứt theo mọi hướng đều bị cắt ngang ít nhất một lần', 'Để bột từ bám đều hơn', 'Để khử từ dư', 'Để tăng gấp đôi cường độ từ trường'], e: 'Một hướng từ hóa chỉ “thấy” vết nứt lệch ≥ 45° so với nó; hai hướng vuông góc phủ được mọi hướng.' }
-        ], done));
+        ], done, opt && opt.btn));
       setTimeout(draw);
     },
 
-    snell(el, done) {
+    snell(el, done, opt) {
       let t1 = 40; const cv = h('canvas'); const read = h('div', { class: 'mono' }); const m1 = P.MAT.perspex, m2 = P.MAT.steel;
       const c1 = P.criticalAngle(m1.vL, m2.vL), c2 = P.criticalAngle(m1.vL, m2.vS);
       const draw = () => {
@@ -99,11 +99,11 @@
         challenges([
           { q: 'Cần góc khúc xạ sóng ngang 60° trong thép (vS = 3240 m/s) từ nêm Perspex (vL = 2730 m/s). Góc nêm (góc tới) phải là bao nhiêu độ?', num: P.incidentFor(60, m1.vL, m2.vS), abs: 0.6, unit: '°', e: `sinθ₁ = sin60° × 2730/3240 → θ₁ ≈ ${fmt(P.incidentFor(60, m1.vL, m2.vS), 1)}°.` },
           { q: 'Góc tới hạn thứ nhất (sóng dọc trong thép biến mất) giữa Perspex và thép là bao nhiêu độ?', num: c1, abs: 0.6, unit: '°', e: `θc1 = arcsin(2730/5920) ≈ ${fmt(c1, 1)}°.` }
-        ], done));
+        ], done, opt && opt.btn));
       setTimeout(draw);
     },
 
-    radiation(el, done) {
+    radiation(el, done, opt) {
       let d = 10, pb = 0; const A = 800; const cv = h('canvas'); const read = h('div', { class: 'mono' });
       const draw = () => {
         const { ctx, W, H } = fitCanvas(cv, 220); ctx.clearRect(0, 0, W, H);
@@ -122,9 +122,9 @@
         challenges([
           { q: `Nguồn Ir-192 hoạt độ 800 GBq, không che chắn. Suất liều ở 10 m là bao nhiêu µSv/h? (Γ = 0,13 mSv·m²/(h·GBq))`, num: P.doseRate(800, 10) * 1000, rel: 0.05, unit: 'µSv/h', e: `0,13 × 800 / 10² = 1,04 mSv/h = ${fmt(P.doseRate(800, 10) * 1000, 0)} µSv/h.` },
           { q: 'Nguồn Ir-192 có 1000 GBq. Sau 147,7 ngày (hai chu kỳ bán rã) còn bao nhiêu GBq?', num: P.decay(1000, 147.66), rel: 0.03, unit: 'GBq', e: 'Hai chu kỳ bán rã: 1000 → 500 → 250 GBq. Nguồn yếu đi thì thời gian chiếu phải tăng.' }
-        ], done));
+        ], done, opt && opt.btn));
       setTimeout(draw);
     }
   };
-  root.LABS = LABS;
+  root.LABS = LABS; root.challenges = challenges;
 })(this);

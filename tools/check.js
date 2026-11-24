@@ -91,4 +91,30 @@ ok(ypLeg2 < 105 && ypLeg2 > 21.5, `Đầu dò với tới không ngấu ở châ
 const slag = ut.reflectors.find(r => r.type === 'slag'); ok(slag.depth * tan > 21.5, 'Đầu dò với tới xỉ ở chân 1');
 for (const [d, x] of [[T / 4, 90], [T / 2, 130], [3 * T / 4, 170]]) for (const de of [d, 2 * T - d]) { const u = x - de * tan; ok(u >= 0 && u <= 160, `Mẫu chuẩn: lỗ sâu ${d} với tới (u = ${u.toFixed(1)})`); }
 
+console.log('6. Học viện NDE');
+const { ACADEMY, PREREQ } = require(path.join(__dirname, '../js/academy_data.js'));
+const fs = require('fs');
+const coreSrc = fs.readFileSync(path.join(__dirname, '../js/core.js'), 'utf8'), simSrc = fs.readFileSync(path.join(__dirname, '../js/academy_sims.js'), 'utf8'), labSrc = fs.readFileSync(path.join(__dirname, '../js/labs.js'), 'utf8');
+const cardIds = [...coreSrc.matchAll(/^\s{4}(\w+): \{ t: '/gm)].map(m => m[1]);
+ok(ACADEMY.filter(c => c.track === 'phys').length === 8, '8 chương vật lý (theo NDE-Ed Physics)');
+ok(ACADEMY.filter(c => c.track === 'tech').length === 9, '9 chương phương pháp (8 của NDE-Ed + VT)');
+ok(new Set(ACADEMY.map(c => c.id)).size === ACADEMY.length, 'Mã chương không trùng');
+for (const c of ACADEMY) {
+  ok(c.lessons.length >= 4, `${c.id}: ≥ 4 bài`); ok(c.quiz.length >= 4, `${c.id}: ≥ 4 câu hỏi`);
+  const sim = c.sim.startsWith('lab:') ? new RegExp(`\\b${c.sim.slice(4)}\\(el, done`).test(labSrc) : new RegExp(`\\b${c.sim}\\(el\\)`).test(simSrc); ok(sim, `${c.id}: mô phỏng ${c.sim} không tồn tại`);
+  for (const k of c.cards || []) ok(cardIds.includes(k), `${c.id}: thẻ ${k} không có trong CARDS`);
+  c.quiz.forEach((q, i) => { ok(q.e && q.q, `${c.id}#${i}: thiếu giải thích`); if (q.o) ok(q.o.length >= 4 && new Set(q.o).size === q.o.length, `${c.id}#${i}: cần ≥ 4 đáp án khác nhau`); });
+  for (const s of c.lessons.flat().concat(c.quiz.map(q => q.q))) ok(s === s.normalize('NFC'), `${c.id}: chuỗi chưa NFC`);
+}
+for (const [lv, ids] of Object.entries(PREREQ)) for (const id of ids) ok(ACADEMY.some(c => c.id === id), `PREREQ ${lv}: ${id}`);
+// Tính lại mọi đáp số bằng physics.js
+const Q = (id, i) => ACADEMY.find(c => c.id === id).quiz[i];
+const chk = (id, i, val) => { const q = Q(id, i); const tol = q.abs != null ? Math.max(q.abs, 1e-9) : Math.abs(val) * (q.rel || 0.05); near(q.num, val, tol, `Đáp số ${id}#${i}`); };
+chk('atom', 1, 192 - 77); chk('elec', 0, P.ohmI(12, 4)); chk('elec', 1, P.impedanceZ(3, 4)); chk('elec', 3, P.currentDensityAt(1, 1) * 100);
+chk('waves', 0, P.wavelength(5920, 5e6) * 1000); chk('sound', 0, 7850 * 5920 / 1e6); chk('sound', 1, P.reflectionCoef(1.48, 46.5) * 100);
+chk('xray', 1, P.hvlFromMu(0.0693)); chk('xray', 2, 37); chk('xray', 3, P.geomUnsharpness(3, 12, 600)); chk('mat', 0, P.hooke(200000, 0.001));
+chk('ut', 0, P.nearField(10, 5, 5920)); chk('et', 0, P.phaseLagDeg(1, 1)); chk('mw', 0, 3e8 / 10e9 * 1000); chk('rt', 0, Math.pow(10, -2) * 100); chk('rt', 3, P.inverseSquare(1, 1, 0.5));
+chk('ae', 0, P.aeLocate(2, 3000, -0.4e-3)); chk('ir', 0, P.thermalDepth(10, 4e-7) * 1000); chk('ir', 2, P.thermalTime(2, 1) / P.thermalTime(1, 1));
+near(P.filmDensityFromT(0.01), 2, 1e-9, 'D = 2 ↔ 1 % truyền qua'); near(P.mwGamma(1), 0, 1e-12, 'ε = 1 không phản xạ');
+
 console.log(`\n${pass} đạt, ${fail} lỗi`); process.exit(fail ? 1 : 0);

@@ -2,7 +2,7 @@
 
 Game mô phỏng kiểm tra không phá hủy (NDT) chạy trên trình duyệt. Người chơi là kỹ sư tập sự nhận hợp đồng kiểm tra: chọn phương pháp, làm đúng quy trình, hiệu chuẩn, đọc tín hiệu, đối chiếu tiêu chí chấp nhận và ký **Đạt / Loại bỏ**.
 
-**Bản chơi thử v0.1:** 4 hợp đồng PT → MT → UT → RT, mỗi hợp đồng kèm một phòng thí nghiệm vật lý.
+**Bản chơi thử v0.2:** 4 hợp đồng hiện trường PT → MT → UT → RT, kèm **Học viện NDE** gồm 17 chương: 8 chương vật lý nền tảng và 9 chương phương pháp (VT, UT, MT, ET, vi ba, RT, PT, AE, nhiệt ảnh), cấu trúc theo NDE-Ed.org.
 
 ## Chạy
 - Mở `index.html` trực tiếp (chạy được qua `file://`), hoặc
@@ -17,9 +17,12 @@ Game mô phỏng kiểm tra không phá hủy (NDT) chạy trên trình duyệt.
 | `js/levels.js` | Dữ liệu hợp đồng dạng JSON + Atlas khuyết tật |
 | `js/core.js` | Trạng thái, lưu (localStorage), HUD, sổ tay, vòng lặp nhiệm vụ, chấm điểm |
 | `js/labs.js` | Phòng thí nghiệm: mao dẫn, từ thông rò, Snell, bức xạ |
+| `js/academy_data.js` | Nội dung Học viện: bài học, câu hỏi, chương nên học trước mỗi hợp đồng |
+| `js/academy_sims.js` | 13 mô phỏng của Học viện (nguyên tử, độ sâu thấm, từ trễ, bước sóng, trở kháng âm, suy giảm, ứng suất – biến dạng, mặt phẳng trở kháng, vi ba, định vị AE, nhiệt ảnh, VT, quy trình PT) |
+| `js/academy.js` | Giao diện Học viện, tiến độ, mở khóa thẻ công thức |
 | `js/surface.js` | Khung soi bề mặt dùng chung cho PT, MT, RT (thước đo, phân loại, biên bản) |
 | `js/m_pt.js` `m_mt.js` `m_ut.js` `m_rt.js` | Quy trình và mô phỏng từng phương pháp |
-| `tools/check.js` | `node tools/check.js`: kiểm tra vật lý, dữ liệu màn, tiêu chí, biên jitter |
+| `tools/check.js` | `node tools/check.js`: kiểm tra vật lý, dữ liệu màn, tiêu chí, biên jitter, và tính lại mọi đáp số của Học viện |
 | `docs/THAM_DINH_GDD.md` | Bản thẩm định GDD theo 3 tiêu chí |
 | `docs/HANDOFF.md` | Bàn giao để làm tiếp |
 

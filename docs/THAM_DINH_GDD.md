@@ -92,3 +92,16 @@ Người thẩm định: Claude, trong vai Serious Game Designer kiêm kỹ sư 
 - Tài liệu của anh: PTC.TDD.NDT.T02 UT Training Programme Rev.5 (Drive); BAN_GIAO_Kinh_nghiem_va_Toolkit_dao_tao_NDT.md (Drive); `claude/ndt-game-khoi-dong.md`, `claude/quy-tac-tieng-viet.md`, `claude/kiem-dem-ca-dem-handoff.md` (Project App GAME).
 - ASME BPVC Section V Điều 2, 4, 6, 7; Section VIII Div.1 Phụ lục 6, 8, 12 và UW-51. Đã đối chiếu các con số dùng trong game qua bản trích dẫn công khai; cần soát lại theo ấn bản đang áp dụng.
 - NDE-Ed.org (Iowa State University): phần vật lý nền tảng.
+
+---
+
+## Cập nhật v0.2 (24/11/2026): Học viện NDE theo NDE-Ed.org
+
+Theo yêu cầu bổ sung, “Giai đoạn 1: Học viện Vật lý” của GDD được dựng thành **Học viện NDE**. Học viện **không chặn** việc ra hiện trường (giữ nguyên khuyến nghị 2.1), nhưng mỗi hợp đồng gợi ý chương nên học trước.
+
+| Nhánh | Chương (theo mục lục NDE-Ed.org) | Mô phỏng |
+|---|---|---|
+| Vật lý nền tảng | Nguyên tử & nguyên tố · Điện học & hiệu ứng bề mặt · Từ học & vòng từ trễ · Sóng · Âm học & trở kháng âm · Tia X/gamma & suy giảm · Vật liệu & hư hỏng · Mao dẫn | Lắp ráp đồng vị; dòng xoáy theo độ sâu; vòng từ trễ và khử từ; bước sóng so với cỡ khuyết tật; phản xạ/truyền qua; I = I₀e^(−μx); kéo mẫu thép; mao dẫn |
+| Phương pháp | VT · UT · MT · ET · Vi ba · RT · PT · AE · Nhiệt ảnh | Điều kiện quan sát T-952; Snell; từ thông rò; mặt phẳng trở kháng; độ ẩm composite; bức xạ; xếp quy trình PT; định vị nguồn AE; flash nhiệt ảnh |
+
+So với GDD: thêm **VT** (không có trong mục lục kỹ thuật của NDE-Ed.org nhưng là phương pháp bắt buộc đầu tiên) và đưa **ET, AE, nhiệt ảnh, vi ba** vào dạng bài học có mô phỏng trước khi làm hợp đồng hiện trường. Các giá trị vật liệu trong mô phỏng ghi “tham khảo” là giá trị minh họa. Mô hình mặt phẳng trở kháng, nhiệt ảnh và hằng số điện môi trộn tuyến tính là mô hình định tính cho học tập.
