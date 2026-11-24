@@ -2,7 +2,7 @@
 
 Game mô phỏng kiểm tra không phá hủy (NDT) chạy trên trình duyệt. Người chơi là kỹ sư tập sự nhận hợp đồng kiểm tra: chọn phương pháp, làm đúng quy trình, hiệu chuẩn, đọc tín hiệu, đối chiếu tiêu chí chấp nhận và ký **Đạt / Loại bỏ**.
 
-**Phiên bản v0.6:** 9 hợp đồng hiện trường (thêm VT, dòng điện xoáy, phát xạ âm, nhiệt ảnh, vi ba) và gợi ý học, thi chứng chỉ NDT thật sau mỗi hợp đồng. **v0.5:** thêm chương UT nâng cao và An toàn bức xạ (hàng rào 7,5 µSv/h, vị trí thợ chụp 10 µSv/h), 15 mô hình 3D tương tác, phần Đào sâu mức Bậc II, ví dụ tính, thuật ngữ Việt – Anh, trang Giới thiệu. Chơi tại https://hvflaw.hlvsuckhoe.com/.  9 hợp đồng hiện trường PT → MT → UT → RT → VT → ET → AE → nhiệt ảnh → vi ba, kèm **Học viện NDE** gồm 19 chương: 8 chương vật lý nền tảng, 10 chương phương pháp (VT, UT, UT nâng cao, MT, ET, vi ba, RT, PT, AE, nhiệt ảnh) và An toàn bức xạ, cấu trúc theo NDE-Ed.org.
+**Phiên bản v0.7:** Phòng Bậc III: soát xét quy trình, phiếu kỹ thuật và hồ sơ nhân sự có lỗi cài sẵn. **v0.6:** 9 hợp đồng hiện trường (thêm VT, dòng điện xoáy, phát xạ âm, nhiệt ảnh, vi ba) và gợi ý học, thi chứng chỉ NDT thật sau mỗi hợp đồng. **v0.5:** thêm chương UT nâng cao và An toàn bức xạ (hàng rào 7,5 µSv/h, vị trí thợ chụp 10 µSv/h), 15 mô hình 3D tương tác, phần Đào sâu mức Bậc II, ví dụ tính, thuật ngữ Việt – Anh, trang Giới thiệu. Chơi tại https://hvflaw.hlvsuckhoe.com/.  9 hợp đồng hiện trường PT → MT → UT → RT → VT → ET → AE → nhiệt ảnh → vi ba, kèm **Học viện NDE** gồm 19 chương: 8 chương vật lý nền tảng, 10 chương phương pháp (VT, UT, UT nâng cao, MT, ET, vi ba, RT, PT, AE, nhiệt ảnh) và An toàn bức xạ, cấu trúc theo NDE-Ed.org.
 
 👉 **Chơi tại: https://hvflaw.hlvsuckhoe.com/**
 

@@ -130,3 +130,8 @@ So với GDD: thêm **VT** (không có trong mục lục kỹ thuật của NDE-
 - Mức quét chuẩn +6 dB (ASME V Điều 4) đã được anh Dũng xác nhận.
 - Thêm 5 hợp đồng: VT (AWS D1.1 Bảng 8.1, tải tĩnh, rút gọn: nứt, cháy cạnh 1 mm / 2 mm với tổng 50 mm trong 300 mm, rỗ 10 mm/25 mm và 19 mm/300 mm; điều kiện nhìn theo ASME V T-952), ET (quét quanh lỗ đinh tán trên nhôm 2024-T3, chọn tần số theo δ, xoay pha, mức rãnh EDM), AE (thử thủy lực bồn LPG, hiệu chuẩn vận tốc bằng bẻ ruột chì, ngưỡng, giữ áp để tách nguồn hoạt động khỏi ma sát gối đỡ), nhiệt ảnh xung (CFRP, t ≈ z²/α, thời gian ghi, độ phát xạ), vi ba (mối hàn nhiệt HDPE, λ = c/(f√ε), bước quét ≤ λ/4). Tiêu chí ET, nhiệt ảnh, vi ba là quy trình hư cấu ghi rõ trong game.
 - Sau mỗi hợp đồng đạt ≥ 1 sao: thẻ “Bạn thấy thích công việc này?” gợi ý tìm các công ty dịch vụ NDT ở Việt Nam như PHATECO, học và thi chứng chỉ ở PNIC hoặc các đơn vị khác; trang Giới thiệu có mục tương tự.
+
+## Bổ sung v0.7: Phòng Bậc III
+- Vòng chơi mới cho người đã có Bậc II: đọc tài liệu do người khác soạn (quy trình UT, phiếu kỹ thuật và biên bản RT, quy trình MT, PT, hồ sơ nhân sự), tìm dòng sai và chọn cách sửa. Lỗi cài ngẫu nhiên nên chơi lại vẫn có giá trị.
+- Lỗi được chọn từ những sai sót hay gặp ngoài thực tế: mẫu chuẩn sai cỡ, chênh nhiệt độ khi hiệu chuẩn, không quét +6 dB, ngưỡng điều tra 50 % thay cho 20 % DAC, tính sai t/3, mật độ phim 1,5, chữ B sáng, Ug quá lớn, đo nguồn về bằng tai, gông AC 2,5 kg, chỉ từ hóa một hướng, xịt dung môi trực tiếp, đọc PT sau 2 giờ, nhầm SNT-TC-1A với ISO 9712.
+- Đánh dấu bừa bị trừ điểm, nên người chơi phải thật sự hiểu bộ luật.

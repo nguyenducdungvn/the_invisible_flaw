@@ -146,3 +146,9 @@ table.t th{color:var(--dim);font-weight:600}
 .deep h3{color:var(--cy)}
 
 .v3d-wait{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--dim)}
+.l3line{border:1px solid var(--line,#2b3a44);border-radius:10px;padding:10px 12px;margin:8px 0;line-height:1.65}
+.l3line.flag{border-color:var(--hi);background:rgba(255,197,49,.06)}
+.l3line select.f{width:100%}
+.l3fix{margin-top:8px;display:grid;gap:6px}
+.l3fix label{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line,#2b3a44);border-radius:8px;padding:6px 8px;cursor:pointer;line-height:1.55}
+.l3fix input{margin-top:5px}

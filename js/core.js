@@ -189,7 +189,7 @@
         h('div', { class: 'card' }, h('h3', null, 'Hậu quả có thật'), h('p', { class: 'dim' }, 'Bỏ sót, báo động giả và vi phạm an toàn đều có giá. Cái sai nguy hiểm nhất thường là lựa chọn hấp dẫn nhất.')))));
   }
 
-  function certName(m) { const c = S.certs[m] || 0; return c === 0 ? 'Thực tập' : c === 1 ? 'Bậc I' : 'Bậc II'; }
+  function certName(m) { const c = S.certs[m] || 0; return ['Thực tập', 'Bậc I', 'Bậc II', 'Bậc III'][c] || 'Bậc III'; }
   function unlocked(lvl) { if (lvl.order === 1) return true; const prev = root.LEVELS.find(l => l.order === lvl.order - 1); return !!(S.done[prev.id] && S.done[prev.id].stars > 0); }
   function stars(n) { return h('span', { class: 'stars' }, [0, 1, 2].map(i => h('span', { class: i < n ? '' : 'e' }, i < n ? '★' : '☆'))); }
 
@@ -205,6 +205,10 @@
         return h('div', { class: 'card contract', onclick: () => Game.academy(), style: 'border-color:#2d5c48' }, h('div', { class: 'row' }, h('span', { class: 'meth', style: 'color:var(--ok)' }, 'HV'),
           h('div', null, h('h3', { style: 'margin:0' }, 'Học viện NDE'), h('div', { class: 'dim', style: 'font-size:.88rem' }, `8 chương vật lý nền tảng · 10 chương phương pháp (VT, UT, UT nâng cao, MT, ET, vi ba, RT, PT, AE, nhiệt ảnh) · An toàn bức xạ · đã thành thạo ${n}/${AC.length}`)),
           h('span', { class: 'spacer' }), h('span', { class: 'btn sm' }, 'Vào học'))); })(),
+      Game.level3 ? (() => { const n2 = Object.values(S.certs).filter(v => v >= 2).length, n3 = Object.values(S.certs).filter(v => v >= 3).length, open = n2 >= 1;
+        return h('div', { class: 'card contract' + (open ? '' : ' locked'), onclick: () => open ? Game.level3() : toast('Cần ít nhất một chứng chỉ Bậc II (3 sao ở một hợp đồng)'), style: 'border-color:#5c4a2d' }, h('div', { class: 'row' }, h('span', { class: 'meth', style: 'color:var(--hi)' }, 'III'),
+          h('div', null, h('h3', { style: 'margin:0' }, 'Phòng Bậc III · Soát xét quy trình'), h('div', { class: 'dim', style: 'font-size:.88rem' }, open ? `Tìm lỗi cài sẵn trong quy trình UT, RT, MT, PT và hồ sơ nhân sự · đã có ${n3} chứng chỉ Bậc III` : 'Mở khi bạn có Bậc II ở ít nhất một phương pháp')),
+          h('span', { class: 'spacer' }), h('span', { class: 'btn sm' + (open ? '' : ' ghost') }, open ? 'Vào phòng' : 'Khóa'))); })() : null,
       allDone ? h('div', { class: 'callout ok' }, `Bạn đã hoàn thành cả ${L.length} hợp đồng. Cảm ơn bạn đã chơi!`+' Chơi lại để lấy 3 sao: vị trí khuyết tật thay đổi mỗi lần. ', h('a', { href: '#', onclick: e => { e.preventDefault(); Game.about(); } }, 'Thấy hay thì mời tác giả ly cà phê và chia sẻ cho bạn bè.')) : null,
       h('div', { class: 'grid g2' }, L.map(l => {
         const ok = unlocked(l), d = S.done[l.id];
@@ -216,7 +220,7 @@
           h('div', { class: 'row', style: 'font-size:.85rem' }, h('span', { class: 'chip' }, `Hợp đồng ${l.budget} tr₫`), h('span', { class: 'chip' }, `Cho phép dừng máy ${l.downtime} phút`), d ? h('span', { class: 'chip' }, `Điểm cao nhất ${d.score}`) : null));
       })),
       h('div', { class: 'card flat' }, h('h3', null, 'Lộ trình bản đầy đủ (theo GDD)'),
-        h('p', { class: 'dim' }, 'Hiện có 9 hợp đồng PT → MT → UT → RT → VT → ET → AE → nhiệt ảnh → vi ba và Học viện 19 chương. Bước tiếp theo: hợp đồng trùm kết hợp nhiều phương pháp và chế độ Bậc III (soát xét quy trình có lỗi cài sẵn).'))));
+        h('p', { class: 'dim' }, 'Hiện có 9 hợp đồng PT → MT → UT → RT → VT → ET → AE → nhiệt ảnh → vi ba và Học viện 19 chương. Khi có Bậc II, Phòng Bậc III mở ra: soát xét quy trình, phiếu kỹ thuật và hồ sơ có lỗi cài sẵn. Bước tiếp theo: hợp đồng trùm kết hợp nhiều phương pháp.'))));
   }
 
   /* ---------- vòng lặp nhiệm vụ ---------- */
@@ -320,7 +324,7 @@
   }
 
   const METHODS = {};
-  const Game = { M: null, S: () => S, boot, title, ask, h, $, fmt, fmt0, parseNum, slider, fitCanvas, modal, toast, hud, addTime, spend, safetyHit, METHODS, CARDS, cardView, page, hub, finish };
+  const Game = { M: null, S: () => S, boot, title, ask, h, $, fmt, fmt0, parseNum, slider, fitCanvas, modal, toast, hud, addTime, spend, safetyHit, METHODS, CARDS, cardView, page, hub, finish, save };
   async function boot() {
     load();
     try { await Promise.all(['400 16px "Be Vietnam Pro"', '700 16px "Be Vietnam Pro"', '400 16px "Roboto Mono"', 'italic 400 16px "Noto Serif"'].map(f => document.fonts.load(f, 'Tiếng Việt ễ ậ ỗ'))); } catch (e) { /* vẫn chạy */ }

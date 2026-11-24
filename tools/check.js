@@ -104,6 +104,17 @@ const ut = LEVELS.find(l => l.id === 'ut1'); ok(U12(ut.reflectors.filter(r => r.
   near(P.skinDepth(2e5, 0.3 * P.IACS, 1) * 1000, 0.27, 0.01, 'ET: δ nhôm 30 % IACS ở 200 kHz ≈ 0,27 mm');
   near(300 / 24 / Math.sqrt(2.3), 8.24, 0.01, 'MW: λ trong HDPE ở 24 GHz ≈ 8,2 mm');
   for (const k of Object.keys(LM.PREREQ_MORE)) ok(LM.PREREQ_MORE[k].every(c => ACADEMY_IDS.includes(c)), `PREREQ ${k}`); }
+{ const L3 = require(path.join(__dirname, '../js/level3.js'));
+  ok(L3.CASES.length === 5, 'Bậc III: 5 tài liệu soát xét');
+  for (const c of L3.CASES) { ok(c.lines.length >= 7, `${c.id}: ≥ 7 dòng`);
+    for (const [i, l] of c.lines.entries()) { ok(l.ok && l.bad && l.ok !== l.bad, `${c.id}#${i + 1}: có bản đúng và bản sai khác nhau`); ok(l.fix.length === 3 && new Set(l.fix).size === 3, `${c.id}#${i + 1}: 3 cách sửa khác nhau`); ok(l.why && l.ref, `${c.id}#${i + 1}: có giải thích và căn cứ`); } }
+  let r = () => 0.37; const b = L3.pickBad(9, Math.random); ok(b.size >= 3 && b.size <= 5, 'Bậc III: 3–5 dòng lỗi mỗi lượt');
+  const c = L3.CASES[0], bad = new Set([0, 3, 4]);
+  near(L3.score(c, bad, { 0: { fix: 0 }, 3: { fix: 0 }, 4: { fix: 0 } }).pct, 1, 1e-9, 'Bậc III: tìm và sửa đúng cả 3 → 100 %');
+  near(L3.score(c, bad, { 0: { fix: 0 }, 3: { fix: 0 }, 4: { fix: 2 } }).pct, 5 / 6, 1e-9, 'Bậc III: một dòng sửa sai → 83 %');
+  near(L3.score(c, bad, { 0: { fix: 0 }, 3: { fix: 0 }, 4: { fix: 0 }, 1: { fix: 0 } }).pct, 5 / 6, 1e-9, 'Bậc III: đánh dấu nhầm một dòng đúng bị trừ');
+  near(L3.score(c, bad, Object.fromEntries(c.lines.map((_, i) => [i, { fix: 0 }]))).pct, 0, 1e-9, 'Bậc III: đánh dấu tất cả không có lợi');
+  near(20 / 3, 6.67, 0.01, 'Bậc III UT: t/3 với t = 20 mm'); near(3 * 25 / 100, 0.75, 1e-9, 'Bậc III RT: Ug = 3·25/100'); near(3 * 25 / 300, 0.25, 1e-9, 'Bậc III RT: Ug = 3·25/300'); }
 console.log('5. Hình học UT');
 const T = 25, tan = Math.tan(60 * P.D2R), fusion = d => 1 + (T - d) * Math.tan(30 * P.D2R);
 const lof = ut.reflectors.find(r => r.type === 'lof'); const ypLeg2 = fusion(lof.depth) + (2 * T - lof.depth) * tan;
