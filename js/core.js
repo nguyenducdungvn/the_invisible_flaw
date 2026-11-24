@@ -145,7 +145,7 @@
       el.append(h('div', { class: 'stat', title: 'Thẻ an toàn: vi phạm mất một thẻ, hết thẻ là dừng nhiệm vụ' }, 'An toàn',
         h('span', { class: 'shields' }, [0, 1, 2].map(i => h('span', { class: i < M.safety ? '' : 'off' }, i < M.safety ? '◆' : '◇')))));
     }
-    el.append(h('button', { class: 'hbtn', onclick: openNotebook }, 'Sổ tay'), h('button', { class: 'hbtn', onclick: openAtlas }, 'Atlas'));
+    el.append(h('button', { class: 'hbtn', onclick: openNotebook }, 'Sổ tay'), h('button', { class: 'hbtn', onclick: openAtlas }, 'Atlas'), h('button', { class: 'hbtn', onclick: () => { const go = () => { if (Game.M) clearInterval(Game.M.tick); Game.about(); }; Game.M ? ask('Rời nhiệm vụ để xem trang Giới thiệu?', go) : go(); } }, 'Giới thiệu'));
   }
 
   /* ---------- tài nguyên trong nhiệm vụ ---------- */
@@ -182,7 +182,7 @@
         h('p', { class: 'dim', style: 'max-width:640px;margin:18px auto' }, 'Bạn là kỹ sư tập sự ở một trung tâm giám định an toàn công nghiệp. Mỗi hợp đồng là một “ca bệnh vật liệu”: chọn phương pháp, làm đúng quy trình, đọc tín hiệu, đối chiếu tiêu chuẩn rồi ký Đạt hay Loại bỏ. Và sáu tháng sau, bạn sẽ biết mình đúng hay sai.'),
         h('div', { class: 'row', style: 'justify-content:center' }, name,
           h('button', { class: 'btn', onclick: () => { S.name = name.value.trim().normalize('NFC') || 'Kỹ sư tập sự'; save(); hub(); } }, S.name ? 'Tiếp tục' : 'Nhận việc')),
-        S.name ? h('p', null, h('button', { class: 'btn ghost sm', style: 'margin-top:14px', onclick: () => ask('Xóa toàn bộ tiến trình và chơi lại từ đầu?', () => { S = fresh(); save(); title(); }) }, 'Chơi lại từ đầu')) : null),
+        h('p', null, h('button', { class: 'btn ghost sm', style: 'margin:14px 6px 0', onclick: () => Game.about() }, 'Giới thiệu & miễn trừ'), S.name ? h('button', { class: 'btn ghost sm', style: 'margin-top:14px', onclick: () => ask('Xóa toàn bộ tiến trình và chơi lại từ đầu?', () => { S = fresh(); save(); title(); }) }, 'Chơi lại từ đầu') : null)),
       h('div', { class: 'grid g3' },
         h('div', { class: 'card' }, h('h3', null, 'Học đúng lúc cần'), h('p', { class: 'dim' }, 'Phòng thí nghiệm mở ra ngay trước nhiệm vụ cần đến nó. Muốn học kỹ hơn thì vào Học viện NDE: 17 chương từ nguyên tử tới nhiệt ảnh.')),
         h('div', { class: 'card' }, h('h3', null, 'Dự đoán rồi mới đo'), h('p', { class: 'dim' }, 'Bạn tính trước bằng công thức, máy chỉ xác nhận. Dự đoán trúng được thưởng; đoán bừa thì tốn thời gian dừng máy.')),
@@ -205,7 +205,7 @@
         return h('div', { class: 'card contract', onclick: () => Game.academy(), style: 'border-color:#2d5c48' }, h('div', { class: 'row' }, h('span', { class: 'meth', style: 'color:var(--ok)' }, 'HV'),
           h('div', null, h('h3', { style: 'margin:0' }, 'Học viện NDE'), h('div', { class: 'dim', style: 'font-size:.88rem' }, `8 chương vật lý nền tảng · 9 chương phương pháp (VT, UT, MT, ET, vi ba, RT, PT, AE, nhiệt ảnh) · đã thành thạo ${n}/${AC.length}`)),
           h('span', { class: 'spacer' }), h('span', { class: 'btn sm' }, 'Vào học'))); })(),
-      allDone ? h('div', { class: 'callout ok' }, 'Bạn đã hoàn thành cả 4 hợp đồng của bản chơi thử. Chơi lại để lấy 3 sao: vị trí khuyết tật thay đổi mỗi lần.') : null,
+      allDone ? h('div', { class: 'callout ok' }, 'Bạn đã hoàn thành cả 4 hợp đồng của bản chơi thử. Cảm ơn bạn đã chơi! Chơi lại để lấy 3 sao: vị trí khuyết tật thay đổi mỗi lần. ', h('a', { href: '#', onclick: e => { e.preventDefault(); Game.about(); } }, 'Thấy hay thì mời tác giả ly cà phê và chia sẻ cho bạn bè.')) : null,
       h('div', { class: 'grid g2' }, L.map(l => {
         const ok = unlocked(l), d = S.done[l.id];
         return h('div', { class: 'card contract' + (ok ? '' : ' locked'), onclick: () => ok ? startMission(l.id) : toast('Hoàn thành hợp đồng trước để mở khóa') },
@@ -260,7 +260,8 @@
             h('dt', null, 'Tiêu chí'), h('dd', null, root.CRITERIA[l.criteria].name))),
         h('div', { class: 'card' }, h('div', { class: 'row' }, h('h3', { style: 'margin:0' }, 'Chọn phương pháp'), h('span', { class: 'spacer' }), h('span', { class: 'dim' }, 'Khách đang chờ:'), tEl),
           h('div', { class: 'bar', style: 'margin:6px 0' }, bar),
-          h('p', { class: 'dim', style: 'font-size:.88rem' }, 'Gợi ý màu cam là lời khách hoặc đồng nghiệp nói. Hấp dẫn, nhưng chưa chắc đúng.'), opts))));
+          h('p', { class: 'dim', style: 'font-size:.88rem' }, 'Gợi ý màu cam là lời khách hoặc đồng nghiệp nói. Hấp dẫn, nhưng chưa chắc đúng.'), opts)), h('div', { id: 'brief3d' })));
+    if (root.View3D && root.View3D.FOR_METHOD[l.method]) root.View3D.mount(document.getElementById('brief3d'), root.View3D.FOR_METHOD[l.method], { height: window.innerWidth < 600 ? 260 : 320 });
   }
 
   function lab() {
@@ -314,12 +315,12 @@
             r.why && r.why.length ? h('ul', null, r.why.map(x => h('li', null, x))) : h('p', { class: 'dim' }, 'Không có chỉ thị vượt tiêu chí.'),
             r.notes && r.notes.length ? h('div', { class: 'callout' }, h('b', null, 'Nhận xét của Bậc III: '), h('ul', { style: 'margin:4px 0' }, r.notes.map(n => h('li', null, n)))) : null),
           h('div', { class: 'after' }, after))),
-      h('div', { class: 'row' }, h('button', { class: 'btn', onclick: hub }, 'Về trung tâm'), h('button', { class: 'btn ghost', onclick: () => startMission(l.id) }, 'Chơi lại (khuyết tật đổi vị trí)')));
+      h('div', { class: 'row' }, h('button', { class: 'btn', onclick: hub }, 'Về trung tâm'), h('button', { class: 'btn ghost', onclick: () => startMission(l.id) }, 'Chơi lại (khuyết tật đổi vị trí)')), Game.coffeeLine ? Game.coffeeLine() : null);
     page(w); Game.M = null; hud();
   }
 
   const METHODS = {};
-  const Game = { M: null, S: () => S, boot, h, $, fmt, fmt0, parseNum, slider, fitCanvas, modal, toast, hud, addTime, spend, safetyHit, METHODS, CARDS, cardView, page, hub, finish };
+  const Game = { M: null, S: () => S, boot, title, ask, h, $, fmt, fmt0, parseNum, slider, fitCanvas, modal, toast, hud, addTime, spend, safetyHit, METHODS, CARDS, cardView, page, hub, finish };
   async function boot() {
     load();
     try { await Promise.all(['400 16px "Be Vietnam Pro"', '700 16px "Be Vietnam Pro"', '400 16px "Roboto Mono"', 'italic 400 16px "Noto Serif"'].map(f => document.fonts.load(f, 'Tiếng Việt ễ ậ ỗ'))); } catch (e) { /* vẫn chạy */ }

@@ -134,3 +134,10 @@ table.t th{color:var(--dim);font-weight:600}
 }
 .ut-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media (max-width:820px){.ut-grid{grid-template-columns:1fr}.ut-grid .ascan{order:-1}}
+
+.v3d-stage{position:relative;border-radius:10px;overflow:hidden;margin-top:10px;background:radial-gradient(ellipse at 50% 30%,#22303a,#0b1014 75%);border:1px solid var(--line);touch-action:none}
+.v3d-stage canvas{border:0;border-radius:0;background:transparent}
+.v3d-ctl{margin-top:8px}
+.about .qr{max-width:260px;width:100%;border-radius:12px;background:#fff;padding:6px}
+.about h2{margin-top:6px}
+.about a{overflow-wrap:anywhere;word-break:break-word}

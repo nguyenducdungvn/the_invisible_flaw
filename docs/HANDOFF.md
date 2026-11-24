@@ -1,14 +1,15 @@
-# BÀN GIAO · The Invisible Flaw (v0.2, 24/11/2026)
+# BÀN GIAO · The Invisible Flaw (v0.3, 24/11/2026)
 
 ## 1. Trạng thái
 - Bản chơi thử 4 hợp đồng (PT, MT, UT, RT) **chơi được hết luồng**: kiểm thử Playwright ở 1366 px và 390 px, không lỗi JS, không tràn ngang. 
 - **v0.2: Học viện NDE** 17 chương (8 vật lý + 9 phương pháp), cấu trúc theo NDE-Ed.org Physics và NDE Techniques; 13 mô phỏng mới; 10 thẻ công thức mới. Kiểm thử Playwright: làm hết 17 bài kiểm tra ở cả 1366 px và 390 px, không lỗi. `check.js`: 591/591.
+- **v0.3:** 8 mô hình 3D (Three.js r128 trong `js/vendor/`, tự dừng khi rời trang) hiện ở 14 chương Học viện và ở hồ sơ 4 hợp đồng; trang Giới thiệu (miễn trừ, cảm ơn, QR BIDV mời cà phê, chia sẻ); nút Giới thiệu trên thanh trên cùng và lời mời ở cuối mỗi kết quả.
 - Thẩm định GDD: `docs/THAM_DINH_GDD.md`.
 - Bản chơi thử: https://claude.ai/artifact/DRwkCPNZ2H7wADVdUT7LHU · Thư mục máy: `D:\New App 2026\The_invisible_FLAW\the_invisible_flaw`
 - Repo: github.com/nguyenducdungvn/the_invisible_flaw (**chỉ đẩy khi anh Dũng duyệt**).
 
 ## 2. Kiến trúc
-- HTML/JS thuần, không build. Thứ tự script: physics → criteria → levels → core → labs → surface → m_pt → m_mt → m_ut → m_rt.
+- HTML/JS thuần, không build. Thứ tự script: three.min + OrbitControls → physics → criteria → levels → core → labs → surface → m_pt → m_mt → m_ut → m_rt.
 - Giao diện mỗi phương pháp: `Game.METHODS.X = { prep(el,M,next), inspect(el,M,next), report(el,M,finish) }`. `finish({proc, det, falseCalls, playerAccept, trueAccept, why, atlas, notes})`.
 - Điểm (100): phương pháp 10 · phòng thí nghiệm 10 · quy trình 25 · phát hiện 35 (−6 cho mỗi báo động giả) · kết luận 20; −5 cho mỗi thẻ an toàn mất. Sao: kết luận sai = 0; ≥ 85 = 3; ≥ 65 = 2; còn lại = 1. Bậc I khi ≥ 1 sao, Bậc II khi 3 sao.
 - `optional: p` trên khuyết tật = xác suất vắng mặt, để đáp án có thể là ĐẠT. `jitter` = dịch vị trí ngẫu nhiên.

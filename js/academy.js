@@ -48,10 +48,11 @@
       h('h1', { style: 'margin-top:10px' }, c.title), h('p', { class: 'dim' }, c.en),
       h('div', { class: 'grid g2' }, c.lessons.map(([t, b], i) => h('div', { class: 'card' }, h('div', { class: 'row' }, h('span', { class: 'chip hi' }, `Bài ${i + 1}`), h('h3', { style: 'margin:0' }, t)), h('p', { class: 'serif', style: 'margin-top:8px' }, b)))),
       c.cards && c.cards.length ? h('div', { class: 'card flat' }, h('h3', null, 'Thẻ công thức của chương'), h('p', { class: 'dim' }, 'Mở khóa khi đạt ≥ 80 %. Thẻ đã mở có máy tính trong Sổ tay.'), c.cards.map(k => G.cardView(k, false))) : null,
-      h('h2', null, 'Mô phỏng'), simBox,
+      h('div', { id: 'ch3d' }), h('h2', null, 'Mô phỏng'), simBox,
       h('div', { class: 'row', style: 'margin:10px 0 18px' }, h('button', { class: 'btn', onclick: startQuiz }, `Làm bài kiểm tra (${c.quiz.length} câu)`)),
       quizBox,
       h('p', { class: 'dim', style: 'font-size:.85rem;margin-top:20px' }, 'Nguồn tham khảo: ', h('a', { href: root.NDE + c.src, target: '_blank', rel: 'noopener' }, `NDE-Ed.org – ${c.en}`), '. Nội dung đã viết lại và rút gọn cho game; số liệu vật liệu ghi “tham khảo” là giá trị minh họa.')));
+    if (root.View3D && root.View3D.FOR_CHAPTER[id]) root.View3D.mount(document.getElementById('ch3d'), root.View3D.FOR_CHAPTER[id]);
     if (c.sim.startsWith('lab:')) root.LABS[c.sim.slice(4)](simBox, () => { toast('Xong phần mô phỏng'); startQuiz(); }, { btn: 'Sang bài kiểm tra chương' });
     else root.SIMS[c.sim](simBox);
   }
