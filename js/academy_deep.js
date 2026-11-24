@@ -75,7 +75,7 @@
         ['Lớp giảm mười lần (TVL)', '1 TVL giảm cường độ 10 lần, tương đương khoảng 3,3 HVL. Thiết kế che chắn: số HVL cần = log₂(hệ số giảm). Với chùm rộng, các HVL đầu thường dày hơn các HVL sau.'],
         ['Định luật thuận nghịch với máy X', 'Phơi sáng tỉ lệ với mA × thời gian (mA·s hay mA·phút). Giữ nguyên kV và khoảng cách: 10 mA trong 2 phút cho cùng độ đen như 5 mA trong 4 phút.']
       ],
-      ex: [{ q: 'Cần giảm suất liều từ 1000 xuống 20 µSv/h bằng chì (HVL 5,1 mm). Dày bao nhiêu?', steps: ['Hệ số giảm = 1000/20 = 50', 'Số HVL = log₂(50) ≈ 5,64', 'Chiều dày = 5,64 × 5,1'], a: '≈ 28,8 mm chì' }],
+      ex: [{ q: 'Cần giảm suất liều từ 1000 xuống 7,5 µSv/h (mức hàng rào) bằng chì (HVL 5,1 mm). Dày bao nhiêu?', steps: ['Hệ số giảm = 1000/7,5 ≈ 133', 'Số HVL = log₂(133) ≈ 7,06', 'Chiều dày = 7,06 × 5,1'], a: '≈ 36 mm chì' }],
       quiz: [
         { q: 'Giảm suất liều 50 lần bằng chì có HVL 5,1 mm. Cần dày bao nhiêu mm?', num: 28.78, rel: 0.03, unit: 'mm', e: 'log₂(50) × 5,1 ≈ 28,8 mm.' },
         { q: 'Máy X chụp đạt ở 10 mA, 2 phút. Hạ xuống 5 mA thì cần bao nhiêu phút?', num: 4, rel: 0.01, unit: 'phút', e: 'mA·phút giữ nguyên: 20 / 5 = 4.' },
@@ -270,7 +270,7 @@
     ['Trường gần', 'Near field', 'Vùng sát đầu dò, biên độ dao động thất thường: N = D²f/(4v).'],
     ['Từ thông rò', 'Flux leakage', 'Từ thông thoát ra ngoài vật tại bất liên tục, giữ hạt từ lại.'],
     ['Văn bản thực hành', 'Written practice', 'Tài liệu của đơn vị quy định đào tạo, kinh nghiệm, thi và chứng nhận nhân sự NDT.'],
-    ['Vùng kiểm soát', 'Controlled area', 'Khu vực rào lại khi chụp bức xạ, nơi suất liều có thể vượt giới hạn cho công chúng.']
+    ['Vùng kiểm soát', 'Controlled area', 'Nơi liều có thể từ 6 mSv/năm trở lên (NĐ 332/2025 Điều 5); chỉ nhân viên bức xạ được vào. Khi chụp hiện trường, ranh giới là hàng rào ≤ 7,5 µSv/h.']
   ];
 
   function merge() {

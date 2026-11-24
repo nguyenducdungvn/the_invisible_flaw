@@ -184,7 +184,7 @@
           h('button', { class: 'btn', onclick: () => { S.name = name.value.trim().normalize('NFC') || 'Kỹ sư tập sự'; save(); hub(); } }, S.name ? 'Tiếp tục' : 'Nhận việc')),
         h('p', null, h('button', { class: 'btn ghost sm', style: 'margin:14px 6px 0', onclick: () => Game.about() }, 'Giới thiệu & miễn trừ'), S.name ? h('button', { class: 'btn ghost sm', style: 'margin-top:14px', onclick: () => ask('Xóa toàn bộ tiến trình và chơi lại từ đầu?', () => { S = fresh(); save(); title(); }) }, 'Chơi lại từ đầu') : null)),
       h('div', { class: 'grid g3' },
-        h('div', { class: 'card' }, h('h3', null, 'Học đúng lúc cần'), h('p', { class: 'dim' }, 'Phòng thí nghiệm mở ra ngay trước nhiệm vụ cần đến nó. Muốn học kỹ hơn thì vào Học viện NDE: 17 chương từ nguyên tử tới nhiệt ảnh.')),
+        h('div', { class: 'card' }, h('h3', null, 'Học đúng lúc cần'), h('p', { class: 'dim' }, 'Phòng thí nghiệm mở ra ngay trước nhiệm vụ cần đến nó. Muốn học kỹ hơn thì vào Học viện NDE: 19 chương từ nguyên tử tới nhiệt ảnh và an toàn bức xạ.')),
         h('div', { class: 'card' }, h('h3', null, 'Dự đoán rồi mới đo'), h('p', { class: 'dim' }, 'Bạn tính trước bằng công thức, máy chỉ xác nhận. Dự đoán trúng được thưởng; đoán bừa thì tốn thời gian dừng máy.')),
         h('div', { class: 'card' }, h('h3', null, 'Hậu quả có thật'), h('p', { class: 'dim' }, 'Bỏ sót, báo động giả và vi phạm an toàn đều có giá. Cái sai nguy hiểm nhất thường là lựa chọn hấp dẫn nhất.')))));
   }
@@ -203,7 +203,7 @@
       h('p', { class: 'dim' }, 'Chứng chỉ tính theo từng phương pháp, giống thực tế (SNT-TC-1A, ISO 9712): có Bậc II UT không có nghĩa là được ký kết quả RT.'),
       (() => { const AC = root.ACADEMY || [], n = AC.filter(c => Game.mastered && Game.mastered(c.id)).length;
         return h('div', { class: 'card contract', onclick: () => Game.academy(), style: 'border-color:#2d5c48' }, h('div', { class: 'row' }, h('span', { class: 'meth', style: 'color:var(--ok)' }, 'HV'),
-          h('div', null, h('h3', { style: 'margin:0' }, 'Học viện NDE'), h('div', { class: 'dim', style: 'font-size:.88rem' }, `8 chương vật lý nền tảng · 9 chương phương pháp (VT, UT, MT, ET, vi ba, RT, PT, AE, nhiệt ảnh) · đã thành thạo ${n}/${AC.length}`)),
+          h('div', null, h('h3', { style: 'margin:0' }, 'Học viện NDE'), h('div', { class: 'dim', style: 'font-size:.88rem' }, `8 chương vật lý nền tảng · 10 chương phương pháp (VT, UT, UT nâng cao, MT, ET, vi ba, RT, PT, AE, nhiệt ảnh) · An toàn bức xạ · đã thành thạo ${n}/${AC.length}`)),
           h('span', { class: 'spacer' }), h('span', { class: 'btn sm' }, 'Vào học'))); })(),
       allDone ? h('div', { class: 'callout ok' }, 'Bạn đã hoàn thành cả 4 hợp đồng của bản chơi thử. Cảm ơn bạn đã chơi! Chơi lại để lấy 3 sao: vị trí khuyết tật thay đổi mỗi lần. ', h('a', { href: '#', onclick: e => { e.preventDefault(); Game.about(); } }, 'Thấy hay thì mời tác giả ly cà phê và chia sẻ cho bạn bè.')) : null,
       h('div', { class: 'grid g2' }, L.map(l => {
@@ -216,7 +216,7 @@
           h('div', { class: 'row', style: 'font-size:.85rem' }, h('span', { class: 'chip' }, `Hợp đồng ${l.budget} tr₫`), h('span', { class: 'chip' }, `Cho phép dừng máy ${l.downtime} phút`), d ? h('span', { class: 'chip' }, `Điểm cao nhất ${d.score}`) : null));
       })),
       h('div', { class: 'card flat' }, h('h3', null, 'Lộ trình bản đầy đủ (theo GDD)'),
-        h('p', { class: 'dim' }, 'Bản chơi thử gồm 4 hợp đồng PT → MT → UT → RT và Học viện 17 chương. Hợp đồng hiện trường cho ET, AE, nhiệt ảnh và vi ba sẽ dùng chung khung dữ liệu (thêm vào levels.js); hiện các phương pháp này đã có bài học và mô phỏng trong Học viện.'))));
+        h('p', { class: 'dim' }, 'Bản chơi thử gồm 4 hợp đồng PT → MT → UT → RT và Học viện 19 chương. Hợp đồng hiện trường cho ET, AE, nhiệt ảnh và vi ba sẽ dùng chung khung dữ liệu (thêm vào levels.js); hiện các phương pháp này đã có bài học và mô phỏng trong Học viện.'))));
   }
 
   /* ---------- vòng lặp nhiệm vụ ---------- */

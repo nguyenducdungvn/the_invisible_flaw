@@ -12,8 +12,8 @@
       material: 'Thép không gỉ austenit 316L', temp: 30, budget: 18, downtime: 120,
       briefing: 'Sau một đợt rò rỉ nhỏ, khách yêu cầu kiểm tra bề mặt 100 % mối hàn W-07 trước khi chạy lại dây chuyền. Tiêu chí: ASME VIII Div.1 Phụ lục 8. Dây chuyền đang dừng: mỗi phút đều tốn tiền.',
       methods: [
-        { id: 'MT', label: 'Hạt từ dùng ách (MT)', cost: 3, time: 20, ok: false,
-          lure: 'Rẻ nhất, nhanh nhất – ách đã có sẵn trên xe',
+        { id: 'MT', label: 'Hạt từ dùng gông (MT)', cost: 3, time: 20, ok: false,
+          lure: 'Rẻ nhất, nhanh nhất – gông đã có sẵn trên xe',
           why: 'Inox 316L là thép austenit, gần như không nhiễm từ: không tạo được từ thông rò, MT không dùng được.' },
         { id: 'RT', label: 'Chụp bức xạ (RT)', cost: 14, time: 90, ok: false,
           lure: 'Có phim lưu hồ sơ, “chắc ăn” nhất',
@@ -48,7 +48,7 @@
         { id: 'VT', label: 'Kiểm tra bằng mắt và kính lúp (VT)', cost: 1, time: 10, ok: false,
           lure: 'Nhanh nhất, cẩu chạy lại sớm',
           why: 'Không phát hiện được vết nứt gần bề mặt hoặc nứt khít bị sơn che.' },
-        { id: 'MT', label: 'Hạt từ ướt, ách điện xoay chiều (MT)', cost: 4, time: 40, ok: true,
+        { id: 'MT', label: 'Hạt từ ướt, gông điện xoay chiều (MT)', cost: 4, time: 40, ok: true,
           why: 'Thép S355 là sắt từ; MT phát hiện cả bất liên tục bề mặt và gần bề mặt, nhanh hơn PT trên bề mặt sơn mỏng đã làm sạch.' },
         { id: 'UT', label: 'Siêu âm đầu dò góc (UT)', cost: 9, time: 80, ok: false,
           lure: 'Thiết bị “xịn” nhất trên xe',
@@ -108,7 +108,7 @@
       client: 'Nhà máy điện khí Long Sơn (hư cấu)', contact: 'Chị Ngân – QA/QC chủ đầu tư',
       part: 'Mối hàn giáp mép ống thép, thành dày 12 mm, chụp một thành – một ảnh (phim đặt trong)',
       material: 'Thép API 5L X52', t: 12, budget: 28, downtime: 150,
-      briefing: 'Đặc tính kỹ thuật của chủ đầu tư yêu cầu RT có phim lưu trữ cho mối hàn W-112. Nguồn Ir-192 có chứng chỉ hoạt độ 1850 GBq, đo ngày 26/08/2026 (cách hôm nay 90 ngày). Ranh giới vùng kiểm soát theo quy trình an toàn bức xạ của công ty: suất liều ≤ 20 µSv/h. Ống chuẩn trực giảm 16 lần (4 HVL) theo các hướng ngoài chùm. Tiêu chí: ASME VIII UW-51 (rút gọn).',
+      briefing: 'Đặc tính kỹ thuật của chủ đầu tư yêu cầu RT có phim lưu trữ cho mối hàn W-112. Nguồn Ir-192 có chứng chỉ hoạt độ 1850 GBq, đo ngày 26/08/2026 (cách hôm nay 90 ngày). Tiêu chí vận hành an toàn bức xạ của dự án: hàng rào đặt nơi suất liều ≤ 7,5 µSv/h khi đang chiếu; vị trí thợ chụp đứng điều khiển ≤ 10 µSv/h. Ống chuẩn trực giảm 16 lần theo các hướng ngoài chùm. Thợ chụp có cáp điều khiển 7,6 m hoặc 15 m; hiện trường có vách thép 25 mm của nhà bơm để đứng sau. Tiêu chí: ASME VIII UW-51 (rút gọn).',
       methods: [
         { id: 'UT', label: 'Siêu âm thay chụp (UT)', cost: 8, time: 100, ok: false,
           lure: 'Không phải dựng rào, an toàn hơn',
@@ -120,7 +120,7 @@
           why: 'Đúng theo đặc tính kỹ thuật: Ir-192 dùng cho thép dày khoảng 10–90 mm (ISO 5579), cơ động ở hiện trường.' }
       ],
       lab: 'radiation', criteria: 'ASME8-UW51',
-      source: { A0: 1850, days: 90, size: 3.0, limit: 20, shield: 16, E1m: 220 },
+      source: { A0: 1850, days: 90, size: 3.0, limit: 7.5, opLimit: 10, shield: 16, E1m: 220, wall: 25 },
       indications: [
         { id: 'A', kind: 'crack', x: 55, y: 0.5, len: 7, wid: 0.4, jitter: 20, atlas: 'crack', optional: 0.35 },
         { id: 'B', kind: 'slag', x: 100, y: -1, len: 4.5, wid: 1.0, jitter: 15, atlas: 'slag' },

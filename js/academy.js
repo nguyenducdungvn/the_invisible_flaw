@@ -23,7 +23,7 @@
       h('div', { class: 'row' }, h('button', { class: 'btn ghost sm', onclick: G.hub }, '← Trung tâm'), h('h2', { style: 'margin:0' }, 'Học viện NDE'), h('span', { class: 'spacer' }), h('button', { class: 'btn sm ghost', onclick: glossary }, 'Thuật ngữ Việt – Anh'), h('span', { class: 'chip ok' }, `Thành thạo ${n}/${A().length} chương`)),
       h('p', { class: 'dim' }, 'Cấu trúc theo NDE-Ed.org (Iowa State University), viết lại bằng tiếng Việt, bổ sung căn cứ tiêu chuẩn. Đạt ≥ 80 % bài kiểm tra để thành thạo chương và mở khóa thẻ công thức. Học bất kỳ lúc nào; hợp đồng hiện trường sẽ gợi ý chương nên học trước.'),
       h('div', { class: 'bar', style: 'height:8px' }, h('i', { style: `width:${n / A().length * 100}%;background:var(--ok)` })),
-      track('phys'), track('tech')));
+      track('phys'), track('tech'), track('safe')));
   }
 
   function chapter(id) {

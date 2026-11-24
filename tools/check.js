@@ -26,7 +26,7 @@ near(P.angleBeam(28, 60, 25).depth, 14, 1e-9, 'Chân 1: SP 28 → sâu 14');
 near(P.skipDistance(25, 60), 86.6, 0.05, 'Bước nhảy T25/60°');
 near(P.decay(1000, 73.83), 500, 1e-6, 'Một chu kỳ bán rã');
 const A = P.decay(1850, 90); near(A, 794.6, 0.5, 'Hoạt độ RT hôm nay');
-near(P.barrierDistance(A, 20, 16), 17.97, 0.05, 'Bán kính rào RT');
+near(P.barrierDistance(A, 7.5, 16), 29.35, 0.05, 'Bán kính rào RT (7,5 µSv/h)'); ok(P.attenuate(P.doseRate(A, 15) * 1000 / 16, 25, P.IR192.hvlSteel) <= 10 && P.doseRate(A, 15) * 1000 / 16 > 10 && P.attenuate(P.doseRate(A, 7.6) * 1000 / 16, 25, P.IR192.hvlSteel) > 10, 'RT: chỉ phương án cáp 15 m + vách 25 mm đạt ≤ 10 µSv/h');
 near(P.exposureMinutes(220, 0.5, A), 4.15, 0.02, 'Thời gian chiếu RT');
 near(P.filmDensity(1), 2.6, 1e-9, 'Độ đen tại phơi sáng đúng');
 ok(P.filmDensity(0.5) >= 1.4 && P.filmDensity(0.5) < 2.0, 'Phơi sáng thiếu một nửa → phim mỏng dưới 2,0');
@@ -92,12 +92,20 @@ const slag = ut.reflectors.find(r => r.type === 'slag'); ok(slag.depth * tan > 2
 for (const [d, x] of [[T / 4, 90], [T / 2, 130], [3 * T / 4, 170]]) for (const de of [d, 2 * T - d]) { const u = x - de * tan; ok(u >= 0 && u <= 160, `Mẫu chuẩn: lỗ sâu ${d} với tới (u = ${u.toFixed(1)})`); }
 
 console.log('6. Học viện NDE');
-const { ACADEMY, PREREQ } = require(path.join(__dirname, '../js/academy_data.js'));
+const AD = require(path.join(__dirname, '../js/academy_data.js')), { ACADEMY, PREREQ } = AD;
+const { DEEP, GLOSSARY } = require(path.join(__dirname, '../js/academy_deep.js'));
+const MORE = require(path.join(__dirname, '../js/academy_more.js')); MORE.install({ ACADEMY, TRACKS: AD.TRACKS, PREREQ, GLOSSARY });
 const fs = require('fs');
 const coreSrc = fs.readFileSync(path.join(__dirname, '../js/core.js'), 'utf8'), simSrc = fs.readFileSync(path.join(__dirname, '../js/academy_sims.js'), 'utf8'), labSrc = fs.readFileSync(path.join(__dirname, '../js/labs.js'), 'utf8');
 const cardIds = [...coreSrc.matchAll(/^\s{4}(\w+): \{ t: '/gm)].map(m => m[1]);
 ok(ACADEMY.filter(c => c.track === 'phys').length === 8, '8 chương vật lý (theo NDE-Ed Physics)');
-ok(ACADEMY.filter(c => c.track === 'tech').length === 9, '9 chương phương pháp (8 của NDE-Ed + VT)');
+ok(ACADEMY.filter(c => c.track === 'tech').length === 10, '10 chương phương pháp (8 của NDE-Ed + VT + UT nâng cao)');
+ok(ACADEMY.filter(c => c.track === 'safe').length === 1 && ACADEMY.findIndex(c => c.id === 'ut2') === ACADEMY.findIndex(c => c.id === 'ut') + 1, 'Chương An toàn bức xạ; UT nâng cao ngay sau UT');
+ok(PREREQ.ut1.includes('ut2') && PREREQ.rt1.includes('rs'), 'PREREQ cập nhật');
+for (const c of [MORE.UT2, MORE.RS]) ok(c.deep.length >= 4 && c.ex.length >= 2 && c.quiz.length >= 10, `${c.id}: đủ đào sâu, ví dụ, câu hỏi`);
+{ const q = (c, i) => c.quiz[i]; const U = MORE.UT2, R = MORE.RS, rad = (A, k, lim) => Math.sqrt(P.IR192.gamma * 1000 * A / (k * lim));
+  near(q(U, 2).num, -P.dB(20, 100), 0.2, 'ut2#2 20 % DAC'); near(q(U, 5).num, 2 * 20 * Math.tan(Math.PI / 3), 0.5, 'ut2#5 bước nhảy'); near(q(R, 5).num, rad(740, 10, 7.5), 0.5, 'rs#5 bán kính'); near(q(R, 6).num, Math.pow(0.5, 10 / P.IR192.hvlSteel) * 100, 1, 'rs#6 vách 10 mm');
+  near(P.attenuate(P.doseRate(740, 1) * 1000, 0, 12.7), 96.2 * 1000, 1000, '20 Ci ≈ 96 mSv/h ở 1 m'); }
 ok(new Set(ACADEMY.map(c => c.id)).size === ACADEMY.length, 'Mã chương không trùng');
 for (const c of ACADEMY) {
   ok(c.lessons.length >= 4, `${c.id}: ≥ 4 bài`); ok(c.quiz.length >= 4, `${c.id}: ≥ 4 câu hỏi`);
@@ -117,15 +125,14 @@ chk('ut', 0, P.nearField(10, 5, 5920)); chk('et', 0, P.phaseLagDeg(1, 1)); chk('
 chk('ae', 0, P.aeLocate(2, 3000, -0.4e-3)); chk('ir', 0, P.thermalDepth(10, 4e-7) * 1000); chk('ir', 2, P.thermalTime(2, 1) / P.thermalTime(1, 1));
 near(P.filmDensityFromT(0.01), 2, 1e-9, 'D = 2 ↔ 1 % truyền qua');
 // Phần Đào sâu
-const { DEEP, GLOSSARY } = require(path.join(__dirname, '../js/academy_deep.js'));
-ok(ACADEMY.every(c => DEEP[c.id] && DEEP[c.id].deep.length >= 3 && DEEP[c.id].ex.length >= 1 && DEEP[c.id].quiz.length >= 3), 'Mỗi chương có ≥ 3 mục đào sâu, ≥ 1 ví dụ, ≥ 3 câu nâng cao');
+ok(ACADEMY.filter(c => !c.deep).every(c => DEEP[c.id] && DEEP[c.id].deep.length >= 3 && DEEP[c.id].ex.length >= 1 && DEEP[c.id].quiz.length >= 3), 'Mỗi chương có ≥ 3 mục đào sâu, ≥ 1 ví dụ, ≥ 3 câu nâng cao');
 ok(GLOSSARY.length >= 40 && new Set(GLOSSARY.map(g => g[0])).size === GLOSSARY.length, 'Thuật ngữ ≥ 40, không trùng');
 for (const [id, d] of Object.entries(DEEP)) d.quiz.forEach((q, i) => { ok(q.e, `${id} nâng cao #${i}: thiếu giải thích`); if (q.o) ok(q.o.length >= 4 && new Set(q.o).size === q.o.length, `${id} nâng cao #${i}: đáp án`); });
 const D = (id, i, val) => { const q = DEEP[id].quiz[i]; const tol = q.abs != null ? Math.max(q.abs, 1e-9) : Math.abs(val) * (q.rel || 0.05); near(q.num, val, tol, `Đáp số nâng cao ${id}#${i}`); };
 const fFor = (delta, iacs) => 1 / (Math.PI * 4e-7 * Math.PI * iacs / 100 * P.IACS * delta * delta);
 D('atom', 1, 1850 / 37); D('elec', 0, 0.58 * 50); D('elec', 1, fFor(1e-3, 40) / 1000); near(P.skinDepth(fFor(1e-3, 40), 0.4 * P.IACS, 1), 1e-3, 1e-9, 'f tìm được cho δ = 1 mm');
 D('mag', 0, 1000 / (2 * Math.PI * 0.025)); D('waves', 0, P.wavelength(0.92 * 3240, 2e6) * 1000); D('sound', 0, P.dB(80, 40) / 100);
-D('xray', 0, Math.log2(50) * P.IR192.hvlLead); D('xray', 1, 10 * 2 / 5); D('mat', 0, (50 / (1.12 * 200)) ** 2 / Math.PI * 1000);
+near(DEEP.xray.ex[0].a.includes('36') ? 1 : 0, 1, 0, 'Ví dụ xray 7,5 µSv/h'); D('xray', 0, Math.log2(50) * P.IR192.hvlLead); D('xray', 1, 10 * 2 / 5); D('mat', 0, (50 / (1.12 * 200)) ** 2 / Math.PI * 1000);
 D('vt', 0, P.inverseSquare(400, 1, 0.5)); D('ut', 0, P.beamSpreadHalfDeg(5920, 5e6, 0.01)); D('et', 0, fFor(1.2e-3, 25) / 1000); D('mw', 0, 300 / 10 / Math.sqrt(4)); D('rt', 0, P.geomUnsharpness(2, 15, 500)); D('ae', 0, 8 / 10); D('ir', 0, ((330 / 300) ** 4 - 1) * 100);
 const numDeep = Object.values(DEEP).reduce((n, d) => n + d.quiz.filter(q => q.num != null).length, 0); ok(numDeep === 16, `Đã tính lại mọi câu số nâng cao (${numDeep})`); near(P.mwGamma(1), 0, 1e-12, 'ε = 1 không phản xạ');
 

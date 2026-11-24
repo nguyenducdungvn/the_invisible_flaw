@@ -216,6 +216,57 @@
       el.append(card(h('h3', null, 'Bạn có đang nhìn đúng cách?'), slider('Khoảng cách mắt – bề mặt', 100, 1500, 50, d, 'mm', v => { d = v; draw(); }), slider('Góc nhìn so với bề mặt', 5, 90, 5, a, '°', v => { a = v; draw(); }), slider('Độ rọi', 100, 2000, 50, lx, 'lx', v => { lx = v; draw(); }), o)); setTimeout(draw);
     },
 
+    /* ---- Động học xung theo loại khuyết tật ---- */
+    echodyn(el) {
+      const T = { crack: ['Nứt', 'nhiều đỉnh, chân rộng, lởm chởm; đổi mạnh khi xoay đầu dò', 40, 6], lof: ['Không ngấu vách', 'một đỉnh sắc, rất cao khi chùm vuông góc vách; rơi nhanh khi lệch góc', 95, 10], ip: ['Không thấu chân', 'cao ở độ sâu ≈ T, thấy từ cả hai phía; lệch nhẹ khỏi tâm', 80, 5],
+        slag: ['Ngậm xỉ', 'biên độ vừa, vài đỉnh; ít phụ thuộc hướng', 45, 1.5], pore: ['Rỗ khí', 'các xung nhỏ, thấp, nhấp nháy khi dời đầu dò', 22, 0.5], geom: ['Gờ chân (hình học)', 'độ sâu đúng bằng T, chạy liên tục dọc mối hàn; không phải khuyết tật', 60, 2] };
+      let k = 'crack', skew = 0, t = 0, raf = 0; const top = h('canvas', { class: 'screen' }), bot = h('canvas', { class: 'screen' }), o = out();
+      const amp = (type, x, sk) => { const d = T[type], dir = Math.pow(Math.cos(sk * Math.PI / 180), d[3]); const base = d[2] * dir;
+        if (type === 'crack') return base * Math.max(0, Math.exp(-x * x / 60) * (0.75 + 0.25 * Math.sin(x * 1.9) * Math.sin(x * 0.7)));
+        if (type === 'lof') return base * Math.exp(-x * x / 18);
+        if (type === 'ip' || type === 'geom') return base * (Math.abs(x) < 14 ? 1 - 0.1 * Math.abs(Math.sin(x)) : Math.exp(-((Math.abs(x) - 14) ** 2) / 4));
+        if (type === 'slag') return base * Math.exp(-x * x / 40) * (0.8 + 0.2 * Math.sin(x * 1.3));
+        return base * Math.exp(-x * x / 30) * (0.5 + 0.5 * Math.abs(Math.sin(x * 2.7)));
+      };
+      const draw = () => { if (!top.isConnected) return cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); t += 0.016; const x = 16 * Math.sin(t * 0.7);
+        { const { ctx, W, H } = fitCanvas(top, 150); ctx.fillStyle = '#061109'; ctx.fillRect(0, 0, W, H); const X = mm => 20 + (W - 30) * mm / 100, Y = v => H - 14 - (H - 24) * Math.min(1.05, v / 100);
+          ctx.strokeStyle = '#123821'; for (let i = 0; i <= 10; i++) { ctx.beginPath(); ctx.moveTo(X(i * 10), 6); ctx.lineTo(X(i * 10), H - 14); ctx.stroke(); }
+          const a = amp(k, x, skew), pos = k === 'ip' || k === 'geom' ? 50 : 42; ctx.strokeStyle = '#7dff9b'; ctx.lineWidth = 1.2; ctx.beginPath();
+          for (let i = 0; i <= W - 30; i++) { const mm = 100 * i / (W - 30); let v = mm < 3 ? 100 : 2 + Math.random() * 3;
+            if (k === 'crack') { for (const [o2, w] of [[-2.2, .7], [-1, 1], [0.4, .85], [1.8, .6]]) v += a * w * Math.exp(-((mm - pos - o2) ** 2) / 0.35); }
+            else if (k === 'slag') { for (const [o2, w] of [[-1.2, .8], [0, 1], [1.3, .7]]) v += a * w * Math.exp(-((mm - pos - o2) ** 2) / 0.5); }
+            else if (k === 'pore') { for (const [o2, w] of [[-1.5, .6], [0, 1], [1.6, .7]]) v += a * w * (0.6 + 0.4 * Math.sin(t * 9 + o2 * 3)) * Math.exp(-((mm - pos - o2) ** 2) / 0.4); }
+            else v += a * Math.exp(-((mm - pos) ** 2) / 0.8);
+            i ? ctx.lineTo(X(mm), Y(v)) : ctx.moveTo(X(mm), Y(v)); } ctx.stroke(); ctx.fillStyle = '#9fb0bc'; ctx.font = '11px "Be Vietnam Pro"'; ctx.fillText('A-scan tại vị trí đầu dò hiện tại', 24, 16); }
+        { const { ctx, W, H } = fitCanvas(bot, 120); ctx.fillStyle = '#061109'; ctx.fillRect(0, 0, W, H); const X = xx => 20 + (W - 30) * (xx + 20) / 40, Y = v => H - 14 - (H - 24) * Math.min(1.05, v / 100);
+          ctx.strokeStyle = 'rgba(255,93,93,.6)'; ctx.beginPath(); ctx.moveTo(20, Y(50)); ctx.lineTo(W - 10, Y(50)); ctx.stroke();
+          ctx.strokeStyle = '#ffc531'; ctx.lineWidth = 1.6; ctx.beginPath(); for (let xx = -20; xx <= 20; xx += 0.2) { const v = amp(k, xx, skew); xx === -20 ? ctx.moveTo(X(xx), Y(v)) : ctx.lineTo(X(xx), Y(v)); } ctx.stroke();
+          ctx.fillStyle = '#43c6f0'; ctx.beginPath(); ctx.arc(X(x), Y(amp(k, x, skew)), 4, 0, 7); ctx.fill();
+          ctx.fillStyle = '#9fb0bc'; ctx.font = '11px "Be Vietnam Pro"'; ctx.fillText('Động học xung: biên độ đỉnh theo vị trí đầu dò (±20 mm)', 24, 14); }
+      };
+      const setK = v => { k = v; o.innerHTML = ''; o.append(h('div', { class: 'hi' }, `${T[v][0]}: ${T[v][1]}`), h('div', { class: 'dim' }, 'Xoay đầu dò để thấy khuyết tật phẳng (nứt, không ngấu) rơi biên độ nhanh hơn khuyết tật thể tích (xỉ, rỗ). Mô hình định tính.')); };
+      el.append(card(h('h3', null, 'Nhận dạng khuyết tật qua động học xung'), h('div', { class: 'row' }, Object.entries(T).map(([kk, v]) => h('button', { class: 'btn sm ghost', onclick: () => setK(kk) }, v[0]))), top, bot,
+        slider('Xoay đầu dò (skew)', 0, 40, 1, skew, '°', v => { skew = v; }), o)); setK('crack'); raf = requestAnimationFrame(draw);
+    },
+
+    /* ---- Tính suất liều, liều, bán kính hàng rào ---- */
+    dosecalc(el) {
+      let ci = 20, d = 20, coll = 10, th = 10, tmin = 90; const o = out();
+      const calc = () => { const A = ci * 37, r = P.attenuate(P.doseRate(A, d) * 1000 / coll, th, P.IR192.hvlSteel), dose = r * tmin / 60;
+        const rad = lim => Math.sqrt(P.IR192.gamma * 1000 * A * Math.pow(0.5, th / P.IR192.hvlSteel) / (coll * lim));
+        const okB = r <= 7.5, okW = r <= 10; o.innerHTML = '';
+        o.append(h('div', { class: 'formula' }, `Ḣ = 0,13 × ${fmt(A, 0)} / ${fmt(d, 1)}² ÷ ${coll} × 0,5^(${th}/12,7) × 1000 = ${fmt(r, 2)} µSv/h`),
+          h('div', { class: 'grid g3' },
+            h('div', { class: 'card', style: 'margin:0' }, h('div', { class: 'dim' }, 'Suất liều tại điểm'), h('div', { class: 'big ' + (okB ? 'ok' : okW ? 'hi' : 'bad'), style: 'font-size:1.6rem' }, `${fmt(r, 1)} µSv/h`),
+              h('div', { class: okB ? 'ok' : 'bad' }, okB ? '✓ ≤ 7,5: đặt được hàng rào' : '✗ > 7,5: phải ở trong rào'), h('div', { class: okW ? 'ok' : 'bad' }, okW ? '✓ ≤ 10: đứng điều khiển được' : '✗ > 10: không đứng điều khiển')),
+            h('div', { class: 'card', style: 'margin:0' }, h('div', { class: 'dim' }, `Liều nếu có mặt ${tmin} phút phát tia`), h('div', { class: 'big', style: 'font-size:1.6rem' }, `${fmt(dose, 1)} µSv`), h('div', { class: 'dim' }, `= ${fmt(dose / 1000, 3)} mSv · ${fmt(dose / 10, 1)} % giới hạn công chúng năm`)),
+            h('div', { class: 'card', style: 'margin:0' }, h('div', { class: 'dim' }, 'Bán kính với cùng che chắn'), h('div', { class: 'mono' }, `7,5 µSv/h: ${fmt(rad(7.5), 1)} m`), h('div', { class: 'mono' }, `10 µSv/h: ${fmt(rad(10), 1)} m`), h('div', { class: 'dim' }, 'Nguồn điểm, chùm hẹp, chưa tính tích lũy và tán xạ.'))),
+          h('p', { class: 'dim', style: 'font-size:.85rem' }, 'Thử: 20 Ci, ống chuẩn trực ÷10, không vách → bán kính 7,5 µSv/h khoảng 36 m; thêm vách thép 10 mm → khoảng 27 m; 20 mm → khoảng 21 m.')); };
+      const sel2 = (lab, opts, v, on) => h('div', { class: 'sl' }, h('span', null, lab), sel(opts, String(v), x => { on(+x); calc(); }), h('span'));
+      el.append(card(h('h3', null, 'Máy tính an toàn bức xạ Ir-192'), slider('Hoạt độ', 1, 100, 0.5, ci, 'Ci', v => { ci = v; calc(); }), slider('Khoảng cách', 1, 80, 0.5, d, 'm', v => { d = v; calc(); }),
+        sel2('Ống chuẩn trực', [['1', 'Không'], ['10', 'Giảm 10 lần'], ['16', 'Giảm 16 lần']], coll, v => coll = v), slider('Vách thép', 0, 60, 1, th, 'mm', v => { th = v; calc(); }), slider('Thời gian phát tia', 1, 240, 1, tmin, 'phút', v => { tmin = v; calc(); }), o)); setTimeout(calc);
+    },
+
     /* ---- Sắp xếp quy trình PT ---- */
     ptorder(el) {
       const steps = ['Làm sạch trước và làm khô', 'Phủ chất thấm, chờ ngấm', 'Loại bỏ chất thấm thừa', 'Phủ lớp hiện hình mỏng, đều', 'Chờ thời gian hiện hình', 'Quan sát dưới ánh sáng phù hợp, đánh giá', 'Làm sạch sau kiểm tra'];

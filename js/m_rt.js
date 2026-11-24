@@ -11,7 +11,7 @@
       const q = M.q = { A, dReq, rope: 0, iqi: 'src', density: 0, scores: [] };
       el.append(h('div', { class: 'card' }, h('h2', null, 'Chuẩn bị chụp: an toàn trước, phim sau'),
         h('dl', { class: 'kv' }, h('dt', null, 'Nguồn'), h('dd', null, `Ir-192, ${s.A0} GBq ngày đo, cách nay ${s.days} ngày, kích thước tiêu điểm ${s.size} mm`),
-          h('dt', null, 'Giới hạn rào'), h('dd', null, `≤ ${s.limit} µSv/h · ống chuẩn trực giảm ${s.shield} lần`),
+          h('dt', null, 'Giới hạn'), h('dd', null, `hàng rào ≤ ${fmt(s.limit, 1)} µSv/h · vị trí thợ chụp ≤ ${s.opLimit} µSv/h · ống chuẩn trực giảm ${s.shield} lần`),
           h('dt', null, 'Biểu đồ phơi sáng'), h('dd', null, `Thép ${M.lvl.t} mm, phim loại mịn: E = ${s.E1m} GBq·h quy về SFD 1 m để đạt độ đen ~2,6 (dữ liệu màn)`),
           h('dt', null, 'Bố trí'), h('dd', null, 'SFD = 0,5 m'))));
       const stage = h('div'); el.append(stage);
@@ -32,19 +32,31 @@
       function s3() {
         let d = 10; const out = h('div', { class: 'dim' });
         const sl = slider('Bán kính rào', 5, 40, 0.5, d, 'm', v => { d = v; out.textContent = `Chu vi rào ≈ ${fmt(2 * Math.PI * v, 0)} m dây và biển báo. Rào càng rộng càng tốn công dựng (+${fmt(v * 0.6, 0)} phút).`; });
-        step('3. Dựng rào vùng kiểm soát', h('div', null, h('div', { class: 'formula' }, 'd = √(Γ·A / (k·Ḣ_giới hạn))   ·   Γ = 0,13 mSv·m²/(h·GBq) = 130 µSv·m²/(h·GBq)'),
+        step('3. Dựng hàng rào (≤ 7,5 µSv/h)', h('div', null, h('div', { class: 'formula' }, 'd = √(Γ·A / (k·Ḣ_giới hạn))   ·   Γ = 0,13 mSv·m²/(h·GBq) = 130 µSv·m²/(h·GBq)'),
           h('p', { class: 'dim' }, 'Tự tính bán kính rồi đặt rào. Máy đo suất liều chỉ kiểm chứng được khi đã bắt đầu chiếu.'), sl, out,
-          h('button', { class: 'btn', onclick: () => { q.rope = d; addTime(Math.round(d * 0.6), 'dựng rào'); s4(); } }, 'Dựng rào ở bán kính này')));
+          h('button', { class: 'btn', onclick: () => { q.rope = d; addTime(Math.round(d * 0.6), 'dựng rào'); s3b(); } }, 'Dựng rào ở bán kính này')));
+      }
+      function s3b() {
+        // Vị trí thợ chụp đứng quay nguồn: suất liều ≤ opLimit. Người chơi tự tính, không hiện suất liều trên nút.
+        const OPTS = [{ l: 'Đứng ở đầu cáp điều khiển 7,6 m, ngoài trời', d: 7.6, w: 0 }, { l: 'Dùng cáp 15 m, đứng ngoài trời', d: 15, w: 0, lure: 'Xa gấp đôi là đủ' },
+          { l: 'Dùng cáp 15 m, đứng sau vách thép 25 mm của nhà bơm', d: 15, w: s.wall }, { l: 'Cáp 7,6 m, đứng sau vách thép 25 mm', d: 7.6, w: s.wall, lure: 'Có che chắn rồi' }];
+        const rate = o => P.attenuate(P.doseRate(A, o.d) * 1000 / s.shield, o.w, P.IR192.hvlSteel);
+        step('4. Chọn vị trí đứng quay nguồn', h('div', null, h('div', { class: 'formula' }, `Ḣ = Γ·A/(k·d²) × 0,5^(x/HVL) · HVL thép = ${fmt(P.IR192.hvlSteel, 1)} mm · cần ≤ ${s.opLimit} µSv/h`),
+          h('p', { class: 'dim' }, 'Tự tính suất liều tại từng vị trí trước khi chọn. Ở vị trí này bạn sẽ đứng suốt thời gian chiếu.'),
+          ...OPTS.slice().sort(() => Math.random() - 0.5).map(o => h('button', { class: 'opt', onclick: () => {
+            const r = rate(o); q.op = { ...o, r }; addTime(2, 'bố trí cáp điều khiển');
+            if (r > s.opLimit) { safetyHit(`Vị trí thợ chụp ≈ ${fmt(r, 1)} µSv/h, vượt ${s.opLimit} µSv/h`); q.scores.push(0); toast('Chọn lại vị trí', 'bad'); return; }
+            q.scores.push(1); toast(`Đạt: ≈ ${fmt(r, 1)} µSv/h tại vị trí đứng`, 'ok'); s4(); } }, h('b', null, o.l), o.lure ? h('span', { class: 'lure' }, '· ' + o.lure) : null))));
       }
       function s4() {
-        step('4. Đặt chỉ thị chất lượng ảnh (IQI)', h('div', null, ...[
+        step('5. Đặt chỉ thị chất lượng ảnh (IQI)', h('div', null, ...[
           { l: 'IQI dây đặt phía nguồn, ngang qua mối hàn', k: 'src', ok: true },
           { l: 'IQI đặt phía phim, trong lòng ống, không kèm chữ “F”', k: 'film', lure: 'Dễ đặt hơn, khỏi trèo giá ống' }
         ].sort(() => Math.random() - 0.5).map(o => h('button', { class: 'opt', onclick: () => { q.iqi = o.k; q.scores.push(o.ok ? 1 : 0); addTime(4, 'đặt IQI, chữ chì, phim'); s5(); } }, h('b', null, o.l), o.lure ? h('span', { class: 'lure' }, '· ' + o.lure) : null))));
       }
       function s5() {
         const inp = h('input', { class: 'f', inputmode: 'decimal', style: 'max-width:180px' });
-        step('5. Thời gian chiếu', h('div', null, h('div', { class: 'formula' }, 't = E₁ₘ · SFD² / A'), h('p', { class: 'dim' }, 'Phim đạt khi độ đen trong vùng quan tâm từ 2,0 đến 4,0 với nguồn gamma (ASME V T-282.1).'),
+        step('6. Thời gian chiếu', h('div', null, h('div', { class: 'formula' }, 't = E₁ₘ · SFD² / A'), h('p', { class: 'dim' }, 'Phim đạt khi độ đen trong vùng quan tâm từ 2,0 đến 4,0 với nguồn gamma (ASME V T-282.1).'),
           h('div', { class: 'row' }, inp, h('span', null, 'phút'), h('button', { class: 'btn', onclick: () => { const v = parseNum(inp.value); if (!(v > 0)) return toast('Nhập thời gian'); expose(v); } }, 'Bắt đầu chiếu'))));
       }
       function expose(tmin) {
@@ -70,14 +82,22 @@
             left += 2;
           }
           if (left <= 0) {
-            clearInterval(iv); addTime(Math.round(tmin) + 10, 'chiếu và tráng phim'); spend(0.4, 'phim và hóa chất');
+            clearInterval(iv); addTime(Math.round(tmin), 'chiếu');
+            const opDose = q.op ? q.op.r * tmin / 60 : 0;
+            step('Đã quay nguồn về: bước tiếp theo?', h('div', null, h('p', { class: 'serif' }, `Hết giờ chiếu, bạn đã quay tay quay đủ vòng. Liều ước tính tại vị trí đứng trong lần chiếu này ≈ ${fmt(opDose, 2)} µSv.`),
+              ...[{ l: 'Tiến lại với máy đo trên tay, xác nhận suất liều tại projector và ống dẫn về mức bình thường rồi mới tới thay phim', ok: true },
+                { l: 'Đã nghe tiếng “cạch” khóa nguồn, đi thẳng tới thay phim cho kịp tiến độ', lure: 'Tiết kiệm 2 phút mỗi phim' }].sort(() => Math.random() - 0.5).map(o => h('button', { class: 'opt', onclick: () => {
+                if (!o.ok) { safetyHit('Không đo xác nhận nguồn đã về: đây là nguyên nhân của phần lớn tai nạn chụp bức xạ nghiêm trọng', true); return; }
+                q.scores.push(1); addTime(12, 'đo xác nhận, thay và tráng phim'); spend(0.4, 'phim và hóa chất'); film(); } }, h('b', null, o.l), o.lure ? h('span', { class: 'lure' }, '· ' + o.lure) : null))));
+          }
+        }, 1000);
+        function film() {
             q.density = P.filmDensity(tmin / tReq); const ok = q.density >= 2.0 && q.density <= 4.0;
             step('Phim đã tráng', h('div', null, h('p', null, 'Máy đo độ đen tại vùng mối hàn:'), h('div', { class: 'big ' + (ok ? 'ok' : 'bad') }, `D = ${fmt(q.density, 2)}`),
               ok ? h('p', { class: 'ok' }, q.iqi === 'src' ? 'Độ đen đạt, IQI thấy rõ dây yêu cầu.' : 'Độ đen đạt. Lưu ý: IQI phía phim mà không có chữ “F”.') : h('p', { class: 'bad' }, `Ngoài dải 2,0–4,0: phim không đạt, phải chụp lại. Thời gian cần ≈ ${fmt(tReq, 1)} phút.`),
               ok ? h('button', { class: 'btn', onclick: () => { q.scores.push(1); M.proc = q.scores.reduce((a, b) => a + b, 0) / q.scores.length * (q.iqi === 'src' ? 1 : 0.8); next(); } }, 'Đưa phim lên đèn đọc')
                 : h('button', { class: 'btn', onclick: () => { q.scores.push(0); s5(); } }, 'Chụp lại')));
-          }
-        }, 1000);
+        }
       }
     },
 

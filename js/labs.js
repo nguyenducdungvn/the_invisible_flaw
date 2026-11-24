@@ -71,7 +71,7 @@
       el.append(labHead('Từ thông rò: vết nứt phải “cắt ngang” đường sức', 'Xoay hướng từ trường và vết nứt. Bột từ chỉ tụ lại khi đường sức bị vết nứt chặn ngang; song song thì gần như không có rò.', 'Φ_rò ∝ |sin(α_trường − α_nứt)| · tốt nhất khi vuông góc, chấp nhận được khi lệch ≥ 45°'),
         h('div', { class: 'card' }, cv, slider('Hướng từ trường', 0, 180, 5, fd, '°', v => { fd = v; draw(); }), slider('Hướng vết nứt', 0, 180, 5, cd, '°', v => { cd = v; draw(); }), read),
         challenges([
-          { q: 'Mối hàn nằm ngang (0°). Có một vết nứt chéo 30° so với trục mối hàn. Ách từ đặt hai chân DỌC theo mối hàn tạo từ trường 0°; đặt CẮT NGANG mối hàn tạo từ trường 90°. Cách nào phát hiện tốt vết nứt?', o: ['Chỉ cách đặt cắt ngang (từ trường 90°)', 'Chỉ cách đặt dọc (từ trường 0°)', 'Cả hai như nhau', 'Không cách nào'], e: 'Từ trường 0° lệch 30° → |sin30°| = 0,5 < 0,71; từ trường 90° lệch 60° → 0,87. Vì không biết trước hướng nứt, phải kiểm tra hai lần với đường sức gần vuông góc nhau.' },
+          { q: 'Mối hàn nằm ngang (0°). Có một vết nứt chéo 30° so với trục mối hàn. Gông từ đặt hai chân DỌC theo mối hàn tạo từ trường 0°; đặt CẮT NGANG mối hàn tạo từ trường 90°. Cách nào phát hiện tốt vết nứt?', o: ['Chỉ cách đặt cắt ngang (từ trường 90°)', 'Chỉ cách đặt dọc (từ trường 0°)', 'Cả hai như nhau', 'Không cách nào'], e: 'Từ trường 0° lệch 30° → |sin30°| = 0,5 < 0,71; từ trường 90° lệch 60° → 0,87. Vì không biết trước hướng nứt, phải kiểm tra hai lần với đường sức gần vuông góc nhau.' },
           { q: 'Vì sao quy trình MT (ASME V Điều 7) yêu cầu mỗi vùng phải kiểm tra ít nhất hai lần với đường sức gần vuông góc nhau?', o: ['Để vết nứt theo mọi hướng đều bị cắt ngang ít nhất một lần', 'Để bột từ bám đều hơn', 'Để khử từ dư', 'Để tăng gấp đôi cường độ từ trường'], e: 'Một hướng từ hóa chỉ “thấy” vết nứt lệch ≥ 45° so với nó; hai hướng vuông góc phủ được mọi hướng.' }
         ], done, opt && opt.btn));
       setTimeout(draw);
@@ -112,13 +112,13 @@
         ctx.fillStyle = '#ffc531'; ctx.beginPath(); ctx.arc(40, H / 2, 7, 0, 7); ctx.fill();
         const x = 40 + Math.min(W - 80, d * (W - 80) / 40);
         if (pb > 0) { ctx.fillStyle = '#7b8a96'; ctx.fillRect(x - 18 - pb, H / 2 - 40, pb + 4, 80); }
-        ctx.fillStyle = rate > 20 ? '#ff5d5d' : '#3ddc97'; ctx.fillRect(x - 8, H / 2 - 14, 16, 28);
+        ctx.fillStyle = rate > 7.5 ? '#ff5d5d' : '#3ddc97'; ctx.fillRect(x - 8, H / 2 - 14, 16, 28);
         ctx.fillStyle = '#e8eef2'; ctx.font = '13px "Be Vietnam Pro"'; ctx.fillText(`Ir-192 · ${A} GBq`, 14, 18); ctx.fillText('máy đo liều', x - 30, H / 2 + 32);
-        read.innerHTML = ''; read.append(h('div', { class: rate > 20 ? 'bad' : 'ok' }, `Suất liều tại ${fmt(d, 1)} m sau ${fmt(pb, 0)} mm chì: ${fmt(rate, 1)} µSv/h` + (rate > 20 ? ' (trên 20 µSv/h)' : '')));
+        read.innerHTML = ''; read.append(h('div', { class: rate > 7.5 ? 'bad' : 'ok' }, `Suất liều tại ${fmt(d, 1)} m sau ${fmt(pb, 0)} mm chì: ${fmt(rate, 1)} µSv/h` + (rate > 7.5 ? ' (trên mức hàng rào 7,5 µSv/h)' : ' (đạt mức hàng rào ≤ 7,5 µSv/h)')));
       };
       el.append(labHead('Bức xạ: khoảng cách, che chắn và thời gian', 'Gấp đôi khoảng cách thì suất liều còn 1/4. Mỗi lớp giảm một nửa (HVL) thì còn 1/2. Đây là hai công cụ chính để vẽ rào an toàn khi chụp hiện trường.', 'Ḣ = Γ·A/d² · I = I₀·0,5^(x/HVL) · A = A₀·0,5^(t/T½)'),
         h('div', { class: 'card' }, cv, slider('Khoảng cách', 1, 40, 0.5, d, 'm', v => { d = v; draw(); }), slider('Chì che chắn', 0, 20, 1, pb, 'mm', v => { pb = v; draw(); }), read,
-          h('p', { class: 'dim', style: 'font-size:.85rem' }, 'Γ(Ir-192) ≈ 0,13 mSv·m²/(h·GBq); HVL chì ≈ 5,1 mm, thép ≈ 13 mm (số liệu tham khảo của nhà cung cấp nguồn). Khi làm thật, dùng số trên chứng chỉ nguồn và quy trình an toàn bức xạ của đơn vị.')),
+          h('p', { class: 'dim', style: 'font-size:.85rem' }, 'Γ(Ir-192) ≈ 0,13 mSv·m²/(h·GBq); HVL chì ≈ 5,1 mm, thép ≈ 12,7 mm (số liệu tham khảo). Khi làm thật, dùng số trên chứng chỉ nguồn và quy trình an toàn bức xạ của đơn vị.')),
         challenges([
           { q: `Nguồn Ir-192 hoạt độ 800 GBq, không che chắn. Suất liều ở 10 m là bao nhiêu µSv/h? (Γ = 0,13 mSv·m²/(h·GBq))`, num: P.doseRate(800, 10) * 1000, rel: 0.05, unit: 'µSv/h', e: `0,13 × 800 / 10² = 1,04 mSv/h = ${fmt(P.doseRate(800, 10) * 1000, 0)} µSv/h.` },
           { q: 'Nguồn Ir-192 có 1000 GBq. Sau 147,7 ngày (hai chu kỳ bán rã) còn bao nhiêu GBq?', num: P.decay(1000, 147.66), rel: 0.03, unit: 'GBq', e: 'Hai chu kỳ bán rã: 1000 → 500 → 250 GBq. Nguồn yếu đi thì thời gian chiếu phải tăng.' }

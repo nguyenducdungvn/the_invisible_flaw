@@ -64,8 +64,8 @@
           pulse.position.set(p[0], p[1], 0); glow.material.opacity = S.userData.hit ? 0.35 + 0.3 * Math.sin(t * 8) : 0; if (t - lastA > 0.12) { lastA = t; asc(); } };
       } },
 
-    mt: { title: 'Ách từ AC trên mối hàn: đường sức và chỉ thị hạt từ', cam: [16, 14, 18], target: [0, 1, 0],
-      note: 'Xoay ách: hạt từ chỉ tụ lại khi đường sức (xanh) cắt ngang vết nứt. Song song thì gần như không có chỉ thị: vì thế phải kiểm tra hai hướng vuông góc.',
+    mt: { title: 'Gông từ AC trên mối hàn: đường sức và chỉ thị hạt từ', cam: [16, 14, 18], target: [0, 1, 0],
+      note: 'Xoay gông: hạt từ chỉ tụ lại khi đường sức (xanh) cắt ngang vết nứt. Song song thì gần như không có chỉ thị: vì thế phải kiểm tra hai hướng vuông góc.',
       build(S, ui) {
         const THREE = T3(); const pl = box(22, 1.2, 16, mat(COL.steel)); pl.position.y = -0.6; S.add(pl);
         const bead = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 22, 24), mat(COL.weld)); bead.rotation.z = Math.PI / 2; bead.position.y = 0; S.add(bead);
@@ -75,10 +75,10 @@
         const lines = new THREE.Group(); for (let k = -3; k <= 3; k++) { const pts = []; for (let i = 0; i <= 30; i++) { const x = -3 + 6 * i / 30; pts.push([x, 0.85 - 0.15 * Math.sin(Math.PI * i / 30) * Math.abs(k) / 3, k * 0.45 * (1 + 0.6 * Math.sin(Math.PI * i / 30))]); } const cur = new THREE.CatmullRomCurve3(pts.map(q => new THREE.Vector3(...q))); lines.add(new THREE.Mesh(new THREE.TubeGeometry(cur, 30, 0.045, 6), new THREE.MeshBasicMaterial({ color: COL.cy, transparent: true }))); } yoke.add(lines);
         const N = 400, pg = new THREE.BufferGeometry(), pos = new Float32Array(N * 3); for (let i = 0; i < N; i++) { pos[i * 3] = (Math.random() - 0.5) * 4.6; pos[i * 3 + 1] = 0.74 + Math.random() * 0.08; pos[i * 3 + 2] = (Math.random() - 0.5) * 0.35; }
         pg.setAttribute('position', new THREE.BufferAttribute(pos, 3)); const pts = new THREE.Points(pg, new THREE.PointsMaterial({ color: 0x050505, size: 0.16, transparent: true })); S.add(pts);
-        const lb = label('Vết nứt (dọc mối hàn)'); lb.position.set(-3.5, 1.8, 1.5); const ly = label('Ách từ AC'); ly.position.set(4.5, 5.6, 0); S.add(lb, ly);
+        const lb = label('Vết nứt (dọc mối hàn)'); lb.position.set(-3.5, 1.8, 1.5); const ly = label('Gông từ AC'); ly.position.set(4.5, 5.6, 0); S.add(lb, ly);
         let ang = 90, fill = 0;
         const setA = v => { ang = v; yoke.rotation.y = -ang * Math.PI / 180; const k = P.leakageFactor(ang, 0); ui.read.textContent = `Đường sức lệch vết nứt ${fmt(ang, 0)}° · |sinΔ| = ${fmt(k, 2)} → ${k >= P.MT_DETECT ? 'chỉ thị rõ' : 'chỉ thị yếu hoặc không có'}`; S.userData.k = k; };
-        ui.slider('Góc xoay ách', 0, 90, 5, ang, v => setA(v)); setA(ang);
+        ui.slider('Góc xoay gông', 0, 90, 5, ang, v => setA(v)); setA(ang);
         ui.button('Phun lại hạt từ', () => { fill = 0; });
         return (t, dt) => { const k = S.userData.k; fill = Math.min(1, fill + dt * 0.5); pts.material.opacity = 1; pts.visible = k >= 0.3; pts.scale.set(1, 1, 1); pts.material.size = 0.06 + 0.14 * k * fill; pts.material.transparent = true; pts.material.opacity = k * fill;
           lines.children.forEach((l, i) => l.material.opacity = 0.4 + 0.5 * Math.abs(Math.sin(t * 3 + i))); };
@@ -105,7 +105,7 @@
       } },
 
     rt: { title: 'Chụp gamma Ir-192 một thành ống, rào vùng kiểm soát', cam: [15, 11, 18], target: [0, 3, 0],
-      note: 'Bật nguồn để thấy hình nón chùm tia qua ống chuẩn trực. Rào đặt theo bán kính tính từ Ḣ = Γ·A/(k·d²). Kéo bán kính: rào đỏ là chưa đủ xa.',
+      note: 'Bật nguồn để thấy hình nón chùm tia qua ống chuẩn trực. Hàng rào đặt nơi suất liều ≤ 7,5 µSv/h, tính từ Ḣ = Γ·A/(k·d²) rồi xác nhận bằng máy đo ở lần chiếu đầu. Kéo bán kính: rào đỏ là chưa đủ xa.',
       build(S, ui) {
         const THREE = T3(); const ground = new THREE.Mesh(new THREE.CircleGeometry(30, 64), mat(0x26303a, { metalness: 0 })); ground.rotation.x = -Math.PI / 2; S.add(ground);
         const pipe = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 16, 40, 1, true), mat(COL.steel, { side: THREE.DoubleSide })); pipe.rotation.z = Math.PI / 2; pipe.position.y = 3; S.add(pipe);
@@ -118,11 +118,11 @@
         const seeds = Array.from({ length: NP }, () => [Math.random(), Math.random() * 6.283, Math.random()]);
         let rope = null; const posts = new THREE.Group(); S.add(posts); const person = new THREE.Group(); const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 1.6, 12), mat(0x3ddc97)); body.position.y = 0.8; const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 10), mat(0xf0c8a0)); head.position.y = 1.9; person.add(body, head); S.add(person);
         const lsrc = label('Nguồn Ir-192 + ống chuẩn trực'); lsrc.position.set(0, 10.6, 0); const lfilm = label('Phim đặt trong ống'); lfilm.position.set(0, 1.2, 3); S.add(lsrc, lfilm); let lrope = null;
-        const A = P.decay(1850, 90), need = P.barrierDistance(A, 20, 16); let R = 12, on = true;
+        const A = P.decay(1850, 90), need = P.barrierDistance(A, 7.5, 16), needOp = P.barrierDistance(A, 10, 16); let R = 12, on = true;
         const setR = v => { R = v; if (rope) S.remove(rope); const pts = []; for (let i = 0; i <= 64; i++) { const a = i / 64 * 6.283; pts.push([Math.cos(a) * R / 1.6, 1, Math.sin(a) * R / 1.6]); }
           const okk = R >= need; rope = line(pts, okk ? COL.ok : COL.bad); S.add(rope); posts.clear(); for (let i = 0; i < 12; i++) { const a = i / 12 * 6.283; const c = new THREE.Mesh(new THREE.ConeGeometry(0.25, 1, 10), mat(okk ? 0xffa21c : COL.bad)); c.position.set(Math.cos(a) * R / 1.6, 0.5, Math.sin(a) * R / 1.6); posts.add(c); }
           person.position.set(R / 1.6 + 1.2, 0, 0); if (lrope) S.remove(lrope); lrope = label(`Rào ${fmt(R, 1)} m · cần ≥ ${fmt(need, 1)} m`, { border: okk ? 'rgba(61,220,151,.9)' : 'rgba(255,93,93,.9)' }); lrope.position.set(0, 2.2, -R / 1.6); S.add(lrope);
-          const rate = P.doseRate(A, R) * 1000 / 16; ui.read.textContent = `Hoạt độ hôm nay ${fmt(A, 0)} GBq · suất liều ở rào ≈ ${fmt(rate, 1)} µSv/h ${rate > 20 ? '> 20: KHÔNG ĐẠT' : '≤ 20: đạt'} (mô hình rút gọn, 1 m trong thực tế ≈ 0,625 đơn vị cảnh)`; };
+          const rate = P.doseRate(A, R) * 1000 / 16; ui.read.textContent = `Hoạt độ hôm nay ${fmt(A, 0)} GBq · suất liều ở rào ≈ ${fmt(rate, 1)} µSv/h ${rate > 7.5 ? '> 7,5: KHÔNG ĐẠT' : '≤ 7,5: đạt'} · thợ chụp đứng ngoài trời cần cách ≥ ${fmt(needOp, 1)} m để ≤ 10 µSv/h, hoặc đứng sau che chắn (mô hình rút gọn)`; };
         ui.slider('Bán kính rào (m)', 6, 40, 0.5, R, v => setR(v)); setR(R);
         ui.button('Bật/thu nguồn', () => { on = !on; toast(on ? 'Nguồn đang mở: không ai được vào trong rào' : 'Đã thu nguồn về container', on ? 'hi' : 'ok'); });
         return t => { cone.visible = ph.visible = on; if (!on) return; for (let i = 0; i < NP; i++) { const s = seeds[i]; const u = (s[0] + t * 0.5) % 1, r = 1.4 * u * Math.sqrt(s[2]); pp[i * 3] = Math.cos(s[1]) * r; pp[i * 3 + 1] = 8.5 - 5.8 * u; pp[i * 3 + 2] = Math.sin(s[1]) * r; } pg.attributes.position.needsUpdate = true; };
@@ -294,6 +294,72 @@
         ui.slider('Vị trí đầu dò', -6, 6, 0.1, x, v => { x = v; upd(); }); upd();
         return t => { for (let i = 0; i < 3; i++) { const u = (t * 0.8 + i / 3) % 1; inc[i].position.set(x, 1.4 - u * 0.9, 0); inc[i].scale.setScalar(0.6 + u * 0.8); inc[i].material.opacity = 0.8 * (1 - u);
             ref[i].position.set(x, 0.5 + u * 1.0, 0); ref[i].scale.setScalar(0.7 + u * 1.2); ref[i].material.opacity = Math.min(1, G * 1.6) * (1 - u); } };
+      } },
+
+    probe: { title: 'Cấu tạo đầu dò siêu âm (tách rời từng bộ phận)', cam: [5.6, 4.6, 7.2], target: [0, 2.3, 0],
+      note: 'Chọn loại đầu dò, kéo “Tách rời” để thấy các lớp bên trong, bấm tên bộ phận để xem chức năng. Kích thước minh họa, không theo tỉ lệ.',
+      build(S, ui) {
+        const THREE = T3(); const grp = new THREE.Group(); S.add(grp); let parts = [], ex = 0, kind = 'angle', labs = [];
+        const DESC = { vo: 'Vỏ: bảo vệ, chống nhiễu điện từ, chịu va đập.', noi: 'Đầu nối: dẫn xung kích thích vào và tín hiệu thu ra qua cáp đồng trục.', giam: 'Lớp giảm chấn (bột vonfram trong epoxy): dập dao động phía sau, làm xung ngắn lại. Giảm chấn mạnh: phân giải tốt, kém nhạy.',
+          bien: 'Biến tử áp điện (PZT): dày ≈ λ/2 quyết định tần số; đường kính quyết định vùng gần và độ mở chùm.', dien: 'Điện cực bạc/vàng phủ hai mặt biến tử để đặt điện áp và lấy tín hiệu.', phoi: 'Lớp bảo vệ/phối hợp dày ≈ λ/4: chống mài mòn, giúp truyền năng lượng vào vật.',
+          nem: 'Nêm Perspex (vL = 2730 m/s): tạo góc tới để trong thép thành sóng ngang ở góc danh định. Thời gian qua nêm là “probe delay”.', tieu: 'Khối tiêu âm ở đuôi nêm: dập phản xạ nội bộ trong nêm.', diem: 'Vạch điểm ra tia: chỗ chùm trung tâm rời nêm; xác định lại trên V1/V2 vì nêm mòn.',
+          vach: 'Vách cách âm: ngăn sóng đi thẳng từ biến tử phát sang biến tử thu, nhờ đó đo được vật mỏng.', tre: 'Đường trễ: đẩy xung phát ra khỏi vùng đo; hai đường trễ nghiêng nhẹ (roof angle) để chùm hội tụ ở độ sâu cần đo.' };
+        const add = (key, mesh, dir, name) => { mesh.userData = { key, base: mesh.position.clone(), dir: new THREE.Vector3(...dir) }; grp.add(mesh); parts.push(mesh); const l = label(name, { scale: 0.42 }); l.userData = { m: mesh, off: new THREE.Vector3(dir[0] * 0.6, -0.35, 1.0) }; S.add(l); labs.push(l); };
+        const mk = () => { parts.forEach(p => grp.remove(p)); labs.forEach(l => S.remove(l)); parts = []; labs = []; const glass = mat(0x8899aa, { transparent: true, opacity: 0.18, depthWrite: false });
+          if (kind === 'straight' || kind === 'angle') {
+            const y0 = kind === 'angle' ? 1.3 : 0;
+            if (kind === 'angle') { const sh = new THREE.Shape(); sh.moveTo(-1.4, 0); sh.lineTo(1.4, 0); sh.lineTo(1.4, 0.4); sh.lineTo(-1.4, 1.25); sh.closePath(); const g = new THREE.ExtrudeGeometry(sh, { depth: 1.2, bevelEnabled: false }); g.translate(0, 0, -0.6);
+              add('nem', new THREE.Mesh(g, mat(0x9fd3ff, { transparent: true, opacity: 0.55, metalness: 0 })), [0, -1, 0], 'Nêm Perspex');
+              const tb = box(0.5, 0.9, 1.2, mat(0x3a2f2a, { metalness: 0 })); tb.position.set(-1.15, 0.5, 0); add('tieu', tb, [-1, 0, 0], 'Khối tiêu âm');
+              const im = box(0.04, 0.3, 0.02, new THREE.MeshBasicMaterial({ color: 0xff3333 })); im.position.set(0.55, 0.15, 0.62); add('diem', im, [0, 0, 1], 'Điểm ra tia'); }
+            const tilt = kind === 'angle' ? -0.29 : 0; const stack = new THREE.Group(); stack.position.set(kind === 'angle' ? 0.1 : 0, y0 + (kind === 'angle' ? 0.12 : 0.05), 0); stack.rotation.z = tilt; grp.add(stack);
+            let li = 0; const L = (key, h0, hh, m, name, r = 0.5) => { li++; const c = new THREE.Mesh(new THREE.CylinderGeometry(r, r, hh, 32), m); c.position.y = h0; c.userData = { key, base: c.position.clone(), dir: new THREE.Vector3(0, 0.7 * li, 0) }; stack.add(c); parts.push(c); const l = label(name, { scale: 0.42 }); l.userData = { m: c, off: new THREE.Vector3(li % 2 ? 1.5 : -1.5, 0, 0) }; S.add(l); labs.push(l); };
+            if (kind === 'straight') L('phoi', 0.03, 0.06, mat(0xd8d0c0, { metalness: 0 }), 'Lớp bảo vệ λ/4');
+            L('dien', 0.08, 0.02, mat(0xe0e0e0, { metalness: 0.9 }), 'Điện cực'); L('bien', 0.15, 0.12, mat(0xf0c95a, { metalness: 0.3 }), 'Biến tử PZT'); L('giam', 0.55, 0.65, mat(0x2b2b2b, { metalness: 0.2 }), 'Lớp giảm chấn');
+            L('noi', 1.25, 0.5, mat(0xc9a227, { metalness: 0.9 }), 'Đầu nối', 0.18);
+            const hous = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 1.3, 32, 1, true), glass); hous.position.y = 0.55; hous.userData = { key: 'vo', base: hous.position.clone(), dir: new THREE.Vector3(0, 0, -1) }; stack.add(hous); parts.push(hous);
+          } else {
+            [-1, 1].forEach(sd => { const dl = box(0.7, 0.6, 1, mat(0x9fd3ff, { transparent: true, opacity: 0.55, metalness: 0 })); dl.position.set(sd * 0.42, 0.3, 0); dl.rotation.z = sd * 0.06; add('tre', dl, [sd, 0, 0], sd < 0 ? 'Đường trễ (phát)' : 'Đường trễ (thu)');
+              const cr = box(0.6, 0.08, 0.8, mat(0xf0c95a)); cr.position.set(sd * 0.42, 0.65, 0); add('bien', cr, [sd, 1, 0], sd < 0 ? 'Biến tử phát' : 'Biến tử thu');
+              const bk = box(0.6, 0.5, 0.8, mat(0x2b2b2b)); bk.position.set(sd * 0.42, 0.95, 0); add('giam', bk, [sd, 2, 0], 'Giảm chấn'); });
+            const bar = box(0.06, 1.3, 1, mat(0xbb4444, { metalness: 0 })); bar.position.set(0, 0.65, 0); add('vach', bar, [0, 0, 1], 'Vách cách âm');
+          } setEx(ex); };
+        const setEx = v => { ex = v; parts.forEach(p => { if (p.userData.base) p.position.copy(p.userData.base).addScaledVector(p.userData.dir, ex * 0.9); }); };
+        [['angle', 'Đầu dò góc'], ['straight', 'Đầu dò thẳng'], ['tr', 'Đầu dò kép TR']].forEach(([k, n]) => ui.button(n, () => { kind = k; mk(); ui.read.textContent = n + ': bấm tên bộ phận để xem chức năng.'; }));
+        ui.slider('Tách rời', 0, 1, 0.02, 0, v => setEx(v));
+        const info = h('div', { class: 'row', style: 'margin-top:4px' }); ui.extra.append(info);
+        Object.entries({ bien: 'Biến tử', giam: 'Giảm chấn', dien: 'Điện cực', phoi: 'Lớp λ/4', nem: 'Nêm', tieu: 'Tiêu âm', diem: 'Điểm ra tia', vach: 'Vách cách âm', tre: 'Đường trễ', noi: 'Đầu nối', vo: 'Vỏ' }).forEach(([k, n]) => info.append(h('button', { class: 'btn sm ghost', onclick: () => {
+          ui.read.textContent = DESC[k]; parts.forEach(p => { if (p.material && p.material.emissive) p.material.emissive.setHex(p.userData.key === k ? 0x553300 : 0); }); } }, n)));
+        mk(); ui.read.textContent = 'Đầu dò góc: bấm tên bộ phận để xem chức năng.';
+        const wp = new THREE.Vector3();
+        return t => { labs.forEach(l => { l.userData.m.getWorldPosition(wp); l.position.copy(wp).add(l.userData.off); }); grp.rotation.y = Math.sin(t * 0.3) * 0.25; };
+      } },
+
+    rsmap: { title: 'Bản đồ suất liều quanh nguồn Ir-192 ở hiện trường', cam: [0, 72, 58], target: [0, 0, 0],
+      note: 'Màu trên sàn là suất liều khi đang chiếu (chùm chính hướng xuống, mọi hướng ngang đều ngoài chùm). Đường cam: hàng rào 7,5 µSv/h; đường xanh: 10 µSv/h. Vách thép chỉ che phía sau nó. Kéo người để xem suất liều và liều trong ca. Mô hình nguồn điểm, chưa tính tán xạ.',
+      build(S, ui) {
+        const THREE = T3(); const N = 160, half = 40; const c = document.createElement('canvas'); c.width = c.height = N; const cx = c.getContext('2d'); const tex = new THREE.CanvasTexture(c); tex.magFilter = THREE.NearestFilter;
+        const floor = new THREE.Mesh(new THREE.PlaneGeometry(2 * half, 2 * half), new THREE.MeshBasicMaterial({ map: tex })); floor.rotation.x = -Math.PI / 2; S.add(floor);
+        const src = new THREE.Mesh(new THREE.SphereGeometry(0.6, 16, 12), new THREE.MeshBasicMaterial({ color: 0xff5a1f })); src.position.y = 1; S.add(src);
+        const coll = box(1.2, 1.2, 1.2, mat(0x13233a)); coll.position.y = 1.6; S.add(coll); const ls = label('Nguồn + ống chuẩn trực', { scale: 0.9 }); ls.position.set(0, 4, 0); S.add(ls);
+        const wall = box(0.6, 4, 20, mat(0x5a6570)); S.add(wall); const lw = label('Vách thép', { scale: 0.8 }); S.add(lw);
+        const person = new THREE.Group(); const pb = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 3, 12), mat(0x3ddc97)); pb.position.y = 1.5; const ph = new THREE.Mesh(new THREE.SphereGeometry(0.55, 12, 10), mat(0xf0c8a0)); ph.position.y = 3.5; person.add(pb, ph); S.add(person);
+        let ci = 20, coll_k = 10, th = 20, wx = 12, px = 18, pz = 0, tmin = 90; const lab = label('', { scale: 0.9 }); S.add(lab); let curLab = lab;
+        const rateAt = (x, z) => { const d = Math.max(0.5, Math.hypot(x, z)); let r = P.doseRate(ci * 37, d) * 1000 / coll_k; if (th > 0 && x > wx && Math.abs(z * wx / x) < 10) r *= Math.pow(0.5, th / P.IR192.hvlSteel); return r; };
+        const col = r => r > 100 ? [220, 40, 40] : r > 10 ? [255, 140, 30] : r > 7.5 ? [255, 210, 60] : r > 2.5 ? [90, 120, 140] : [38, 48, 58];
+        const paint = () => { const img = cx.createImageData(N, N);
+          for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) { const x = -half + (i + 0.5) * 2 * half / N, z = -half + (j + 0.5) * 2 * half / N, r = rateAt(x, z); const k = (j * N + i) * 4; const cc = col(r); img.data[k] = cc[0]; img.data[k + 1] = cc[1]; img.data[k + 2] = cc[2]; img.data[k + 3] = 255;
+            const e = (lim) => { const r2 = rateAt(x + 2 * half / N, z), r3 = rateAt(x, z + 2 * half / N); return (r - lim) * (r2 - lim) < 0 || (r - lim) * (r3 - lim) < 0; };
+            if (e(7.5)) { img.data[k] = 255; img.data[k + 1] = 120; img.data[k + 2] = 0; } else if (e(10)) { img.data[k] = 60; img.data[k + 1] = 140; img.data[k + 2] = 255; } }
+          cx.putImageData(img, 0, 0); tex.needsUpdate = true; };
+        const upd = () => { wall.position.set(wx, 2, 0); wall.visible = th > 0; wall.scale.x = Math.max(0.3, th / 20); lw.position.set(wx, 5, 10); person.position.set(px, 0, pz); paint();
+          const r = rateAt(px, pz), dose = r * tmin / 60; S.remove(curLab); curLab = label(`${fmt(r, 1)} µSv/h`, { scale: 0.9, border: r <= 7.5 ? 'rgba(61,220,151,.9)' : r <= 10 ? 'rgba(255,197,49,.9)' : 'rgba(255,93,93,.9)' }); curLab.position.set(px, 6, pz); S.add(curLab);
+          const rB = Math.sqrt(P.IR192.gamma * 1000 * ci * 37 / (coll_k * 7.5));
+          ui.read.textContent = `Người cách nguồn ${fmt(Math.hypot(px, pz), 1)} m: ${fmt(r, 1)} µSv/h → ${r <= 7.5 ? 'ngoài hàng rào được' : r <= 10 ? 'chỉ đạt mức vị trí thợ chụp' : 'quá cao, phải lùi hoặc che'} · liều ${tmin} phút phát tia ≈ ${fmt(dose, 1)} µSv · bán kính 7,5 µSv/h không che ≈ ${fmt(rB, 1)} m`; };
+        ui.slider('Hoạt độ (Ci)', 2, 100, 1, ci, v => { ci = v; upd(); }); ui.slider('Vách thép (mm)', 0, 60, 2, th, v => { th = v; upd(); }); ui.slider('Vị trí vách (m)', 4, 30, 1, wx, v => { wx = v; upd(); });
+        ui.slider('Người: x (m)', -40, 40, 0.5, px, v => { px = v; upd(); }); ui.slider('Người: z (m)', -40, 40, 0.5, pz, v => { pz = v; upd(); });
+        ui.button('Ống chuẩn trực ÷10 / ÷16', () => { coll_k = coll_k === 10 ? 16 : 10; toast(`Ống chuẩn trực giảm ${coll_k} lần`); upd(); });
+        upd(); return t => { src.scale.setScalar(1 + 0.15 * Math.sin(t * 6)); };
       } }
 
   };
@@ -333,7 +399,7 @@
     return wrap;
   }
   // chương Học viện → cảnh 3D
-  const FOR_CHAPTER = { atom: 'atom', elec: 'et', mag: 'mtfield', waves: 'wavemodes', sound: 'ut', xray: 'rt', mat: 'lattice', cap: 'pt', vt: 'vt', ut: 'ut', mt: 'mt', et: 'et', mw: 'mw', rt: 'rt', pt: 'pt', ae: 'ae', ir: 'ir' };
+  const FOR_CHAPTER = { ut2: 'probe', rs: 'rsmap', atom: 'atom', elec: 'et', mag: 'mtfield', waves: 'wavemodes', sound: 'ut', xray: 'rt', mat: 'lattice', cap: 'pt', vt: 'vt', ut: 'ut', mt: 'mt', et: 'et', mw: 'mw', rt: 'rt', pt: 'pt', ae: 'ae', ir: 'ir' };
   const FOR_METHOD = { PT: 'pt', MT: 'mt', UT: 'ut', RT: 'rt' };
   root.View3D = { mount, SCENES, FOR_CHAPTER, FOR_METHOD };
 })(this);

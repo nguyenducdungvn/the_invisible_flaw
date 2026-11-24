@@ -163,7 +163,7 @@
     { id: 'mt', track: 'tech', title: 'MT – Hạt từ', en: 'Magnetic Particle Testing', src: '/NDETechniques/MagParticle/index.xhtml', sim: 'lab:magnet', cards: ['leakage'],
       lessons: [
         ['Nguyên lý', 'Từ hóa chi tiết sắt từ; tại vết nứt bề mặt hoặc gần bề mặt, từ thông rò ra ngoài và giữ hạt từ lại thành chỉ thị nhìn thấy được.'],
-        ['Thiết bị và dòng từ hóa', 'Ách từ, que dẫn dòng (prod), máy cố định có cuộn dây và đầu kẹp. Dòng AC tập trung ở bề mặt (hiệu ứng bề mặt): tốt cho nứt bề mặt. DC hoặc DC chỉnh lưu nửa sóng thấm sâu hơn: tốt hơn cho khuyết tật gần bề mặt.'],
+        ['Thiết bị và dòng từ hóa', 'Gông từ, que dẫn dòng (prod), máy cố định có cuộn dây và đầu kẹp. Dòng AC tập trung ở bề mặt (hiệu ứng bề mặt): tốt cho nứt bề mặt. DC hoặc DC chỉnh lưu nửa sóng thấm sâu hơn: tốt hơn cho khuyết tật gần bề mặt.'],
         ['Hạt khô, hạt ướt, huỳnh quang', 'Hạt khô dùng tốt trên bề mặt thô, nóng. Hạt ướt huỳnh quang soi dưới UV-A trong phòng tối nhạy nhất với vết nứt mảnh. Phải kiểm tra nồng độ hạt và độ nhiễm bẩn của dung dịch.'],
         ['Liên tục và từ dư', 'Phương pháp liên tục: phun hạt khi đang có dòng, nhạy hơn. Phương pháp từ dư: phun sau khi cắt dòng, chỉ dùng cho vật liệu giữ từ tốt. Chỉ thị trường (pie gauge, shim) xác nhận hướng và độ đủ của từ trường.']
       ],

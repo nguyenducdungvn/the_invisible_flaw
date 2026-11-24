@@ -36,9 +36,11 @@
     ctx.fillText('%FSH', 2, 14); [20, 50, 80].forEach(a => ctx.fillText(a, 4, Y(a) + 3));
     if (opts.marks) { ctx.strokeStyle = '#ffc531'; ctx.setLineDash([3, 3]); opts.marks.forEach(m => { ctx.beginPath(); ctx.moveTo(X(m), 8); ctx.lineTo(X(m), H - 22); ctx.stroke(); }); ctx.setLineDash([]); }
     if (opts.dac && U.ref != null && U.dac.length >= 2) {
-      ctx.strokeStyle = '#ff5d5d'; ctx.lineWidth = 1.5; ctx.beginPath(); let first = true;
-      for (let s = 0; s <= R * 1.2; s += 1) { const sp = s; const a = 80 * Math.pow(10, (U.G - U.ref + C.dacRec(sp)) / 20); const x = X(C.disp(sp)); if (x < 30 || x > W - 10) continue; first ? ctx.moveTo(x, Y(a)) : ctx.lineTo(x, Y(a)); first = false; }
-      ctx.stroke(); ctx.fillStyle = '#ff5d5d'; ctx.fillText('DAC', W - 36, 18);
+      [[1, '#ff5d5d', [], 'DAC'], [0.5, '#ffc531', [6, 4], '50 %'], [0.2, '#43c6f0', [2, 4], '20 %']].forEach(([f, col, dash, name], li) => {
+        ctx.strokeStyle = col; ctx.lineWidth = li ? 1.1 : 1.5; ctx.setLineDash(dash); ctx.beginPath(); let first = true, lx = 0, ly = 0;
+        for (let s = 0; s <= R * 1.2; s += 1) { const a = f * 80 * Math.pow(10, (U.G - U.ref + C.dacRec(s)) / 20); const x = X(C.disp(s)); if (x < 30 || x > W - 10) continue; first ? ctx.moveTo(x, Y(a)) : ctx.lineTo(x, Y(a)); first = false; lx = x; ly = Y(a); }
+        ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = col; if (!first) ctx.fillText(name, Math.min(lx, W - 40) - 30, Math.max(12, ly - 4));
+      });
     }
     // vết sóng
     const N = Math.round(W - 40); const ys = new Float32Array(N);
