@@ -43,7 +43,7 @@
           h('li', null, 'Đây là sản phẩm **giáo dục và giải trí**. Nội dung không phải tài liệu đào tạo hay thi chứng nhận chính thức, và không thay thế: quy trình kiểm tra bằng văn bản, written practice của đơn vị, tiêu chuẩn và bộ luật áp dụng, chỉ dẫn của người có chứng chỉ Level III, các quy định về an toàn bức xạ, hóa chất và điện.'.replace(/\*\*/g, '')),
           h('li', null, 'Các mô phỏng được đơn giản hóa có chủ đích để dễ học. Số liệu ghi “tham khảo” hoặc “minh họa” không dùng cho tính toán kỹ thuật, thiết kế, lập quy trình hay đánh giá an toàn thực tế.'),
           h('li', null, 'Các tiêu chuẩn (ASME BPVC Section V, Section VIII…) được nhắc tới để học tập; phần tiêu chí trong game có chỗ rút gọn. Luôn dùng ấn bản hiện hành do tổ chức ban hành phát hành. Bản quyền tiêu chuẩn thuộc tổ chức ban hành.'),
-          h('li', null, 'Điểm số, “chứng chỉ” Bậc I, Bậc II trong game không có giá trị pháp lý hay giá trị chứng nhận nhân sự (SNT-TC-1A, ISO 9712 hay bất kỳ hệ thống nào).'),
+          h('li', null, 'Điểm số, “chứng chỉ” Bậc I, II, III trong game không có giá trị pháp lý hay giá trị chứng nhận nhân sự (SNT-TC-1A, ISO 9712 hay bất kỳ hệ thống nào).'),
           h('li', null, 'Mọi công ty, công trình, nhân vật và tình huống trong game đều hư cấu; nếu trùng tên là ngẫu nhiên.'),
           h('li', null, 'Cấu trúc Học viện tham khảo mục lục của NDE-Ed.org (Iowa State University). Nội dung đã viết lại bằng tiếng Việt; game không liên kết và không được NDE-Ed.org bảo trợ.'),
           h('li', null, 'Tác giả không chịu trách nhiệm cho thiệt hại phát sinh từ việc sử dụng nội dung ngoài mục đích học tập.'),

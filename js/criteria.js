@@ -5,19 +5,19 @@
     'ASME8-App8': {
       name: 'ASME VIII Div.1 – Phụ lục bắt buộc 8 (PT)',
       rules: [
-        'Chỉ thị có kích thước lớn nhất > 1,5 mm mới được coi là liên quan.',
+        'Chỉ thị có kích thước lớn nhất > 1.5 mm mới được coi là liên quan.',
         'Chỉ thị dạng đường: dài > 3 lần rộng.',
         'Loại bỏ: mọi chỉ thị dạng đường liên quan.',
         'Loại bỏ: chỉ thị tròn liên quan > 5 mm (3/16 in).',
-        'Loại bỏ: từ 4 chỉ thị tròn liên quan trở lên nằm trên một đường, cách nhau ≤ 1,5 mm (mép tới mép).'
+        'Loại bỏ: từ 4 chỉ thị tròn liên quan trở lên nằm trên một đường, cách nhau ≤ 1.5 mm (mép tới mép).'
       ],
       evaluate(inds) { return surfaceEval(inds); }
     },
     'ASME8-App6': {
       name: 'ASME VIII Div.1 – Phụ lục bắt buộc 6 (MT)',
       rules: [
-        'Chỉ thị có kích thước lớn nhất > 1,5 mm mới được coi là liên quan.',
-        'Loại bỏ: mọi chỉ thị dạng đường liên quan; chỉ thị tròn liên quan > 5 mm; 4 chỉ thị tròn thẳng hàng cách ≤ 1,5 mm.'
+        'Chỉ thị có kích thước lớn nhất > 1.5 mm mới được coi là liên quan.',
+        'Loại bỏ: mọi chỉ thị dạng đường liên quan; chỉ thị tròn liên quan > 5 mm; 4 chỉ thị tròn thẳng hàng cách ≤ 1.5 mm.'
       ],
       evaluate(inds) { return surfaceEval(inds); }
     },
@@ -66,7 +66,7 @@
     for (let k = 0; k + 3 < rounds.length; k++) {
       const grp = rounds.slice(k, k + 4);
       if (grp.every((r, j) => j === 0 || (r.x - r.len / 2) - (grp[j - 1].x + grp[j - 1].len / 2) <= 1.5)) {
-        why.push('Nhóm ≥ 4 chỉ thị tròn thẳng hàng cách ≤ 1,5 mm'); break;
+        why.push('Nhóm ≥ 4 chỉ thị tròn thẳng hàng cách ≤ 1.5 mm'); break;
       }
     }
     return { accept: why.length === 0, why };

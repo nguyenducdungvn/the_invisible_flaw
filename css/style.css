@@ -152,3 +152,5 @@ table.t th{color:var(--dim);font-weight:600}
 .l3fix{margin-top:8px;display:grid;gap:6px}
 .l3fix label{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line,#2b3a44);border-radius:8px;padding:6px 8px;cursor:pointer;line-height:1.55}
 .l3fix input{margin-top:5px}
+.numwarn{border-color:var(--bad,#ff5d5d)!important;box-shadow:0 0 0 2px rgba(255,93,93,.25)}
+.numhint{flex-basis:100%;color:var(--bad,#ff5d5d);font-size:.85rem;margin-top:4px;line-height:1.55}

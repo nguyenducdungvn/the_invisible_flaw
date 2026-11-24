@@ -26,7 +26,7 @@
   /* ---------- MT: rò từ thông ---------- */
   // Tỉ lệ từ thông rò theo góc giữa đường sức và vết nứt (mô hình bậc nhất): |sin Δ|. Phát hiện tốt khi Δ ≥ 45°.
   function leakageFactor(fieldDeg, crackDeg) { return Math.abs(Math.sin((fieldDeg - crackDeg) * D2R)); }
-  const MT_DETECT = Math.sin(45 * D2R); // 0,707
+  const MT_DETECT = Math.sin(45 * D2R); // 0.707
 
   /* ---------- ET: độ sâu thấm chuẩn ---------- */
   // δ = 1 / sqrt(π f μ σ), μ = μr·μ0
@@ -60,8 +60,8 @@
   /* ---------- RT ---------- */
   const IR192 = {
     halfLifeDays: 73.83,           // chu kỳ bán rã Ir-192
-    gamma: 0.13,                   // mSv·m²/(h·GBq). Đối chiếu: 5,6 mrem/h ở 30 cm cho 1 mCi ≈ 0,135 (NCHPS); dùng số trên chứng chỉ nguồn khi làm thật
-    hvlLead: 5.1, hvlSteel: 12.7   // mm: thép 12,7 theo Working Safely in Radiography (Bảng 5.1, giáo trình đơn vị), chì 5,1 (QSA Global)
+    gamma: 0.13,                   // mSv·m²/(h·GBq). Đối chiếu: 5.6 mrem/h ở 30 cm cho 1 mCi ≈ 0.135 (NCHPS); dùng số trên chứng chỉ nguồn khi làm thật
+    hvlLead: 5.1, hvlSteel: 12.7   // mm: thép 12.7 theo Working Safely in Radiography (Bảng 5.1, giáo trình đơn vị), chì 5.1 (QSA Global)
   };
   const decay = (A0, days, half = IR192.halfLifeDays) => A0 * Math.pow(0.5, days / half);
   const doseRate = (A_GBq, d_m, gammaK = IR192.gamma) => gammaK * A_GBq / (d_m * d_m); // mSv/h
@@ -78,7 +78,7 @@
   const geomUnsharpness = (F, d, D) => F * d / D;
 
   /* ---------- Học viện: bổ sung ---------- */
-  const IACS = 5.8e7;                                   // 100 % IACS = 5,8·10⁷ S/m
+  const IACS = 5.8e7;                                   // 100 % IACS = 5.8·10⁷ S/m
   const ohmI = (V, R) => V / R;
   const resistance = (rho, L, A) => rho * L / A;
   const inductiveReactance = (f, L) => 2 * Math.PI * f * L;

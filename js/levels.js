@@ -108,7 +108,7 @@
       client: 'Nhà máy điện khí Long Sơn (hư cấu)', contact: 'Chị Ngân – QA/QC chủ đầu tư',
       part: 'Mối hàn giáp mép ống thép, thành dày 12 mm, chụp một thành – một ảnh (phim đặt trong)',
       material: 'Thép API 5L X52', t: 12, budget: 28, downtime: 150,
-      briefing: 'Đặc tính kỹ thuật của chủ đầu tư yêu cầu RT có phim lưu trữ cho mối hàn W-112. Nguồn Ir-192 có chứng chỉ hoạt độ 1850 GBq, đo ngày 26/08/2026 (cách hôm nay 90 ngày). Tiêu chí vận hành an toàn bức xạ của dự án: hàng rào đặt nơi suất liều ≤ 7,5 µSv/h khi đang chiếu; vị trí thợ chụp đứng điều khiển ≤ 10 µSv/h. Ống chuẩn trực giảm 16 lần theo các hướng ngoài chùm. Thợ chụp có cáp điều khiển 7,6 m hoặc 15 m; hiện trường có vách thép 25 mm của nhà bơm để đứng sau. Tiêu chí: ASME VIII UW-51 (rút gọn).',
+      briefing: 'Đặc tính kỹ thuật của chủ đầu tư yêu cầu RT có phim lưu trữ cho mối hàn W-112. Nguồn Ir-192 có chứng chỉ hoạt độ 1850 GBq, đo ngày 26/08/2026 (cách hôm nay 90 ngày). Tiêu chí vận hành an toàn bức xạ của dự án: hàng rào đặt nơi suất liều ≤ 7.5 µSv/h khi đang chiếu; vị trí thợ chụp đứng điều khiển ≤ 10 µSv/h. Ống chuẩn trực giảm 16 lần theo các hướng ngoài chùm. Thợ chụp có cáp điều khiển 7.6 m hoặc 15 m; hiện trường có vách thép 25 mm của nhà bơm để đứng sau. Tiêu chí: ASME VIII UW-51 (rút gọn).',
       methods: [
         { id: 'UT', label: 'Siêu âm thay chụp (UT)', cost: 8, time: 100, ok: false,
           lure: 'Không phải dựng rào, an toàn hơn',

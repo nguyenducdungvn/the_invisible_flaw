@@ -27,10 +27,10 @@ near(P.angleBeam(28, 60, 25).depth, 14, 1e-9, 'Chân 1: SP 28 → sâu 14');
 near(P.skipDistance(25, 60), 86.6, 0.05, 'Bước nhảy T25/60°');
 near(P.decay(1000, 73.83), 500, 1e-6, 'Một chu kỳ bán rã');
 const A = P.decay(1850, 90); near(A, 794.6, 0.5, 'Hoạt độ RT hôm nay');
-near(P.barrierDistance(A, 7.5, 16), 29.35, 0.05, 'Bán kính rào RT (7,5 µSv/h)'); ok(P.attenuate(P.doseRate(A, 15) * 1000 / 16, 25, P.IR192.hvlSteel) <= 10 && P.doseRate(A, 15) * 1000 / 16 > 10 && P.attenuate(P.doseRate(A, 7.6) * 1000 / 16, 25, P.IR192.hvlSteel) > 10, 'RT: chỉ phương án cáp 15 m + vách 25 mm đạt ≤ 10 µSv/h');
+near(P.barrierDistance(A, 7.5, 16), 29.35, 0.05, 'Bán kính rào RT (7.5 µSv/h)'); ok(P.attenuate(P.doseRate(A, 15) * 1000 / 16, 25, P.IR192.hvlSteel) <= 10 && P.doseRate(A, 15) * 1000 / 16 > 10 && P.attenuate(P.doseRate(A, 7.6) * 1000 / 16, 25, P.IR192.hvlSteel) > 10, 'RT: chỉ phương án cáp 15 m + vách 25 mm đạt ≤ 10 µSv/h');
 near(P.exposureMinutes(220, 0.5, A), 4.15, 0.02, 'Thời gian chiếu RT');
 near(P.filmDensity(1), 2.6, 1e-9, 'Độ đen tại phơi sáng đúng');
-ok(P.filmDensity(0.5) >= 1.4 && P.filmDensity(0.5) < 2.0, 'Phơi sáng thiếu một nửa → phim mỏng dưới 2,0');
+ok(P.filmDensity(0.5) >= 1.4 && P.filmDensity(0.5) < 2.0, 'Phơi sáng thiếu một nửa → phim mỏng dưới 2.0');
 near(P.skinDepth(100e3, 3.5e7, 1) * 1000, 0.269, 0.003, 'Độ sâu thấm chuẩn nhôm ~100 kHz');
 
 console.log('2. Dữ liệu màn chơi');
@@ -51,20 +51,20 @@ ok(new Set(LEVELS.map(l => l.order)).size === LEVELS.length, 'Thứ tự màn kh
 
 console.log('3. Tiêu chí chấp nhận');
 const S8 = CRITERIA['ASME8-App8'].evaluate;
-ok(S8([{ label: 'a', type: 'linear', len: 1.4, x: 0 }]).accept, 'Đường 1,4 mm không liên quan → đạt');
+ok(S8([{ label: 'a', type: 'linear', len: 1.4, x: 0 }]).accept, 'Đường 1.4 mm không liên quan → đạt');
 ok(!S8([{ label: 'a', type: 'linear', len: 2, x: 0 }]).accept, 'Đường 2 mm → loại');
-ok(S8([{ label: 'a', type: 'rounded', len: 4.5, x: 0 }]).accept, 'Tròn 4,5 mm → đạt');
-ok(!S8([{ label: 'a', type: 'rounded', len: 5.5, x: 0 }]).accept, 'Tròn 5,5 mm → loại');
+ok(S8([{ label: 'a', type: 'rounded', len: 4.5, x: 0 }]).accept, 'Tròn 4.5 mm → đạt');
+ok(!S8([{ label: 'a', type: 'rounded', len: 5.5, x: 0 }]).accept, 'Tròn 5.5 mm → loại');
 ok(!S8([0, 1, 2, 3].map(k => ({ label: 'r' + k, type: 'rounded', len: 2, x: k * 3 }))).accept, '4 tròn thẳng hàng cách 1 mm → loại');
 ok(S8([0, 1, 2, 3].map(k => ({ label: 'r' + k, type: 'rounded', len: 2, x: k * 6 }))).accept, '4 tròn cách 4 mm → đạt');
 const U12 = CRITERIA['ASME8-App12'].evaluate;
-ok(U12([{ label: 's', type: 'slag', len: 6, overDAC: true }], 25).accept, 'Xỉ 6 mm trên DAC, t = 25 → đạt (giới hạn 8,3)');
+ok(U12([{ label: 's', type: 'slag', len: 6, overDAC: true }], 25).accept, 'Xỉ 6 mm trên DAC, t = 25 → đạt (giới hạn 8.3)');
 ok(!U12([{ label: 's', type: 'slag', len: 9, overDAC: true }], 25).accept, 'Xỉ 9 mm trên DAC, t = 25 → loại');
 ok(U12([{ label: 's', type: 'slag', len: 30, overDAC: false }], 25).accept, 'Dưới DAC → đạt bất kể dài');
 ok(!U12([{ label: 'l', type: 'lof', len: 2, overDAC: false }], 25).accept, 'Không ngấu → loại bất kể');
 near(U12([], 12).limit, 6, 1e-9, 't ≤ 19 → 6 mm'); near(U12([], 70).limit, 19, 1e-9, 't > 57 → 19 mm');
 const W51 = CRITERIA['ASME8-UW51'].evaluate;
-ok(W51([{ label: 's', type: 'slag', len: 4.5 }, { label: 'p', type: 'pore', len: 1.6 }], 12).accept, 'RT: xỉ 4,5 + rỗ 1,6 ở t = 12 → đạt');
+ok(W51([{ label: 's', type: 'slag', len: 4.5 }, { label: 'p', type: 'pore', len: 1.6 }], 12).accept, 'RT: xỉ 4.5 + rỗ 1.6 ở t = 12 → đạt');
 ok(!W51([{ label: 'c', type: 'crack', len: 1 }], 12).accept, 'RT: nứt → loại');
 
 console.log('4. Đáp án mỗi màn & biên jitter');
@@ -94,15 +94,15 @@ for (const l of LEVELS) { const c = JSON.parse(JSON.stringify(l)); if (c.indicat
 const ut = LEVELS.find(l => l.id === 'ut1'); ok(U12(ut.reflectors.filter(r => r.type === 'slag').map(r => ({ label: 'B', type: 'slag', len: r.x2 - r.x1, overDAC: true })), 25).accept, 'ut1: xỉ một mình phải đạt (dạy “trên DAC ≠ loại”)');
 
 { const V = CRITERIA['AWS-D11-VT'].evaluate, u = (len, depth, x = 0) => ({ label: 'u', type: 'undercut', len, depth, x });
-  ok(V([u(40, 1.4)]).accept, 'VT: cháy cạnh 1,4 mm dài 40 mm → đạt (ngoại lệ ≤ 50 mm/300 mm)');
-  ok(!V([u(40, 1.4), u(25, 1.2, 150)]).accept, 'VT: tổng 65 mm sâu > 1 mm → loại'); ok(!V([u(5, 2.2)]).accept, 'VT: cháy cạnh 2,2 mm → loại'); ok(V([u(200, 0.9)]).accept, 'VT: cháy cạnh 0,9 mm bất kể dài → đạt');
-  const pr = (x, d) => ({ label: 'p', type: 'pore', len: d, x }); ok(!V([pr(0, 3), pr(7, 3.5), pr(15, 4)]).accept, 'VT: rỗ 10,5 mm trong 25 mm → loại'); ok(V([pr(0, 3), pr(30, 3.5), pr(60, 4)]).accept, 'VT: rỗ rải rác 10,5 mm/300 mm → đạt');
+  ok(V([u(40, 1.4)]).accept, 'VT: cháy cạnh 1.4 mm dài 40 mm → đạt (ngoại lệ ≤ 50 mm/300 mm)');
+  ok(!V([u(40, 1.4), u(25, 1.2, 150)]).accept, 'VT: tổng 65 mm sâu > 1 mm → loại'); ok(!V([u(5, 2.2)]).accept, 'VT: cháy cạnh 2.2 mm → loại'); ok(V([u(200, 0.9)]).accept, 'VT: cháy cạnh 0.9 mm bất kể dài → đạt');
+  const pr = (x, d) => ({ label: 'p', type: 'pore', len: d, x }); ok(!V([pr(0, 3), pr(7, 3.5), pr(15, 4)]).accept, 'VT: rỗ 10.5 mm trong 25 mm → loại'); ok(V([pr(0, 3), pr(30, 3.5), pr(60, 4)]).accept, 'VT: rỗ rải rác 10.5 mm/300 mm → đạt');
   ok(!V([pr(0, 4), pr(40, 4), pr(80, 4), pr(120, 4), pr(160, 4)]).accept, 'VT: tổng rỗ 20 mm > 19 mm trong 300 mm → loại'); ok(!V([{ label: 'c', type: 'crack', len: 1, x: 0 }]).accept, 'VT: nứt → loại');
-  ok(CRITERIA['IR-CFRP'].evaluate([{ label: 'd', type: 'delam', len: 10 }]).accept, 'IR: tách lớp 10 mm → ghi nhận'); ok(CRITERIA['MW-HDPE'].evaluate([{ label: 'v', type: 'void', len: 2.5 }]).accept, 'MW: lỗ rỗng 2,5 mm → ghi nhận');
-  const tau = z => P.thermalTime(z * 1e-3, 4e-7); near(tau(2.5), 15.625, 1e-6, 'IR: tách lớp 2,5 mm hiện ở ≈ 15,6 s (cần ghi ≥ 20 s)');
-  near(P.aeLocate(4, 3050, -0.656e-3), 1.0, 0.01, 'AE: bẻ ruột chì ở 1,0 m cho Δt = −0,656 ms với v = 3050 m/s');
-  near(P.skinDepth(2e5, 0.3 * P.IACS, 1) * 1000, 0.27, 0.01, 'ET: δ nhôm 30 % IACS ở 200 kHz ≈ 0,27 mm');
-  near(300 / 24 / Math.sqrt(2.3), 8.24, 0.01, 'MW: λ trong HDPE ở 24 GHz ≈ 8,2 mm');
+  ok(CRITERIA['IR-CFRP'].evaluate([{ label: 'd', type: 'delam', len: 10 }]).accept, 'IR: tách lớp 10 mm → ghi nhận'); ok(CRITERIA['MW-HDPE'].evaluate([{ label: 'v', type: 'void', len: 2.5 }]).accept, 'MW: lỗ rỗng 2.5 mm → ghi nhận');
+  const tau = z => P.thermalTime(z * 1e-3, 4e-7); near(tau(2.5), 15.625, 1e-6, 'IR: tách lớp 2.5 mm hiện ở ≈ 15.6 s (cần ghi ≥ 20 s)');
+  near(P.aeLocate(4, 3050, -0.656e-3), 1.0, 0.01, 'AE: bẻ ruột chì ở 1.0 m cho Δt = −0.656 ms với v = 3050 m/s');
+  near(P.skinDepth(2e5, 0.3 * P.IACS, 1) * 1000, 0.27, 0.01, 'ET: δ nhôm 30 % IACS ở 200 kHz ≈ 0.27 mm');
+  near(300 / 24 / Math.sqrt(2.3), 8.24, 0.01, 'MW: λ trong HDPE ở 24 GHz ≈ 8.2 mm');
   for (const k of Object.keys(LM.PREREQ_MORE)) ok(LM.PREREQ_MORE[k].every(c => ACADEMY_IDS.includes(c)), `PREREQ ${k}`); }
 { const L3 = require(path.join(__dirname, '../js/level3.js'));
   ok(L3.CASES.length === 5, 'Bậc III: 5 tài liệu soát xét');
@@ -115,6 +115,8 @@ const ut = LEVELS.find(l => l.id === 'ut1'); ok(U12(ut.reflectors.filter(r => r.
   near(L3.score(c, bad, { 0: { fix: 0 }, 3: { fix: 0 }, 4: { fix: 0 }, 1: { fix: 0 } }).pct, 5 / 6, 1e-9, 'Bậc III: đánh dấu nhầm một dòng đúng bị trừ');
   near(L3.score(c, bad, Object.fromEntries(c.lines.map((_, i) => [i, { fix: 0 }]))).pct, 0, 1e-9, 'Bậc III: đánh dấu tất cả không có lợi');
   near(20 / 3, 6.67, 0.01, 'Bậc III UT: t/3 với t = 20 mm'); near(3 * 25 / 100, 0.75, 1e-9, 'Bậc III RT: Ug = 3·25/100'); near(3 * 25 / 300, 0.25, 1e-9, 'Bậc III RT: Ug = 3·25/300'); }
+{ const bad = []; const FS = require('fs'); for (const f of FS.readdirSync(path.join(__dirname, '../js')).filter(f => f.endsWith('.js'))) FS.readFileSync(path.join(__dirname, '../js', f), 'utf8').split('\n').forEach((ln, k) => { if (/\d,\d/.test(ln) && !/rgba|NUM_RULE|1,000|'255,255,255'/.test(ln)) bad.push(`${f}:${k + 1}`); });
+  ok(bad.length === 0, 'Số thập phân dùng dấu chấm (không còn dấu phẩy thập phân)' + (bad.length ? ': ' + bad.slice(0, 5).join(', ') : '')); }
 console.log('5. Hình học UT');
 const T = 25, tan = Math.tan(60 * P.D2R), fusion = d => 1 + (T - d) * Math.tan(30 * P.D2R);
 const lof = ut.reflectors.find(r => r.type === 'lof'); const ypLeg2 = fusion(lof.depth) + (2 * T - lof.depth) * tan;
@@ -163,7 +165,7 @@ const D = (id, i, val) => { const q = DEEP[id].quiz[i]; const tol = q.abs != nul
 const fFor = (delta, iacs) => 1 / (Math.PI * 4e-7 * Math.PI * iacs / 100 * P.IACS * delta * delta);
 D('atom', 1, 1850 / 37); D('elec', 0, 0.58 * 50); D('elec', 1, fFor(1e-3, 40) / 1000); near(P.skinDepth(fFor(1e-3, 40), 0.4 * P.IACS, 1), 1e-3, 1e-9, 'f tìm được cho δ = 1 mm');
 D('mag', 0, 1000 / (2 * Math.PI * 0.025)); D('waves', 0, P.wavelength(0.92 * 3240, 2e6) * 1000); D('sound', 0, P.dB(80, 40) / 100);
-near(DEEP.xray.ex[0].a.includes('36') ? 1 : 0, 1, 0, 'Ví dụ xray 7,5 µSv/h'); D('xray', 0, Math.log2(50) * P.IR192.hvlLead); D('xray', 1, 10 * 2 / 5); D('mat', 0, (50 / (1.12 * 200)) ** 2 / Math.PI * 1000);
+near(DEEP.xray.ex[0].a.includes('36') ? 1 : 0, 1, 0, 'Ví dụ xray 7.5 µSv/h'); D('xray', 0, Math.log2(50) * P.IR192.hvlLead); D('xray', 1, 10 * 2 / 5); D('mat', 0, (50 / (1.12 * 200)) ** 2 / Math.PI * 1000);
 D('vt', 0, P.inverseSquare(400, 1, 0.5)); D('ut', 0, P.beamSpreadHalfDeg(5920, 5e6, 0.01)); D('et', 0, fFor(1.2e-3, 25) / 1000); D('mw', 0, 300 / 10 / Math.sqrt(4)); D('rt', 0, P.geomUnsharpness(2, 15, 500)); D('ae', 0, 8 / 10); D('ir', 0, ((330 / 300) ** 4 - 1) * 100);
 const numDeep = Object.values(DEEP).reduce((n, d) => n + d.quiz.filter(q => q.num != null).length, 0); ok(numDeep === 16, `Đã tính lại mọi câu số nâng cao (${numDeep})`); near(P.mwGamma(1), 0, 1e-12, 'ε = 1 không phản xạ');
 

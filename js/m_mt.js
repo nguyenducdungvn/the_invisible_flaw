@@ -15,8 +15,8 @@
           { l: 'Tẩy sơn vùng kiểm tra, làm sạch, phun lớp sơn trắng tương phản mỏng', ok: true, time: 12 },
           { l: 'Kiểm tra xuyên qua lớp sơn chống gỉ cho nhanh', lure: 'Khách không muốn sơn lại', time: 0, fx: () => { q.sens *= 0.45; }, why: 'Lớp phủ dày làm yếu từ trường rò ở bề mặt, vết nứt khít có thể không hiện.' }] },
         { t: 'Kiểm tra lực nâng của gông (T-762)', d: 'Gông AC dùng hôm nay, khoảng cách cực sẽ dùng là 100 mm.', timer: 20, o: [
-          { l: 'Nhấc tấm thép thử 4,5 kg (10 lb) ở đúng khoảng cách cực sẽ dùng', ok: true, time: 3 },
-          { l: 'Nhấc tấm 2 kg cho chắc chắn đạt', lure: 'Không bao giờ trượt', time: 3, why: 'Gông AC phải nâng được tối thiểu 4,5 kg (10 lb) ở khoảng cách cực lớn nhất sẽ dùng.' },
+          { l: 'Nhấc tấm thép thử 4.5 kg (10 lb) ở đúng khoảng cách cực sẽ dùng', ok: true, time: 3 },
+          { l: 'Nhấc tấm 2 kg cho chắc chắn đạt', lure: 'Không bao giờ trượt', time: 3, why: 'Gông AC phải nâng được tối thiểu 4.5 kg (10 lb) ở khoảng cách cực lớn nhất sẽ dùng.' },
           { l: 'Bỏ qua, gông mới hiệu chuẩn năm ngoái', lure: 'Có tem kiểm định', time: 0, fx: () => { q.sens *= 0.8; }, why: 'Từ ấn bản 2015, ASME V yêu cầu kiểm tra lực nâng mỗi ngày trước khi dùng.' }] },
         { t: 'Xác nhận cường độ và hướng từ trường', o: [
           { l: 'Đặt chỉ thị trường từ (pie gauge) trên bề mặt và quan sát các vạch hiện rõ', ok: true, time: 3 },

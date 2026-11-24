@@ -39,7 +39,7 @@
     {
       id: 'et1', method: 'ET', order: 6, title: 'Lỗ đinh tán vỏ cánh máy bay huấn luyện',
       client: 'Trường bay Cánh Diều (hư cấu)', contact: 'Anh Long – trưởng ca kỹ thuật',
-      part: 'Hàng 8 đinh tán đầu chìm trên tấm vỏ hợp kim nhôm 2024-T3 dày 1,6 mm, có lớp sơn khoảng 50–100 µm. Vùng hay nứt mỏi quanh lỗ.',
+      part: 'Hàng 8 đinh tán đầu chìm trên tấm vỏ hợp kim nhôm 2024-T3 dày 1.6 mm, có lớp sơn khoảng 50–100 µm. Vùng hay nứt mỏi quanh lỗ.',
       material: 'Hợp kim nhôm 2024-T3 (≈ 30 % IACS, không nhiễm từ)', temp: 28, budget: 15, downtime: 120,
       briefing: 'Đợt kiểm tra định kỳ yêu cầu tìm nứt mỏi bề mặt xuất phát từ lỗ đinh tán, không tháo đinh, không bóc sơn. Tiêu chí: quy trình NDT của xưởng (hư cấu, viết theo kiểu sổ tay NDT máy bay). Máy bay có lịch bay sáng mai.',
       methods: [
@@ -69,7 +69,7 @@
     {
       id: 'ae1', method: 'AE', order: 7, title: 'Bồn LPG kiểm định định kỳ',
       client: 'Kho LPG Cửa Biển (Đà Nẵng)', contact: 'Chị Ngân – phụ trách an toàn kho',
-      part: 'Bồn trụ nằm ngang chứa LPG, thép cacbon, dài 12 m, đặt trên 2 gối đỡ ở 2,0 m và 10,0 m. Bọc cách nhiệt, chỉ hở các ô cửa cảm biến.',
+      part: 'Bồn trụ nằm ngang chứa LPG, thép cacbon, dài 12 m, đặt trên 2 gối đỡ ở 2.0 m và 10.0 m. Bọc cách nhiệt, chỉ hở các ô cửa cảm biến.',
       material: 'Thép bình áp lực (sắt từ), có lớp cách nhiệt', budget: 26, downtime: 240,
       briefing: 'Kiểm định định kỳ: thử thủy lực có giám sát phát xạ âm để nghe toàn bộ thân bồn khi tăng áp, sau đó chỉ kiểm tra bổ sung tại các vùng nghi ngờ. Tiêu chí: quy trình AE của đơn vị (rút gọn theo cách tiếp cận của ASME V Điều 12). Kho đang thiếu chỗ chứa, muốn đưa bồn vào lại sớm.',
       methods: [
@@ -130,8 +130,8 @@
     {
       id: 'mw1', method: 'MW', order: 9, title: 'Mối hàn nhiệt ống HDPE cấp nước',
       client: 'Công ty Cấp nước Sông Hậu (hư cấu)', contact: 'Anh Phúc – chỉ huy trưởng công trường',
-      part: 'Mối hàn đối đầu bằng nhiệt ống HDPE PE100 D315, thành dày 28,6 mm. Quét dải 300 mm theo chu vi, mặt nóng chảy nằm ở giữa dải.',
-      material: 'Polyetylen mật độ cao PE100 (ε ≈ 2,3, tổn hao thấp)', temp: 33, budget: 16, downtime: 150, eps: 2.3,
+      part: 'Mối hàn đối đầu bằng nhiệt ống HDPE PE100 D315, thành dày 28.6 mm. Quét dải 300 mm theo chu vi, mặt nóng chảy nằm ở giữa dải.',
+      material: 'Polyetylen mật độ cao PE100 (ε ≈ 2.3, tổn hao thấp)', temp: 33, budget: 16, downtime: 150, eps: 2.3,
       briefing: 'Ống sắp chôn dưới đường. Chủ đầu tư muốn kiểm tra thể tích mối hàn nhiệt trước khi lấp. Ống nhựa nên RT và UT thông thường gặp khó; vi ba đi xuyên được vật liệu điện môi. Tiêu chí: quy trình nghiệm thu của chủ đầu tư (hư cấu).',
       methods: [
         { id: 'MW', label: 'Quét vi ba / sóng milimét (MW)', cost: 9, time: 60, ok: true,
@@ -203,9 +203,9 @@
     'ET-AL-SURF': {
       name: 'Quy trình ET bề mặt quanh lỗ đinh tán của xưởng (hư cấu)',
       rules: [
-        'Chuẩn trên mẫu nhôm cùng hợp kim có rãnh EDM sâu 0,2 – 0,5 – 1,0 mm; rãnh 0,5 mm đặt cao 50 % màn hình.',
+        'Chuẩn trên mẫu nhôm cùng hợp kim có rãnh EDM sâu 0.2 – 0.5 – 1.0 mm; rãnh 0.5 mm đặt cao 50 % màn hình.',
         'Tín hiệu nhấc đầu dò xoay về nằm ngang; chỉ thị nứt là tín hiệu dựng đứng, lặp lại khi quét lại.',
-        'Mọi chỉ thị nứt có đáp ứng bằng hoặc lớn hơn rãnh 0,2 mm → báo cáo, chi tiết không được chấp nhận, chuyển kỹ thuật đánh giá sửa chữa.',
+        'Mọi chỉ thị nứt có đáp ứng bằng hoặc lớn hơn rãnh 0.2 mm → báo cáo, chi tiết không được chấp nhận, chuyển kỹ thuật đánh giá sửa chữa.',
         'Thay đổi khoảng nhấc (sơn) và thay đổi độ dẫn điện: ghi nhận, không phải nứt.'
       ],
       evaluate(inds) { const why = inds.filter(i => i.type === 'crack' && i.depth >= 0.2).map(i => `${i.label}: nứt sâu ≈ ${i.depth.toFixed(1)} mm → loại bỏ`); return { accept: why.length === 0, why }; }

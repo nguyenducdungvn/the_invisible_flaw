@@ -105,7 +105,7 @@
       } },
 
     rt: { title: 'Chụp gamma Ir-192 một thành ống, rào vùng kiểm soát', cam: [15, 11, 18], target: [0, 3, 0],
-      note: 'Bật nguồn để thấy hình nón chùm tia qua ống chuẩn trực. Hàng rào đặt nơi suất liều ≤ 7,5 µSv/h, tính từ Ḣ = Γ·A/(k·d²) rồi xác nhận bằng máy đo ở lần chiếu đầu. Kéo bán kính: rào đỏ là chưa đủ xa.',
+      note: 'Bật nguồn để thấy hình nón chùm tia qua ống chuẩn trực. Hàng rào đặt nơi suất liều ≤ 7.5 µSv/h, tính từ Ḣ = Γ·A/(k·d²) rồi xác nhận bằng máy đo ở lần chiếu đầu. Kéo bán kính: rào đỏ là chưa đủ xa.',
       build(S, ui) {
         const THREE = T3(); const ground = new THREE.Mesh(new THREE.CircleGeometry(30, 64), mat(0x26303a, { metalness: 0 })); ground.rotation.x = -Math.PI / 2; S.add(ground);
         const pipe = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 16, 40, 1, true), mat(COL.steel, { side: THREE.DoubleSide })); pipe.rotation.z = Math.PI / 2; pipe.position.y = 3; S.add(pipe);
@@ -122,7 +122,7 @@
         const setR = v => { R = v; if (rope) S.remove(rope); const pts = []; for (let i = 0; i <= 64; i++) { const a = i / 64 * 6.283; pts.push([Math.cos(a) * R / 1.6, 1, Math.sin(a) * R / 1.6]); }
           const okk = R >= need; rope = line(pts, okk ? COL.ok : COL.bad); S.add(rope); posts.clear(); for (let i = 0; i < 12; i++) { const a = i / 12 * 6.283; const c = new THREE.Mesh(new THREE.ConeGeometry(0.25, 1, 10), mat(okk ? 0xffa21c : COL.bad)); c.position.set(Math.cos(a) * R / 1.6, 0.5, Math.sin(a) * R / 1.6); posts.add(c); }
           person.position.set(R / 1.6 + 1.2, 0, 0); if (lrope) S.remove(lrope); lrope = label(`Rào ${fmt(R, 1)} m · cần ≥ ${fmt(need, 1)} m`, { border: okk ? 'rgba(61,220,151,.9)' : 'rgba(255,93,93,.9)' }); lrope.position.set(0, 2.2, -R / 1.6); S.add(lrope);
-          const rate = P.doseRate(A, R) * 1000 / 16; ui.read.textContent = `Hoạt độ hôm nay ${fmt(A, 0)} GBq · suất liều ở rào ≈ ${fmt(rate, 1)} µSv/h ${rate > 7.5 ? '> 7,5: KHÔNG ĐẠT' : '≤ 7,5: đạt'} · thợ chụp đứng ngoài trời cần cách ≥ ${fmt(needOp, 1)} m để ≤ 10 µSv/h, hoặc đứng sau che chắn (mô hình rút gọn)`; };
+          const rate = P.doseRate(A, R) * 1000 / 16; ui.read.textContent = `Hoạt độ hôm nay ${fmt(A, 0)} GBq · suất liều ở rào ≈ ${fmt(rate, 1)} µSv/h ${rate > 7.5 ? '> 7.5: KHÔNG ĐẠT' : '≤ 7.5: đạt'} · thợ chụp đứng ngoài trời cần cách ≥ ${fmt(needOp, 1)} m để ≤ 10 µSv/h, hoặc đứng sau che chắn (mô hình rút gọn)`; };
         ui.slider('Bán kính rào (m)', 6, 40, 0.5, R, v => setR(v)); setR(R);
         ui.button('Bật/thu nguồn', () => { on = !on; toast(on ? 'Nguồn đang mở: không ai được vào trong rào' : 'Đã thu nguồn về container', on ? 'hi' : 'ok'); });
         return t => { cone.visible = ph.visible = on; if (!on) return; for (let i = 0; i < NP; i++) { const s = seeds[i]; const u = (s[0] + t * 0.5) % 1, r = 1.4 * u * Math.sqrt(s[2]); pp[i * 3] = Math.cos(s[1]) * r; pp[i * 3 + 1] = 8.5 - 5.8 * u; pp[i * 3 + 2] = Math.sin(s[1]) * r; } pg.attributes.position.needsUpdate = true; };
@@ -176,7 +176,7 @@
           for (let y = 0; y < Hh; y++) for (let x = 0; x < W; x++) { const px = (x / W - 0.5) * 16, pz = (y / Hh - 0.5) * 12; let v = 0.32 * bg;
             for (const d of D) { const ti = P.thermalTime(d.z0, alpha); const c = (0.5e-3 / d.z0) * (1 - Math.exp(-tt / ti)) * Math.exp(-tt / (8 * ti)); v += 0.6 * c * Math.exp(-((px - d.x) ** 2 + (pz - d.z) ** 2) / (d.r * d.r)); }
             v = Math.max(0, Math.min(1, v)); const k = (y * W + x) * 4; img.data[k] = 255 * Math.min(1, v * 2); img.data[k + 1] = 255 * Math.max(0, v * 2 - 0.6); img.data[k + 2] = 90 * (1 - v); img.data[k + 3] = 255; }
-          cx.putImageData(img, 0, 0); tex.needsUpdate = true; ui.read.textContent = `t = ${fmt(tt, 1)} s sau flash · A sâu 0,5 mm · B sâu 1 mm · C sâu 2 mm · α = 4·10⁻⁷ m²/s (tham khảo)`; };
+          cx.putImageData(img, 0, 0); tex.needsUpdate = true; ui.read.textContent = `t = ${fmt(tt, 1)} s sau flash · A sâu 0.5 mm · B sâu 1 mm · C sâu 2 mm · α = 4·10⁻⁷ m²/s (tham khảo)`; };
         ui.slider('Thời gian sau flash (s)', 0.1, 30, 0.1, tt, v => { tt = v; paint(); });
         ui.button('Flash', () => { flashAt = S.userData.t; tt = 0.1; paint(); }); ui.button('Nhìn xuyên', () => { see = !see; ghosts.forEach(g => g.visible = see); panel.material.forEach(m => { m.transparent = see; m.opacity = see ? 0.35 : 1; }); });
         paint(); ['A', 'B', 'C'].forEach((n, i) => { const l = label(n, { size: 26 }); l.position.set(D[i].x, 1.6, D[i].z); S.add(l); });
@@ -208,7 +208,7 @@
         const arrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(-10, 0.9, 0), 4, 0xffc531, 0.8, 0.5); S.add(arrow);
         const la = label('Hướng truyền sóng', { scale: 0.7 }); la.position.set(-4.5, 0.9, 0); S.add(la);
         let mode = 'L'; const lam = 5;
-        const NAMES = { L: 'Sóng dọc (L): thép ≈ 5920 m/s, đi được trong rắn, lỏng, khí', S: 'Sóng ngang (S): thép ≈ 3240 m/s, chỉ đi trong chất rắn', R: 'Sóng Rayleigh (mặt): ≈ 0,92 vS, tắt dần trong khoảng 1 bước sóng dưới bề mặt' };
+        const NAMES = { L: 'Sóng dọc (L): thép ≈ 5920 m/s, đi được trong rắn, lỏng, khí', S: 'Sóng ngang (S): thép ≈ 3240 m/s, chỉ đi trong chất rắn', R: 'Sóng Rayleigh (mặt): ≈ 0.92 vS, tắt dần trong khoảng 1 bước sóng dưới bề mặt' };
         const setM = m => { mode = m; ui.read.textContent = NAMES[m] + ' · bước sóng trong cảnh = 5 đơn vị'; };
         [['L', 'Sóng dọc'], ['S', 'Sóng ngang'], ['R', 'Sóng Rayleigh']].forEach(([k, n]) => ui.button(n, () => setM(k))); setM('L');
         return t => { const k = 2 * Math.PI / lam, w = 3; for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) { const n = j * NX + i, x0 = -10 + i * dx, y0 = -j * dx; const ph = k * x0 - w * t;
@@ -336,7 +336,7 @@
       } },
 
     rsmap: { title: 'Bản đồ suất liều quanh nguồn Ir-192 ở hiện trường', cam: [0, 72, 58], target: [0, 0, 0],
-      note: 'Màu trên sàn là suất liều khi đang chiếu (chùm chính hướng xuống, mọi hướng ngang đều ngoài chùm). Đường cam: hàng rào 7,5 µSv/h; đường xanh: 10 µSv/h. Vách thép chỉ che phía sau nó. Kéo người để xem suất liều và liều trong ca. Mô hình nguồn điểm, chưa tính tán xạ.',
+      note: 'Màu trên sàn là suất liều khi đang chiếu (chùm chính hướng xuống, mọi hướng ngang đều ngoài chùm). Đường cam: hàng rào 7.5 µSv/h; đường xanh: 10 µSv/h. Vách thép chỉ che phía sau nó. Kéo người để xem suất liều và liều trong ca. Mô hình nguồn điểm, chưa tính tán xạ.',
       build(S, ui) {
         const THREE = T3(); const N = 160, half = 40; const c = document.createElement('canvas'); c.width = c.height = N; const cx = c.getContext('2d'); const tex = new THREE.CanvasTexture(c); tex.magFilter = THREE.NearestFilter;
         const floor = new THREE.Mesh(new THREE.PlaneGeometry(2 * half, 2 * half), new THREE.MeshBasicMaterial({ map: tex })); floor.rotation.x = -Math.PI / 2; S.add(floor);
@@ -355,7 +355,7 @@
         const upd = () => { wall.position.set(wx, 2, 0); wall.visible = th > 0; wall.scale.x = Math.max(0.3, th / 20); lw.position.set(wx, 5, 10); person.position.set(px, 0, pz); paint();
           const r = rateAt(px, pz), dose = r * tmin / 60; S.remove(curLab); curLab = label(`${fmt(r, 1)} µSv/h`, { scale: 0.9, border: r <= 7.5 ? 'rgba(61,220,151,.9)' : r <= 10 ? 'rgba(255,197,49,.9)' : 'rgba(255,93,93,.9)' }); curLab.position.set(px, 6, pz); S.add(curLab);
           const rB = Math.sqrt(P.IR192.gamma * 1000 * ci * 37 / (coll_k * 7.5));
-          ui.read.textContent = `Người cách nguồn ${fmt(Math.hypot(px, pz), 1)} m: ${fmt(r, 1)} µSv/h → ${r <= 7.5 ? 'ngoài hàng rào được' : r <= 10 ? 'chỉ đạt mức vị trí thợ chụp' : 'quá cao, phải lùi hoặc che'} · liều ${tmin} phút phát tia ≈ ${fmt(dose, 1)} µSv · bán kính 7,5 µSv/h không che ≈ ${fmt(rB, 1)} m`; };
+          ui.read.textContent = `Người cách nguồn ${fmt(Math.hypot(px, pz), 1)} m: ${fmt(r, 1)} µSv/h → ${r <= 7.5 ? 'ngoài hàng rào được' : r <= 10 ? 'chỉ đạt mức vị trí thợ chụp' : 'quá cao, phải lùi hoặc che'} · liều ${tmin} phút phát tia ≈ ${fmt(dose, 1)} µSv · bán kính 7.5 µSv/h không che ≈ ${fmt(rB, 1)} m`; };
         ui.slider('Hoạt độ (Ci)', 2, 100, 1, ci, v => { ci = v; upd(); }); ui.slider('Vách thép (mm)', 0, 60, 2, th, v => { th = v; upd(); }); ui.slider('Vị trí vách (m)', 4, 30, 1, wx, v => { wx = v; upd(); });
         ui.slider('Người: x (m)', -40, 40, 0.5, px, v => { px = v; upd(); }); ui.slider('Người: z (m)', -40, 40, 0.5, pz, v => { pz = v; upd(); });
         ui.button('Ống chuẩn trực ÷10 / ÷16', () => { coll_k = coll_k === 10 ? 16 : 10; toast(`Ống chuẩn trực giảm ${coll_k} lần`); upd(); });

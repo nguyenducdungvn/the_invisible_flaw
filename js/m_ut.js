@@ -1,12 +1,12 @@
 /* m_ut.js — Siêu âm mối hàn bằng đầu dò góc 60°. Căn cứ: ASME V Điều 4 (mẫu chuẩn cơ sở có lỗ khoan cạnh, DAC), ASME VIII Phụ lục 12.
  * Mô hình tín hiệu (đơn giản hóa có chủ đích):
  *  - biên độ (%FSH) = 80·10^((G − G0 + dacDb(SP) + R)/20) · hệ số chùm ngang · hệ số chùm dọc
- *  - dacDb(SP) = −0,2·(SP − 12,5) dB: suy giảm + tản chùm gộp; lỗ khoan cạnh có R = 0 theo định nghĩa
+ *  - dacDb(SP) = −0.2·(SP − 12.5) dB: suy giảm + tản chùm gộp; lỗ khoan cạnh có R = 0 theo định nghĩa
  *  - vị trí hiển thị = (t − Z)·V/2, với t = 2·SP/vS + trễ nêm: người chơi phải hiệu chuẩn V và Z
  */
 (function (root) {
   'use strict';
-  const { h, fmt, toast, addTime, METHODS, parseNum, fitCanvas, slider } = root.Game; const P = root.Physics;
+  const { h, fmt, toast, addTime, METHODS, parseNum, fitCanvas, slider, numMsg } = root.Game; const P = root.Physics;
   const erf = x => { const s = Math.sign(x); x = Math.abs(x); const t = 1 / (1 + 0.3275911 * x); const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return s * y; };
   const dacDb = sp => -0.2 * (sp - 12.5);
 
@@ -63,10 +63,12 @@
       const predBox = h('div', { class: 'card' }, h('h3', null, 'A. Dự đoán đường truyền âm (SP) tới từng lỗ, chân sóng thứ nhất'), h('div', { class: 'formula' }, 'SP = độ sâu / cosθ'));
       const ins = holes.map(d => h('input', { class: 'f', inputmode: 'decimal', placeholder: 'mm' }));
       predBox.append(h('div', { class: 'grid g3' }, holes.map((d, i) => h('div', null, h('label', { class: 'f' }, `Lỗ ở độ sâu ${fmt(d, 2)} mm`), ins[i]))),
+        h('div', { class: 'dim', style: 'font-size:.82rem;margin-top:4px' }, 'Quy tắc nhập số: ' + root.Game.NUM_RULE),
         h('button', { class: 'btn', style: 'margin-top:8px', onclick: () => {
+          if (ins.some(i => isNaN(parseNum(i.value)))) return toast(numMsg(ins.map(i => i.value).join('')), 'bad');
           const ok = holes.map((d, i) => Math.abs(parseNum(ins[i].value) - d / C.cos) <= 0.5);
           scores.pred = ok.filter(Boolean).length / 3; U.preds = scores.pred;
-          predBox.append(h('div', { class: 'callout ' + (scores.pred === 1 ? 'ok' : 'bad') }, `Đúng ${ok.filter(Boolean).length}/3. Đáp án: ${holes.map(d => fmt(d / C.cos, 1)).join(' · ')} mm (cos60° = 0,5 → SP = 2 × độ sâu). Các vạch vàng trên màn hình là vị trí bạn cần đưa tiếng vọng về.`));
+          predBox.append(h('div', { class: 'callout ' + (scores.pred === 1 ? 'ok' : 'bad') }, `Đúng ${ok.filter(Boolean).length}/3. Đáp án: ${holes.map(d => fmt(d / C.cos, 1)).join(' · ')} mm (cos60° = 0.5 → SP = 2 × độ sâu). Các vạch vàng trên màn hình là vị trí bạn cần đưa tiếng vọng về.`));
           stepB();
         } }, 'Chốt dự đoán'));
       stage.append(predBox);
@@ -92,8 +94,8 @@
         const ctl = h('div'); card.append(ctl); stage.append(card); setTimeout(draw);
         ctl.append(h('button', { class: 'btn', onclick: () => {
           vzTries++; addTime(2, 'kiểm tra thang đo'); const e1 = Math.abs(C.disp(holes[0] / C.cos) - holes[0] / C.cos), e3 = Math.abs(C.disp(holes[2] / C.cos) - holes[2] / C.cos);
-          if (e1 <= 0.5 && e3 <= 0.5) { scores.vz = vzTries <= 2 ? 1 : 0.6; toast('Thang đo chuẩn: T/4 và 3T/4 đều lệch ≤ 0,5 mm', 'ok'); ctl.innerHTML = ''; stepC(ctl, draw); }
-          else toast(`Còn lệch: T/4 ${fmt(e1, 1)} mm, 3T/4 ${fmt(e3, 1)} mm (cần ≤ 0,5)`, 'bad');
+          if (e1 <= 0.5 && e3 <= 0.5) { scores.vz = vzTries <= 2 ? 1 : 0.6; toast('Thang đo chuẩn: T/4 và 3T/4 đều lệch ≤ 0.5 mm', 'ok'); ctl.innerHTML = ''; stepC(ctl, draw); }
+          else toast(`Còn lệch: T/4 ${fmt(e1, 1)} mm, 3T/4 ${fmt(e3, 1)} mm (cần ≤ 0.5)`, 'bad');
         } }, 'Kiểm tra thang đo'));
         function stepC(ctl, draw) {
           ctl.append(h('div', { class: 'callout cy' }, h('b', null, 'C. Mức chuẩn: '), 'đưa đầu dò lên đỉnh tiếng vọng lỗ T/4, chỉnh Gain để đỉnh đạt 80 % FSH, rồi chốt.'),
@@ -175,7 +177,7 @@
           h('td', null, h('button', { class: 'btn sm ghost', onclick: () => { U.recs.splice(i, 1); renderRecs(); } }, 'Xóa')))))); };
       const save = () => {
         if (!U.reading) return toast('Đặt cổng đo lên đỉnh tín hiệu trước');
-        const v = [fx1, fx2, fd, fy].map(i => parseNum(i.value)); if (v.some(isNaN) || !ftype.value) return toast('Điền đủ x đầu, x cuối, độ sâu, khoảng cách tới tâm và loại');
+        const v = [fx1, fx2, fd, fy].map(i => parseNum(i.value)); if (v.some(isNaN)) return toast(numMsg([fx1, fx2, fd, fy].map(i => i.value).join('')), 'bad'); if (!ftype.value) return toast('Chọn loại chỉ thị');
         if (U.G !== U.ref) return toast('Đánh giá biên độ ở mức chuẩn: bấm “Gain mức chuẩn” rồi đọc lại đỉnh', 'bad');
         U.recs.push({ x1: Math.min(v[0], v[1]), x2: Math.max(v[0], v[1]), d: v[2], y: v[3], sp: U.reading.sp, pct: U.reading.pct, type: ftype.value }); addTime(3, 'ghi phiếu chỉ thị');
         [fx1, fx2, fd, fy].forEach(i => i.value = ''); ftype.value = ''; renderRecs(); toast('Đã ghi chỉ thị', 'ok');
@@ -189,7 +191,7 @@
             h('div', null, h('label', { class: 'f' }, 'Độ sâu (bạn tính), mm'), fd), h('div', null, h('label', { class: 'f' }, 'Cách tâm mối hàn (bạn tính), mm'), fy)),
             h('label', { class: 'f' }, 'Phân loại'), ftype, h('div', { class: 'row', style: 'margin-top:8px' }, h('button', { class: 'btn', onclick: save }, 'Ghi chỉ thị (đọc tại cổng đo)')), recList),
           h('div', { class: 'card' }, h('h3', null, 'Bản vẽ mối hàn & công thức'),
-            h('dl', { class: 'kv' }, h('dt', null, 'Chiều dày T'), h('dd', null, `${T} mm`), h('dt', null, 'Vát chữ V'), h('dd', null, `${l.bevel}° mỗi bên, khe chân ${l.rootGap} mm`), h('dt', null, 'Góc đầu dò'), h('dd', null, `${C.th}° (sin = 0,866; cos = 0,5)`), h('dt', null, 'Bước nhảy'), h('dd', null, `${fmt(P.skipDistance(T, C.th), 1)} mm`)),
+            h('dl', { class: 'kv' }, h('dt', null, 'Chiều dày T'), h('dd', null, `${T} mm`), h('dt', null, 'Vát chữ V'), h('dd', null, `${l.bevel}° mỗi bên, khe chân ${l.rootGap} mm`), h('dt', null, 'Góc đầu dò'), h('dd', null, `${C.th}° (sin = 0.866; cos = 0.5)`), h('dt', null, 'Bước nhảy'), h('dd', null, `${fmt(P.skipDistance(T, C.th), 1)} mm`)),
             h('div', { class: 'formula' }, 'Chân 1 (SP ≤ 50): độ sâu = SP·cos60°'), h('div', { class: 'formula' }, 'Chân 2 (50 < SP ≤ 100): độ sâu = 2T − SP·cos60°'),
             h('div', { class: 'formula' }, 'Cách tâm mối hàn = y − SP·sin60°'), h('div', { class: 'formula' }, `Mặt vát phía đầu dò ở độ sâu d: cách tâm = ${l.rootGap / 2} + (${T} − d)·tan${l.bevel}°`),
             h('p', { class: 'dim', style: 'font-size:.88rem' }, 'Gợi ý của Bậc III: một tín hiệu ở đúng độ sâu T, ngay sát tâm, kéo dài suốt mối hàn thường là gờ chân. Khuyết tật nằm đúng trên mặt vát gợi ý không ngấu thành vát.'))),

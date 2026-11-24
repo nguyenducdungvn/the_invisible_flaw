@@ -20,20 +20,20 @@
   const sig30 = 0.30 * P.IACS;
   Object.assign(root.LABS, {
     visual: mkLab('Ánh sáng, bóng đổ và góc nhìn', 'Rãnh cháy cạnh nông gần như biến mất dưới ánh sáng chiếu thẳng, nhưng đổ bóng dài khi chiếu xiên. Độ rọi giảm theo bình phương khoảng cách.', 'bóng ≈ độ sâu / tan(góc chiếu so với mặt) · E₂ = E₁·(d₁/d₂)²', 'vt', () => [
-      { q: 'Rãnh cháy cạnh sâu 1,0 mm. Đèn pin chiếu xiên, tia sáng nghiêng 15° so với mặt tấm. Bóng đổ dài khoảng bao nhiêu mm?', num: 1 / Math.tan(15 * Math.PI / 180), rel: 0.05, unit: 'mm', e: '1 / tan15° ≈ 3,7 mm: dài gấp gần 4 lần độ sâu nên rất dễ thấy.' },
-      { q: 'Đèn cho 4000 lux tại bề mặt khi cách 0,5 m. Dời ra 1,0 m thì còn bao nhiêu lux (coi như nguồn điểm)?', num: P.inverseSquare(4000, 0.5, 1), rel: 0.03, unit: 'lux', e: '4000 × (0,5/1)² = 1000 lux: vừa đúng mức tối thiểu của ASME V T-952.' }]),
-    eddy: mkLab('Tần số và độ sâu thấm', 'Dòng xoáy tập trung sát bề mặt. Tần số càng cao, lớp dòng càng mỏng: nhạy với nứt bề mặt nhỏ, kém với khuyết tật sâu.', 'δ = 1/√(π·f·μ₀·μr·σ) · 100 % IACS = 5,8·10⁷ S/m', 'etplane', () => [
+      { q: 'Rãnh cháy cạnh sâu 1.0 mm. Đèn pin chiếu xiên, tia sáng nghiêng 15° so với mặt tấm. Bóng đổ dài khoảng bao nhiêu mm?', num: 1 / Math.tan(15 * Math.PI / 180), rel: 0.05, unit: 'mm', e: '1 / tan15° ≈ 3.7 mm: dài gấp gần 4 lần độ sâu nên rất dễ thấy.' },
+      { q: 'Đèn cho 4000 lux tại bề mặt khi cách 0.5 m. Dời ra 1.0 m thì còn bao nhiêu lux (coi như nguồn điểm)?', num: P.inverseSquare(4000, 0.5, 1), rel: 0.03, unit: 'lux', e: '4000 × (0.5/1)² = 1000 lux: vừa đúng mức tối thiểu của ASME V T-952.' }]),
+    eddy: mkLab('Tần số và độ sâu thấm', 'Dòng xoáy tập trung sát bề mặt. Tần số càng cao, lớp dòng càng mỏng: nhạy với nứt bề mặt nhỏ, kém với khuyết tật sâu.', 'δ = 1/√(π·f·μ₀·μr·σ) · 100 % IACS = 5.8·10⁷ S/m', 'etplane', () => [
       { q: 'Nhôm 2024-T3 (≈ 30 % IACS, μr = 1). Độ sâu thấm chuẩn δ ở 200 kHz là bao nhiêu mm?', num: P.skinDepth(2e5, sig30, 1) * 1000, rel: 0.04, unit: 'mm', e: `δ ≈ ${fmt(P.skinDepth(2e5, sig30, 1) * 1000, 2)} mm: dòng xoáy tập trung trong vài phần mười milimét ngoài cùng.` },
-      { q: 'Muốn δ = 0,2 mm trên cùng vật liệu thì cần tần số khoảng bao nhiêu kHz?', num: 1 / (Math.PI * 4e-7 * Math.PI * sig30 * 4e-8) / 1000, rel: 0.05, unit: 'kHz', e: 'f = 1/(π·μ₀·σ·δ²) ≈ 364 kHz.' }]),
+      { q: 'Muốn δ = 0.2 mm trên cùng vật liệu thì cần tần số khoảng bao nhiêu kHz?', num: 1 / (Math.PI * 4e-7 * Math.PI * sig30 * 4e-8) / 1000, rel: 0.05, unit: 'kHz', e: 'f = 1/(π·μ₀·σ·δ²) ≈ 364 kHz.' }]),
     aeloc: mkLab('Định vị nguồn phát xạ âm', 'Sóng từ một nguồn tới hai cảm biến lệch nhau Δt. Biết vận tốc sóng thì tính được vị trí; vận tốc sai thì mọi vị trí đều lệch.', 'x = (D + v·Δt)/2, Δt = t₁ − t₂, x tính từ cảm biến 1', 'aeloc', () => [
-      { q: 'Bẻ ruột chì tại x = 1,0 m, giữa hai cảm biến cách nhau D = 4,0 m. Sóng tới cảm biến 1 sớm hơn cảm biến 2 là 0,656 ms (Δt = −0,656 ms). Vận tốc sóng là bao nhiêu m/s?', num: 2 / 0.656e-3, rel: 0.03, unit: 'm/s', e: 'v = (2x − D)/Δt = (2 − 4)/(−0,000656) ≈ 3050 m/s: sóng bản mỏng trong thành bồn, chậm hơn sóng dọc khối 5920 m/s.' },
-      { q: 'Cùng cặp cảm biến, v = 3050 m/s, một tín hiệu có Δt = +0,40 ms. Nguồn cách cảm biến 1 bao nhiêu m?', num: P.aeLocate(4, 3050, 0.4e-3), rel: 0.03, unit: 'm', e: 'x = (4 + 3050 × 0,0004)/2 ≈ 2,61 m.' }]),
+      { q: 'Bẻ ruột chì tại x = 1.0 m, giữa hai cảm biến cách nhau D = 4.0 m. Sóng tới cảm biến 1 sớm hơn cảm biến 2 là 0.656 ms (Δt = −0.656 ms). Vận tốc sóng là bao nhiêu m/s?', num: 2 / 0.656e-3, rel: 0.03, unit: 'm/s', e: 'v = (2x − D)/Δt = (2 − 4)/(−0.000656) ≈ 3050 m/s: sóng bản mỏng trong thành bồn, chậm hơn sóng dọc khối 5920 m/s.' },
+      { q: 'Cùng cặp cảm biến, v = 3050 m/s, một tín hiệu có Δt = +0.40 ms. Nguồn cách cảm biến 1 bao nhiêu m?', num: P.aeLocate(4, 3050, 0.4e-3), rel: 0.03, unit: 'm', e: 'x = (4 + 3050 × 0.0004)/2 ≈ 2.61 m.' }]),
     thermal: mkLab('Thời điểm hiện hình và độ sâu', 'Sau chớp sáng, nhiệt khuếch tán vào trong; chỗ tách lớp chặn dòng nhiệt nên bề mặt phía trên nóng hơn. Khuyết tật càng sâu càng hiện muộn.', 't ≈ z²/α · z ≈ √(α·t)', 'thermo', () => [
-      { q: 'CFRP có α = 4·10⁻⁷ m²/s. Tách lớp ở độ sâu 1,0 mm hiện rõ nhất khoảng sau bao nhiêu giây?', num: P.thermalTime(1e-3, 4e-7), rel: 0.03, unit: 's', e: '(10⁻³)² / 4·10⁻⁷ = 2,5 s.' },
-      { q: 'Một vết đạt tương phản cực đại ở t = 9 s. Độ sâu ước tính là bao nhiêu mm?', num: P.thermalDepth(9, 4e-7) * 1000, rel: 0.03, unit: 'mm', e: '√(4·10⁻⁷ × 9) ≈ 1,9 mm.' }]),
+      { q: 'CFRP có α = 4·10⁻⁷ m²/s. Tách lớp ở độ sâu 1.0 mm hiện rõ nhất khoảng sau bao nhiêu giây?', num: P.thermalTime(1e-3, 4e-7), rel: 0.03, unit: 's', e: '(10⁻³)² / 4·10⁻⁷ = 2.5 s.' },
+      { q: 'Một vết đạt tương phản cực đại ở t = 9 s. Độ sâu ước tính là bao nhiêu mm?', num: P.thermalDepth(9, 4e-7) * 1000, rel: 0.03, unit: 'mm', e: '√(4·10⁻⁷ × 9) ≈ 1.9 mm.' }]),
     microwave: mkLab('Bước sóng và phản xạ trong điện môi', 'Trong vật liệu có hằng số điện môi ε, bước sóng ngắn lại √ε lần. Độ phân giải cỡ nửa bước sóng; chỗ ε thay đổi gây phản xạ.', 'λ = c/(f·√ε) · Γ = (1 − √ε)/(1 + √ε)', 'microwave', () => [
-      { q: 'Bước sóng của vi ba 24 GHz trong HDPE (ε = 2,3) là bao nhiêu mm?', num: 300 / 24 / Math.sqrt(2.3), rel: 0.03, unit: 'mm', e: '12,5 mm / √2,3 ≈ 8,2 mm, nên phân giải cỡ 4 mm.' },
-      { q: 'Độ lớn hệ số phản xạ |Γ| khi sóng từ không khí tới vuông góc mặt HDPE (ε = 2,3)?', num: Math.abs(P.mwGamma(2.3)), rel: 0.03, unit: '', e: '|1 − 1,517| / 2,517 ≈ 0,21. Lỗ rỗng (không khí trong nhựa) phản xạ với độ lớn tương tự nhưng ngược pha.' }])
+      { q: 'Bước sóng của vi ba 24 GHz trong HDPE (ε = 2.3) là bao nhiêu mm?', num: 300 / 24 / Math.sqrt(2.3), rel: 0.03, unit: 'mm', e: '12.5 mm / √2.3 ≈ 8.2 mm, nên phân giải cỡ 4 mm.' },
+      { q: 'Độ lớn hệ số phản xạ |Γ| khi sóng từ không khí tới vuông góc mặt HDPE (ε = 2.3)?', num: Math.abs(P.mwGamma(2.3)), rel: 0.03, unit: '', e: '|1 − 1.517| / 2.517 ≈ 0.21. Lỗ rỗng (không khí trong nhựa) phản xạ với độ lớn tương tự nhưng ngược pha.' }])
   });
 
   /* ---------------- Báo cáo chung cho hợp đồng tự đánh dấu (ET, AE) ---------------- */
@@ -88,7 +88,7 @@
           { l: 'Chiếu thẳng từ trên xuống cho sáng đều', lure: 'Sáng nhất, không có bóng', time: 0, why: 'Ánh sáng vuông góc làm mất bóng đổ: cháy cạnh nông gần như biến mất.' }] },
         { t: 'Khoảng cách và góc nhìn', d: 'Mối hàn ở sát sàn, phải ngồi xổm mới nhìn gần được.', o: [
           { l: 'Ngồi xuống, mắt cách bề mặt ≤ 600 mm, góc nhìn ≥ 30° so với mặt (ASME V T-952)', ok: true, time: 3 },
-          { l: 'Đứng nhìn từ trên xuống, cách khoảng 1,6 m', lure: 'Đỡ mỏi lưng', time: 0, fx: () => { q.dist = 0.55; }, why: 'Quá xa và góc nhìn quá dẹt: các chi tiết nhỏ không còn phân biệt được.' }] },
+          { l: 'Đứng nhìn từ trên xuống, cách khoảng 1.6 m', lure: 'Đỡ mỏi lưng', time: 0, fx: () => { q.dist = 0.55; }, why: 'Quá xa và góc nhìn quá dẹt: các chi tiết nhỏ không còn phân biệt được.' }] },
         { t: 'Dụng cụ', o: [
           { l: 'Thước đo mối hàn đa năng (đo chân, độ lồi, độ sâu cháy cạnh), kính lúp ×5, gương soi', ok: true, time: 1, fx: () => { q.gauge = true; } },
           { l: 'Ước lượng bằng mắt, kinh nghiệm 10 năm rồi', lure: 'Nhẹ người', time: 0, why: 'Không đo thì không áp được tiêu chí 1 mm và 2 mm của cháy cạnh.' }] }
@@ -153,7 +153,7 @@
       el.append(h('div', { class: 'card' }, h('h2', null, 'Chuẩn bị & hiệu chuẩn ET'), h('p', { class: 'dim' }, 'Máy dòng xoáy chỉ cho biết “có gì đó khác với mẫu chuẩn”. Hiệu chuẩn đúng thì nứt, sơn dày và đổi độ dẫn điện đi theo các hướng khác nhau trên mặt phẳng trở kháng.')));
       Decide(el, [
         { t: 'Mẫu chuẩn', o: [
-          { l: 'Mẫu nhôm cùng hợp kim, cùng độ dẫn, có rãnh EDM sâu 0,2 – 0,5 – 1,0 mm', ok: true, time: 3 },
+          { l: 'Mẫu nhôm cùng hợp kim, cùng độ dẫn, có rãnh EDM sâu 0.2 – 0.5 – 1.0 mm', ok: true, time: 3 },
           { l: 'Mẫu thép có rãnh EDM đang có sẵn trên xe', lure: 'Có sẵn, đỡ phải mượn', time: 1, fx: () => { q.cal = 0.45; }, why: 'Thép nhiễm từ, độ dẫn khác hẳn: đáp ứng của rãnh trên thép không dùng để chuẩn cho nhôm được.' }] },
         { t: 'Tần số', slider: { label: 'Tần số', min: 1, max: 1000, step: 1, val: 10, unit: 'kHz', hint: 'δ = 1/√(π·f·μ₀·σ); 2024-T3 ≈ 30 % IACS. Nứt bề mặt nhỏ cần lớp dòng mỏng (δ cỡ vài phần mười milimét). Tần số quá cao thì nhạy với sơn, nhám và nhiễu.',
           apply: v => { q.f = v * 1000; const d = P.skinDepth(q.f, sig30, 1) * 1000; if (v > 500) q.noise = 1 + (v - 500) / 150; return { ok: v >= 100 && v <= 500, time: 2, why: v < 100 ? `δ ≈ ${fmt(d, 2)} mm: lớp dòng quá dày, nứt nông chỉ chiếm phần nhỏ, tín hiệu yếu.` : v > 500 ? `δ ≈ ${fmt(d, 2)} mm nhưng nhiễu sơn và nhám tăng mạnh.` : `δ ≈ ${fmt(d, 2)} mm: phù hợp cho nứt bề mặt.` }; } } },
@@ -161,7 +161,7 @@
           { l: 'Cân bằng (null) trên vùng lành của mẫu, nhấc đầu dò lên xuống, xoay pha cho tín hiệu nhấc đầu dò nằm ngang sang trái', ok: true, time: 3 },
           { l: 'Giữ góc pha mặc định của máy', lure: 'Máy đã cài sẵn từ hãng', time: 0, fx: () => { q.rot = 40; }, why: 'Nhấc đầu dò không nằm ngang thì sơn dày và nứt lẫn vào nhau, khó tách bằng mắt.' }] },
         { t: 'Độ khuếch đại', o: [
-          { l: 'Chỉnh để rãnh 0,5 mm cao 50 % màn hình', ok: true, time: 2 },
+          { l: 'Chỉnh để rãnh 0.5 mm cao 50 % màn hình', ok: true, time: 2 },
           { l: 'Tăng gain tối đa cho nhạy', lure: 'Không bỏ sót gì', time: 0, fx: () => { q.gain = 2.4; q.noise *= 1.8; }, why: 'Tín hiệu bão hòa, nhiễu sơn cũng to lên: không còn so được với rãnh chuẩn.' },
           { l: 'Gain thấp cho màn hình sạch', lure: 'Ít báo động giả', time: 0, fx: () => { q.gain = 0.35; } }] },
         { t: 'Bề mặt', d: 'Sơn còn tốt, chỗ dày chỗ mỏng.', o: [
@@ -199,7 +199,7 @@
       const drawPlane = (pts) => { const { ctx, W, H } = fitCanvas(plane, 240); ctx.fillStyle = '#061109'; ctx.fillRect(0, 0, W, H); const cx = W / 2, cy = H / 2, s = H / 4;
         ctx.strokeStyle = '#123821'; for (let i = -4; i <= 4; i++) { ctx.beginPath(); ctx.moveTo(cx + i * s / 2, 0); ctx.lineTo(cx + i * s / 2, H); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, cy + i * s / 2); ctx.lineTo(W, cy + i * s / 2); ctx.stroke(); }
         ctx.strokeStyle = 'rgba(255,197,49,.5)'; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(0, cy - s * 1); ctx.lineTo(W, cy - s * 1); ctx.stroke(); ctx.setLineDash([]);
-        ctx.fillStyle = '#9fb0bc'; ctx.font = font(11); ctx.fillText('Mặt phẳng trở kháng · vạch cam: mức rãnh chuẩn 0,5 mm (50 % màn hình)', 8, 14);
+        ctx.fillStyle = '#9fb0bc'; ctx.font = font(11); ctx.fillText('Mặt phẳng trở kháng · vạch cam: mức rãnh chuẩn 0.5 mm (50 % màn hình)', 8, 14);
         ctx.strokeStyle = '#7dff9b'; ctx.lineWidth = 1.4; ctx.beginPath(); pts.forEach(([x, y], i) => { const X = Math.max(2, Math.min(W - 2, cx + x * s)), Y = Math.max(2, Math.min(H - 2, cy - y * s)); i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }); ctx.stroke(); };
       const drawStrip = (pts) => { const { ctx, W, H } = fitCanvas(strip, 120); ctx.fillStyle = '#061109'; ctx.fillRect(0, 0, W, H); const s = H / 4;
         ctx.strokeStyle = '#123821'; for (let a = 0; a <= 360; a += 45) { const x = 10 + (W - 20) * a / 360; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); ctx.fillStyle = '#5c7466'; ctx.font = font(10); ctx.fillText(a + '°', x + 2, H - 3); }
@@ -245,9 +245,9 @@
           { l: 'Thử bằng nước sau khi đã xả hết LPG và làm sạch khí; khoanh vùng, không ai đứng trước mặt bích và nắp', ok: true, time: 10 },
           { l: 'Thử bằng khí nén cho đỡ phải bơm và xả nước', lure: 'Nhanh, sạch sẽ', time: 0, safety: 'Thử áp bằng khí nén: năng lượng tích trữ lớn hơn nước rất nhiều, nổ vỡ cực kỳ nguy hiểm' }] },
         { t: 'Kiểm tra đáp ứng cảm biến', d: 'Đã gắn 4 cảm biến tại 0, 4, 8, 12 m dọc thân bồn, thêm 1 cảm biến bảo vệ gần bơm.', o: [
-          { l: 'Bẻ ruột chì 0,5 mm (nguồn Hsu-Nielsen) cạnh từng cảm biến, so biên độ giữa các kênh, gắn lại kênh lệch', ok: true, time: 10 },
+          { l: 'Bẻ ruột chì 0.5 mm (nguồn Hsu-Nielsen) cạnh từng cảm biến, so biên độ giữa các kênh, gắn lại kênh lệch', ok: true, time: 10 },
           { l: 'Bỏ qua, cảm biến mới hiệu chuẩn tuần trước', lure: 'Tiết kiệm 10 phút', time: 0, fx: () => { q.dead = true; }, why: 'Kênh 3 (8 m) tiếp âm kém: các nguồn giữa 4 và 12 m bị định vị sai lệch nhiều.' }] },
-        { t: 'Vận tốc sóng cho phần mềm định vị', slider: { label: 'Vận tốc', min: 2000, max: 6500, step: 10, val: 5920, unit: 'm/s', hint: 'Bẻ ruột chì tại x = 1,0 m giữa S1 (0 m) và S2 (4,0 m): sóng tới S1 sớm hơn S2 0,656 ms. Vị trí x = (D + v·Δt)/2 với Δt = t₁ − t₂. Giá trị mặc định 5920 m/s là sóng dọc trong thép khối.',
+        { t: 'Vận tốc sóng cho phần mềm định vị', slider: { label: 'Vận tốc', min: 2000, max: 6500, step: 10, val: 5920, unit: 'm/s', hint: 'Bẻ ruột chì tại x = 1.0 m giữa S1 (0 m) và S2 (4.0 m): sóng tới S1 sớm hơn S2 0.656 ms. Vị trí x = (D + v·Δt)/2 với Δt = t₁ − t₂. Giá trị mặc định 5920 m/s là sóng dọc trong thép khối.',
           apply: v => { q.v = v; const ok = Math.abs(v - M.lvl.vTrue) <= 150; return { ok, time: 5, why: ok ? 'Đúng: v = (2x − D)/Δt ≈ 3050 m/s.' : `Sai vận tốc: vị trí nguồn sẽ lệch về giữa mỗi cặp cảm biến theo tỉ lệ ${fmt(v / M.lvl.vTrue, 2)}.` }; } } },
         { t: 'Ngưỡng phát hiện', d: 'Nhiễu nền đo được khoảng 30–35 dBAE.', o: [
           { l: 'Ngưỡng cố định 40 dBAE, cao hơn nhiễu nền', ok: true, time: 1 },
@@ -300,7 +300,7 @@
         ctx.strokeStyle = 'rgba(67,198,240,.9)'; ctx.lineWidth = 2; ctx.beginPath(); for (let t = 0; t <= Math.min(now, AE_T); t += 0.2) { const y = py(pressureAt(t, q.hold)); t ? ctx.lineTo(tx(t), y) : ctx.moveTo(tx(t), y); } ctx.stroke();
         for (const e of hits) { if (e.t > now) continue; const near = Math.abs(e.x - cursor) < 0.45; ctx.fillStyle = near ? '#ffc531' : 'rgba(125,255,155,.18)'; ctx.fillRect(tx(e.t) - 1.5, ay(e.amp) - 1.5, near ? 3.5 : 2.5, near ? 3.5 : 2.5); }
         if (q.hold) { ctx.fillStyle = 'rgba(255,255,255,.05)'; [[10, 14], [20, 24], [28, 40]].forEach(([a, b]) => ctx.fillRect(tx(a), 10, tx(b) - tx(a), H - 30)); ctx.fillStyle = '#9fb0bc'; ctx.fillText('giữ áp', tx(10) + 2, H - 26); ctx.fillText('giữ áp', tx(20) + 2, H - 26); ctx.fillText('giữ áp ở áp thử', tx(29), H - 26); }
-        ctx.fillStyle = '#9fb0bc'; ctx.fillText('xanh lam: áp suất (% áp thử) · chấm vàng: tín hiệu định vị gần con trỏ (± 0,45 m)', 36, H - 4); };
+        ctx.fillStyle = '#9fb0bc'; ctx.fillText('xanh lam: áp suất (% áp thử) · chấm vàng: tín hiệu định vị gần con trỏ (± 0.45 m)', 36, H - 4); };
       const redraw = () => { drawMap(); drawChart(); const near = hits.filter(e => e.t <= now && Math.abs(e.x - cursor) < 0.45), inHold = near.filter(e => !rising(e.t, q.hold) && e.t > 10);
         info.textContent = `Con trỏ x = ${fmt(cursor, 1)} m · ${near.length} tín hiệu gần đó · ${inHold.length} tín hiệu trong lúc giữ áp · biên độ lớn nhất ${near.length ? fmt(Math.max(...near.map(e => e.amp)), 0) : '–'} dB`; };
       map.addEventListener('pointerdown', e => { const r = map.getBoundingClientRect(); cursor = Math.max(0, Math.min(l.L, (e.clientX - r.left - 30) / (r.width - 50) * l.L)); redraw(); });
@@ -309,7 +309,7 @@
         marks.map(m => h('tr', null, h('td', { class: 'mono' }, m.label), h('td', null, CLS_AE[m.cls]), h('td', null, h('button', { class: 'btn sm ghost', onclick: () => { marks.splice(marks.indexOf(m), 1); renderList(); redraw(); } }, 'Xóa')))))); };
       act.append(h('div', { class: 'row' }, h('span', { class: 'dim' }, 'Ghi nguồn tại con trỏ:'), Object.entries(CLS_AE).map(([c, t]) => h('button', { class: 'btn sm ghost', onclick: () => { marks.push({ x: cursor, cls: c, label: `x ≈ ${fmt(cursor, 1)} m` }); renderList(); redraw(); } }, t)))); act.style.display = 'none';
       el.append(h('div', { class: 'card' }, h('h2', null, 'Thử áp và nghe bồn'), h('p', { class: 'dim' }, 'Bấm “Bắt đầu tăng áp”. Sau đó bấm lên biểu đồ vị trí để xem tín hiệu ở từng vùng: nguồn hoạt động vẫn phát xạ khi giữ áp; ma sát gối đỡ chỉ xuất hiện khi áp đang tăng; tiếng ồn biên độ thấp và rải rác.'),
-        h('div', { class: 'row' }, h('button', { class: 'btn', onclick: play }, 'Bắt đầu tăng áp')), map, h('p', { class: 'dim', style: 'font-size:.82rem;margin:2px 0 6px' }, 'Trên: sơ đồ bồn, cảm biến S1–S4, gối đỡ; cột xanh là số tín hiệu định vị được theo vị trí (mỗi cột 0,2 m). Dưới: áp suất và biên độ từng tín hiệu theo thời gian.'), chart, info, act, list));
+        h('div', { class: 'row' }, h('button', { class: 'btn', onclick: play }, 'Bắt đầu tăng áp')), map, h('p', { class: 'dim', style: 'font-size:.82rem;margin:2px 0 6px' }, 'Trên: sơ đồ bồn, cảm biến S1–S4, gối đỡ; cột xanh là số tín hiệu định vị được theo vị trí (mỗi cột 0.2 m). Dưới: áp suất và biên độ từng tín hiệu theo thời gian.'), chart, info, act, list));
       setTimeout(redraw);
       el.append(h('div', { class: 'row' }, h('button', { class: 'btn', onclick: () => { if (now < AE_T) return toast('Chưa chạy xong chương trình áp'); addTime(10, 'phân tích dữ liệu'); next(); } }, 'Xong, lập biên bản')));
     },
@@ -412,8 +412,8 @@
           { l: 'Xác nhận đoạn ống đã cô lập và xả áp trước khi lắp bộ quét', ok: true, time: 5 },
           { l: 'Lắp bộ quét khi ống đang thử áp 6 bar', lure: 'Không phải chờ xả', time: 0, safety: 'Thao tác sát mối hàn chưa nghiệm thu khi ống đang có áp' }] },
         { t: 'Tần số', o: [
-          { l: '24 GHz (λ trong HDPE ≈ 8,2 mm)', ok: true, time: 2 },
-          { l: '10 GHz', lure: 'Xuyên sâu hơn', time: 2, fx: () => { q.f = 10; }, why: 'λ trong HDPE ≈ 19,8 mm: phân giải cỡ 10 mm, lỗ rỗng nhỏ bị bỏ sót.' },
+          { l: '24 GHz (λ trong HDPE ≈ 8.2 mm)', ok: true, time: 2 },
+          { l: '10 GHz', lure: 'Xuyên sâu hơn', time: 2, fx: () => { q.f = 10; }, why: 'λ trong HDPE ≈ 19.8 mm: phân giải cỡ 10 mm, lỗ rỗng nhỏ bị bỏ sót.' },
           { l: '100 GHz', lure: 'Phân giải cao nhất', time: 40, fx: () => { q.f = 100; q.noise = 0.35; }, why: 'Rất nhạy với nhám bề mặt và gờ hàn, vùng phủ nhỏ nên quét rất lâu.' }] },
         { t: 'Khoảng cách đầu dò (standoff)', slider: { label: 'Khoảng cách', min: 1, max: 30, step: 1, val: 20, unit: 'mm', hint: 'Đầu dò hở: xa quá thì chùm loe rộng, ảnh nhòe; sát quá thì gờ hàn chạm đầu dò.',
           apply: v => { q.so = v; return { ok: v >= 2 && v <= 10, time: 1, why: v > 10 ? 'Xa quá: chùm loe, ảnh nhòe.' : v < 2 ? 'Sát quá: chạm gờ hàn, tín hiệu dao động.' : 'Khoảng cách phù hợp.' }; } } },
@@ -445,7 +445,7 @@
             ctx.save(); ctx.translate(px, py); ctx.scale(1, ry / rx); const gr = ctx.createRadialGradient(0, 0, 0, 0, 0, rx); gr.addColorStop(0, `rgba(${c},${Math.min(1, A)})`); gr.addColorStop(0.65, `rgba(${c},${Math.min(1, A) * 0.7})`); gr.addColorStop(1, `rgba(${c},0)`); ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(0, 0, rx, 0, 7); ctx.fill(); ctx.restore(); }
         },
         classes: [['lof', 'Không ngấu'], ['void', 'Lỗ rỗng'], ['incl', 'Tạp chất'], ['nonrel', 'Kim loại / không liên quan']],
-        verify: { label: 'Quét chi tiết', fn: (m, rr) => { addTime(4, 'quét chi tiết bước 0,5 mm'); const i = root.Surface.match([m], inds)[0].i;
+        verify: { label: 'Quét chi tiết', fn: (m, rr) => { addTime(4, 'quét chi tiết bước 0.5 mm'); const i = root.Surface.match([m], inds)[0].i;
           if (!i) return toast(`${m.label}: không có phản xạ khác nền`);
           toast(`${m.label}: ` + ({ void: `pha ngược với phản xạ từ vật có ε cao → vùng ε thấp (không khí): lỗ rỗng Ø ≈ ${fmt(i.len, 1)} mm`, incl: `pha cùng chiều phản xạ từ vật có ε cao hơn nhựa → tạp chất (cát, bụi), Ø ≈ ${fmt(i.len, 1)} mm`, lof: `phản xạ yếu, mỏng, kéo dài ${fmt(i.len, 0)} mm đúng trên mặt nóng chảy → không ngấu`, metal: '|Γ| ≈ 1, bão hòa, nằm ngoài mặt nóng chảy → vật kim loại' })[i.kind], 'hi'); rr(); } }
       });
@@ -474,5 +474,5 @@
     h('ul', null,
       h('li', null, h('b', null, 'Muốn áp dụng phương pháp này cho nhà máy, công trình của bạn: '), 'tìm tới các công ty làm dịch vụ NDT ở Việt Nam, ví dụ ', link('https://phateco.com/', 'Công ty Cổ phần Dịch vụ Kỹ thuật PHATECO'), '.'),
       h('li', null, h('b', null, 'Muốn học bài bản và có chứng chỉ thực sự: '), 'tìm tới ', link('https://www.pnic.vn/', 'PNIC – Trung tâm chứng nhận NDT và kiểm định công nghiệp'), ' (chứng nhận theo ISO 9712), hoặc các đơn vị đào tạo khác ở Việt Nam như ', link('https://nde.com.vn/', 'Trung tâm Đánh giá không phá hủy (NDE, Vinatom)'), '.' + (COMMON.includes(m) ? '' : ' Phương pháp này ít đơn vị mở lớp hơn; hãy hỏi trước về khóa học và kỳ thi.'))),
-    h('p', { class: 'dim', style: 'font-size:.85rem' }, 'Chứng chỉ Bậc I, Bậc II trong game chỉ là mô phỏng, không có giá trị pháp lý. Tên đơn vị nêu trên chỉ để bạn tham khảo; hãy tự tìm hiểu và so sánh trước khi chọn.'));
+    h('p', { class: 'dim', style: 'font-size:.85rem' }, 'Chứng chỉ Bậc I, II, III trong game chỉ là mô phỏng, không có giá trị pháp lý. Tên đơn vị nêu trên chỉ để bạn tham khảo; hãy tự tìm hiểu và so sánh trước khi chọn.'));
 })(this);

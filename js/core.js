@@ -15,9 +15,18 @@
     return el;
   }
   const $ = s => document.querySelector(s);
-  const fmt = (x, d = 1) => (+x).toLocaleString('vi-VN', { minimumFractionDigits: d, maximumFractionDigits: d });
+  /* Số thập phân dùng dấu chấm (0.5); nhóm nghìn bằng khoảng trắng hẹp khi từ 10 000 trở lên */
+  const fmt = (x, d = 1) => { const n = +x; if (!isFinite(n)) return String(x); let s = n.toFixed(d); if (/^-0(\.0+)?$/.test(s)) s = s.slice(1);
+    const neg = s[0] === '-', [ip, fp] = (neg ? s.slice(1) : s).split('.'); const g = ip.length > 4 ? ip.replace(/\B(?=(\d{3})+(?!\d))/g, '\u202f') : ip; return (neg ? '−' : '') + g + (fp ? '.' + fp : ''); };
   const fmt0 = x => fmt(x, 0);
-  function parseNum(s) { if (s == null) return NaN; return parseFloat(String(s).trim().replace(/\s/g, '').replace(',', '.')); }
+  /* Chỉ nhận dấu chấm thập phân. Có dấu phẩy thì trả NaN để người chơi sửa lại (tránh nhầm 1,000 là một nghìn hay một). */
+  const NUM_RULE = 'Dùng dấu chấm cho phần thập phân, ví dụ 0.5 (không viết 0,5).';
+  function parseNum(s) { if (s == null) return NaN; const t = String(s).trim().replace(/[\s\u202f]/g, '').replace(/−/g, '-'); if (!t || t.includes(',') || !/^[-+]?(\d+\.?\d*|\.\d+)(e[-+]?\d+)?$/i.test(t)) return NaN; return parseFloat(t); }
+  const numMsg = s => String(s || '').includes(',') ? 'Bạn đã dùng dấu phẩy. ' + NUM_RULE : 'Nhập một số. ' + NUM_RULE;
+  /* Nhắc ngay khi gõ dấu phẩy vào ô nhập số */
+  if (typeof document !== 'undefined') document.addEventListener('input', e => { const t = e.target; if (!t || !t.matches || !t.matches('input[inputmode=decimal]')) return;
+    let hint = t.nextElementSibling && t.nextElementSibling.classList.contains('numhint') ? t.nextElementSibling : null; const bad = t.value.includes(',');
+    t.classList.toggle('numwarn', bad); if (bad && !hint) { hint = h('div', { class: 'numhint', role: 'alert' }, '⚠ ' + NUM_RULE); t.after(hint); } else if (!bad && hint) hint.remove(); });
   function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
   function slider(label, min, max, step, val, unit, oninput) {
     const out = h('span', null, ''); const inp = h('input', { type: 'range', min, max, step, value: val });
@@ -46,7 +55,7 @@
     washburn: { t: 'Thời gian thấm (Washburn, khe)', f: 't = 3·η·L² / (γ·w·cosθ)', lab: 'capillary',
       ins: [['η', 'Độ nhớt (mPa·s)', 5], ['L', 'Độ sâu cần thấm (mm)', 2], ['γ', 'Sức căng bề mặt (N/m)', 0.03], ['w', 'Độ rộng khe (µm)', 1], ['θ', 'Góc tiếp xúc (°)', 10]],
       calc: v => `t = ${fmt(P.washburnTimeSlit(v[0] * 1e-3, v[1] * 1e-3, v[2], v[3] * 1e-6, v[4]), 2)} s` },
-    leakage: { t: 'Từ thông rò theo góc', f: 'Φrò ∝ |sin(α_trường − α_nứt)|  ·  phát hiện tốt khi ≥ sin45° = 0,71', lab: 'magnet',
+    leakage: { t: 'Từ thông rò theo góc', f: 'Φrò ∝ |sin(α_trường − α_nứt)|  ·  phát hiện tốt khi ≥ sin45° = 0.71', lab: 'magnet',
       ins: [['α_trường', 'Hướng đường sức (°)', 0], ['α_nứt', 'Hướng vết nứt (°)', 30]],
       calc: v => { const k = P.leakageFactor(v[0], v[1]); return `|sinΔ| = ${fmt(k, 2)} → ${k >= P.MT_DETECT ? 'phát hiện tốt' : 'dễ bỏ sót'}`; } },
     snell: { t: 'Định luật Snell', f: 'sinθ₁ / v₁ = sinθ₂ / v₂', lab: 'snell',
@@ -58,10 +67,10 @@
     decibel: { t: 'Decibel', f: 'ΔdB = 20·log₁₀(A₂ / A₁)', lab: 'snell',
       ins: [['A₂', 'Biên độ 2 (%)', 40], ['A₁', 'Biên độ 1 (%)', 80]],
       calc: v => `ΔdB = ${fmt(P.dB(v[0], v[1]), 1)} dB` },
-    decay: { t: 'Phân rã phóng xạ', f: 'A = A₀ · 0,5^(t / T½)   (Ir-192: T½ = 73,83 ngày)', lab: 'radiation',
+    decay: { t: 'Phân rã phóng xạ', f: 'A = A₀ · 0.5^(t / T½)   (Ir-192: T½ = 73.83 ngày)', lab: 'radiation',
       ins: [['A₀', 'Hoạt độ ban đầu (GBq)', 1000], ['t', 'Thời gian (ngày)', 30]],
       calc: v => `A = ${fmt(P.decay(v[0], v[1]), 0)} GBq` },
-    inverse: { t: 'Suất liều & nghịch đảo bình phương', f: 'Ḣ = Γ·A / d²   (Γ Ir-192 ≈ 0,13 mSv·m²/(h·GBq))', lab: 'radiation',
+    inverse: { t: 'Suất liều & nghịch đảo bình phương', f: 'Ḣ = Γ·A / d²   (Γ Ir-192 ≈ 0.13 mSv·m²/(h·GBq))', lab: 'radiation',
       ins: [['A', 'Hoạt độ (GBq)', 800], ['d', 'Khoảng cách (m)', 10], ['k', 'Hệ số giảm che chắn (lần)', 1]],
       calc: v => `Ḣ = ${fmt(P.doseRate(v[0], v[1]) * 1000 / v[2], 1)} µSv/h` },
     exposure: { t: 'Thời gian chiếu', f: 't = E₁ₘ · SFD² / A   (E₁ₘ: GBq·h quy về 1 m)', lab: 'radiation',
@@ -83,7 +92,7 @@
     nearfield: { t: 'Trường gần đầu dò', f: 'N = D²·f / (4v)', lab: 'academy',
       ins: [['D', 'Đường kính biến tử (mm)', 10], ['f', 'Tần số (MHz)', 5], ['v', 'Vận tốc (m/s)', 5920]],
       calc: v => `N = ${fmt(P.nearField(v[0], v[1], v[2]), 1)} mm` },
-    hvlmu: { t: 'Suy giảm tuyến tính', f: 'I = I₀·e^(−μx) · HVL = 0,693/μ', lab: 'academy',
+    hvlmu: { t: 'Suy giảm tuyến tính', f: 'I = I₀·e^(−μx) · HVL = 0.693/μ', lab: 'academy',
       ins: [['μ', 'Hệ số suy giảm (/mm)', 0.0693], ['x', 'Chiều dày (mm)', 20]],
       calc: v => `HVL = ${fmt(P.hvlFromMu(v[0]), 2)} mm · I/I₀ = ${fmt(P.linearAtten(1, v[0], v[1]) * 100, 2)} %` },
     hooke: { t: 'Định luật Hooke', f: 'σ = E·ε (vùng đàn hồi)', lab: 'academy',
@@ -103,10 +112,10 @@
     const c = CARDS[id], have = !!S.cards[id];
     const box = h('div', { class: 'fcard' + (have ? '' : ' locked') }, h('b', null, c.t), h('div', { class: 'formula' }, have ? c.f : '— chưa mở khóa —'));
     if (have && calcable) {
-      const inputs = c.ins.map(([k, lab, def]) => h('input', { class: 'f', value: String(def).replace('.', ','), 'aria-label': lab, title: lab }));
+      const inputs = c.ins.map(([k, lab, def]) => h('input', { class: 'f', inputmode: 'decimal', value: String(def), 'aria-label': lab, title: lab }));
       const out = h('div', { class: 'mono ok' }, '');
       const grid = h('div', { class: 'grid g4' }, c.ins.map(([k, lab], i) => h('div', null, h('label', { class: 'f' }, `${k} · ${lab}`), inputs[i])));
-      const go = h('button', { class: 'btn sm', onclick: () => { const v = inputs.map(i => parseNum(i.value)); out.textContent = v.some(isNaN) ? 'Nhập số hợp lệ' : c.calc(v); if (Game.M) addTime(1, 'tra sổ tay'); } }, 'Tính (+1 phút)');
+      const go = h('button', { class: 'btn sm', onclick: () => { const v = inputs.map(i => parseNum(i.value)); out.textContent = v.some(isNaN) ? numMsg(inputs.map(i => i.value).join('')) : c.calc(v); if (Game.M) addTime(1, 'tra sổ tay'); } }, 'Tính (+1 phút)');
       box.append(grid, h('div', { class: 'row', style: 'margin-top:8px' }, go, out));
     }
     return box;
@@ -320,11 +329,11 @@
             r.notes && r.notes.length ? h('div', { class: 'callout' }, h('b', null, 'Nhận xét của Bậc III: '), h('ul', { style: 'margin:4px 0' }, r.notes.map(n => h('li', null, n)))) : null),
           h('div', { class: 'after' }, after))),
       h('div', { class: 'row' }, h('button', { class: 'btn', onclick: hub }, 'Về trung tâm'), h('button', { class: 'btn ghost', onclick: () => startMission(l.id) }, 'Chơi lại (khuyết tật đổi vị trí)')), Game.coffeeLine ? Game.coffeeLine() : null);
-    if (starsN >= 1 && Game.careerLine) w.insertBefore(Game.careerLine(l.method), w.lastChild); page(w); Game.M = null; hud();
+    if (starsN >= 1 && Game.careerLine) { const rows = w.querySelectorAll(':scope > .row'); const actRow = rows[rows.length - 1]; w.insertBefore(Game.careerLine(l.method), actRow || null); } page(w); Game.M = null; hud();
   }
 
   const METHODS = {};
-  const Game = { M: null, S: () => S, boot, title, ask, h, $, fmt, fmt0, parseNum, slider, fitCanvas, modal, toast, hud, addTime, spend, safetyHit, METHODS, CARDS, cardView, page, hub, finish, save };
+  const Game = { M: null, S: () => S, boot, title, ask, h, $, fmt, fmt0, parseNum, slider, fitCanvas, modal, toast, hud, addTime, spend, safetyHit, METHODS, CARDS, cardView, page, hub, finish, save, numMsg, NUM_RULE };
   async function boot() {
     load();
     try { await Promise.all(['400 16px "Be Vietnam Pro"', '700 16px "Be Vietnam Pro"', '400 16px "Roboto Mono"', 'italic 400 16px "Noto Serif"'].map(f => document.fonts.load(f, 'Tiếng Việt ễ ậ ỗ'))); } catch (e) { /* vẫn chạy */ }
