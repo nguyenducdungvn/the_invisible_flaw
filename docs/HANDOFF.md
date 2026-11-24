@@ -1,9 +1,11 @@
-# BÀN GIAO · The Invisible Flaw (v0.3, 24/11/2026)
+# BÀN GIAO · The Invisible Flaw (v0.4, 24/11/2026)
 
 ## 1. Trạng thái
 - Bản chơi thử 4 hợp đồng (PT, MT, UT, RT) **chơi được hết luồng**: kiểm thử Playwright ở 1366 px và 390 px, không lỗi JS, không tràn ngang. 
 - **v0.2: Học viện NDE** 17 chương (8 vật lý + 9 phương pháp), cấu trúc theo NDE-Ed.org Physics và NDE Techniques; 13 mô phỏng mới; 10 thẻ công thức mới. Kiểm thử Playwright: làm hết 17 bài kiểm tra ở cả 1366 px và 390 px, không lỗi. `check.js`: 591/591.
 - **v0.3:** 8 mô hình 3D (Three.js r128 trong `js/vendor/`, tự dừng khi rời trang) hiện ở 14 chương Học viện và ở hồ sơ 4 hợp đồng; trang Giới thiệu (miễn trừ, cảm ơn, QR BIDV mời cà phê, chia sẻ); nút Giới thiệu trên thanh trên cùng và lời mời ở cuối mỗi kết quả.
+- **v0.4:** rà soát nội dung (HVL Ir-192: chì 5,1 mm, thép 13 mm; dải Ir-192 10–90 mm; ách DC ≥ 18 kg đã đối chiếu; mục quyền riêng tư nhắc Cloudflare Analytics). `js/academy_deep.js`: mỗi chương thêm 3 mục “Đào sâu” mức Bậc II, 1 ví dụ tính có lời giải, 3 câu nâng cao (tổng 51 + 17 + 51); trang Thuật ngữ Việt – Anh 45 mục. 3D: khởi tạo WebGL khi cuộn tới, dừng khi tab ẩn, giải phóng texture; A-scan đồng bộ trong cảnh UT; 5 cảnh mới (kiểu sóng, mạng tinh thể BCC/FCC, từ hóa tròn/dọc, điều kiện VT, vi ba) → 13 cảnh, phủ cả 17 chương. `check.js`: 697/697.
+- Repo có tên miền riêng `hvflaw.hlvsuckhoe.com` (tệp CNAME) và Cloudflare Web Analytics trong index.html: giữ nguyên khi sửa.
 - Thẩm định GDD: `docs/THAM_DINH_GDD.md`.
 - Bản chơi thử: https://claude.ai/artifact/DRwkCPNZ2H7wADVdUT7LHU · Thư mục máy: `D:\New App 2026\The_invisible_FLAW\the_invisible_flaw`
 - Repo: github.com/nguyenducdungvn/the_invisible_flaw (**chỉ đẩy khi anh Dũng duyệt**).

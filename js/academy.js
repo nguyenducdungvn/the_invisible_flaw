@@ -18,9 +18,9 @@
       h('div', { class: 'grid g3' }, A().filter(c => c.track === t).map((c, i) => h('div', { class: 'card contract', onclick: () => chapter(c.id) },
         h('div', { class: 'row' }, h('span', { class: 'meth', style: 'font-size:1.15rem' }, `${t === 'phys' ? 'P' : 'M'}${i + 1}`), h('span', { class: 'spacer' }), badge(c.id)),
         h('h3', { style: 'margin:6px 0 2px' }, c.title), h('div', { class: 'dim', style: 'font-size:.85rem' }, c.en),
-        h('p', { class: 'dim', style: 'font-size:.88rem;margin-top:6px' }, `${c.lessons.length} bài · 1 mô phỏng · ${c.quiz.length} câu hỏi`)))));
+        h('p', { class: 'dim', style: 'font-size:.88rem;margin-top:6px' }, `${c.lessons.length} bài · ${(c.deep || []).length} mục đào sâu · ${c.quiz.length} câu hỏi` + (root.View3D && root.View3D.FOR_CHAPTER[c.id] ? ' · 3D' : ''))))));
     page(h('div', null,
-      h('div', { class: 'row' }, h('button', { class: 'btn ghost sm', onclick: G.hub }, '← Trung tâm'), h('h2', { style: 'margin:0' }, 'Học viện NDE'), h('span', { class: 'spacer' }), h('span', { class: 'chip ok' }, `Thành thạo ${n}/${A().length} chương`)),
+      h('div', { class: 'row' }, h('button', { class: 'btn ghost sm', onclick: G.hub }, '← Trung tâm'), h('h2', { style: 'margin:0' }, 'Học viện NDE'), h('span', { class: 'spacer' }), h('button', { class: 'btn sm ghost', onclick: glossary }, 'Thuật ngữ Việt – Anh'), h('span', { class: 'chip ok' }, `Thành thạo ${n}/${A().length} chương`)),
       h('p', { class: 'dim' }, 'Cấu trúc theo NDE-Ed.org (Iowa State University), viết lại bằng tiếng Việt, bổ sung căn cứ tiêu chuẩn. Đạt ≥ 80 % bài kiểm tra để thành thạo chương và mở khóa thẻ công thức. Học bất kỳ lúc nào; hợp đồng hiện trường sẽ gợi ý chương nên học trước.'),
       h('div', { class: 'bar', style: 'height:8px' }, h('i', { style: `width:${n / A().length * 100}%;background:var(--ok)` })),
       track('phys'), track('tech')));
@@ -47,6 +47,10 @@
       h('div', { class: 'row' }, h('button', { class: 'btn ghost sm', onclick: academy }, '← Học viện'), h('span', { class: 'chip' }, root.TRACKS[c.track]), h('span', { class: 'spacer' }), badge(id)),
       h('h1', { style: 'margin-top:10px' }, c.title), h('p', { class: 'dim' }, c.en),
       h('div', { class: 'grid g2' }, c.lessons.map(([t, b], i) => h('div', { class: 'card' }, h('div', { class: 'row' }, h('span', { class: 'chip hi' }, `Bài ${i + 1}`), h('h3', { style: 'margin:0' }, t)), h('p', { class: 'serif', style: 'margin-top:8px' }, b)))),
+      c.deep ? h('div', { class: 'deep' }, h('h2', null, 'Đào sâu ', h('span', { class: 'chip hi', style: 'vertical-align:middle' }, 'mức Bậc II')),
+        h('div', { class: 'grid g3' }, c.deep.map(([t, b]) => h('div', { class: 'card', style: 'border-left:3px solid var(--cy)' }, h('h3', null, t), h('p', { style: 'margin-top:6px' }, b))))) : null,
+      c.ex ? h('div', null, h('h2', null, 'Ví dụ tính'), c.ex.map(x => { const sol = h('div', { class: 'hidden' }, h('ol', null, x.steps.map(s => h('li', { class: 'mono' }, s))), h('div', { class: 'callout ok' }, h('b', null, 'Đáp số: '), x.a));
+        return h('div', { class: 'card' }, h('p', { class: 'serif', style: 'font-size:1.05rem' }, x.q), h('button', { class: 'btn sm ghost', onclick: e => { sol.classList.toggle('hidden'); e.target.textContent = sol.classList.contains('hidden') ? 'Tự tính rồi xem lời giải' : 'Ẩn lời giải'; } }, 'Tự tính rồi xem lời giải'), sol); })) : null,
       c.cards && c.cards.length ? h('div', { class: 'card flat' }, h('h3', null, 'Thẻ công thức của chương'), h('p', { class: 'dim' }, 'Mở khóa khi đạt ≥ 80 %. Thẻ đã mở có máy tính trong Sổ tay.'), c.cards.map(k => G.cardView(k, false))) : null,
       h('div', { id: 'ch3d' }), h('h2', null, 'Mô phỏng'), simBox,
       h('div', { class: 'row', style: 'margin:10px 0 18px' }, h('button', { class: 'btn', onclick: startQuiz }, `Làm bài kiểm tra (${c.quiz.length} câu)`)),
@@ -57,5 +61,15 @@
     else root.SIMS[c.sim](simBox);
   }
 
-  G.academy = academy; G.chapter = chapter; G.mastered = mastered;
+  function glossary() {
+    G.M = null; hud(); const q = h('input', { class: 'f', placeholder: 'Tìm thuật ngữ (Việt hoặc Anh)…', style: 'max-width:420px' }); const list = h('div');
+    const draw = () => { const k = q.value.trim().toLowerCase().normalize('NFC'); list.innerHTML = '';
+      const rows = (root.GLOSSARY || []).filter(r => !k || r.join(' ').toLowerCase().includes(k)).sort((a, b) => a[0].localeCompare(b[0], 'vi'));
+      list.append(h('table', { class: 't stack' }, h('thead', null, h('tr', null, h('th', null, 'Thuật ngữ'), h('th', null, 'Tiếng Anh'), h('th', null, 'Giải thích'))),
+        h('tbody', null, rows.map(r => h('tr', null, h('td', null, h('b', null, r[0])), h('td', { class: 'dim' }, r[1]), h('td', null, r[2]))))), h('p', { class: 'dim' }, `${rows.length} thuật ngữ`)); };
+    q.oninput = draw;
+    page(h('div', null, h('div', { class: 'row' }, h('button', { class: 'btn ghost sm', onclick: academy }, '← Học viện'), h('h2', { style: 'margin:0' }, 'Thuật ngữ NDT Việt – Anh')),
+      h('p', { class: 'dim' }, 'Các thuật ngữ dùng trong game, viết ngắn gọn để tra nhanh. Định nghĩa chính thức xem ASME V Điều 1 (Glossary), ASTM E1316 hoặc ISO 9712 tùy hệ thống áp dụng.'), q, list)); draw();
+  }
+  G.academy = academy; G.chapter = chapter; G.mastered = mastered; G.glossary = glossary;
 })(this);

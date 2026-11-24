@@ -44,7 +44,7 @@
           h('li', null, 'Mọi công ty, công trình, nhân vật và tình huống trong game đều hư cấu; nếu trùng tên là ngẫu nhiên.'),
           h('li', null, 'Cấu trúc Học viện tham khảo mục lục của NDE-Ed.org (Iowa State University). Nội dung đã viết lại bằng tiếng Việt; game không liên kết và không được NDE-Ed.org bảo trợ.'),
           h('li', null, 'Tác giả không chịu trách nhiệm cho thiệt hại phát sinh từ việc sử dụng nội dung ngoài mục đích học tập.'),
-          h('li', null, 'Quyền riêng tư: tiến độ chỉ lưu trên trình duyệt của bạn (localStorage). Game không thu thập hay gửi dữ liệu cá nhân đi đâu.')),
+          h('li', null, 'Quyền riêng tư: tiến độ, tên và điểm chỉ lưu trên trình duyệt của bạn (localStorage), không gửi về máy chủ nào. Trang dùng Cloudflare Web Analytics để đếm lượt xem ẩn danh (không cookie, không lưu IP).')),
         h('p', { class: 'dim', style: 'font-size:.88rem' }, 'Phần mềm nguồn mở sử dụng: Three.js r128 (giấy phép MIT); phông Be Vietnam Pro, Noto Serif, Roboto Mono (SIL Open Font License) qua @fontsource.'))));
   }
   G.about = about;

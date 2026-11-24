@@ -60,8 +60,8 @@
   /* ---------- RT ---------- */
   const IR192 = {
     halfLifeDays: 73.83,           // chu kỳ bán rã Ir-192
-    gamma: 0.13,                   // mSv·m²/(h·GBq) — hằng số suất liều tham khảo [CẦN KIỂM CHỨNG theo chứng chỉ nguồn]
-    hvlLead: 4.8, hvlSteel: 12.7   // mm [CẦN KIỂM CHỨNG]
+    gamma: 0.13,                   // mSv·m²/(h·GBq). Đối chiếu: 5,6 mrem/h ở 30 cm cho 1 mCi ≈ 0,135 (NCHPS); dùng số trên chứng chỉ nguồn khi làm thật
+    hvlLead: 5.1, hvlSteel: 13.0   // mm, HVL chùm rộng tham khảo của nhà cung cấp nguồn (QSA Global)
   };
   const decay = (A0, days, half = IR192.halfLifeDays) => A0 * Math.pow(0.5, days / half);
   const doseRate = (A_GBq, d_m, gammaK = IR192.gamma) => gammaK * A_GBq / (d_m * d_m); // mSv/h

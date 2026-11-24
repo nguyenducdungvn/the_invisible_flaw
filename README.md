@@ -2,7 +2,7 @@
 
 Game mô phỏng kiểm tra không phá hủy (NDT) chạy trên trình duyệt. Người chơi là kỹ sư tập sự nhận hợp đồng kiểm tra: chọn phương pháp, làm đúng quy trình, hiệu chuẩn, đọc tín hiệu, đối chiếu tiêu chí chấp nhận và ký **Đạt / Loại bỏ**.
 
-**Bản chơi thử v0.3:** có mô hình 3D tương tác và trang Giới thiệu.  4 hợp đồng hiện trường PT → MT → UT → RT, kèm **Học viện NDE** gồm 17 chương: 8 chương vật lý nền tảng và 9 chương phương pháp (VT, UT, MT, ET, vi ba, RT, PT, AE, nhiệt ảnh), cấu trúc theo NDE-Ed.org.
+**Phiên bản v0.4:** 13 mô hình 3D tương tác, phần Đào sâu mức Bậc II, ví dụ tính, thuật ngữ Việt – Anh, trang Giới thiệu. Chơi tại https://hvflaw.hlvsuckhoe.com/.  4 hợp đồng hiện trường PT → MT → UT → RT, kèm **Học viện NDE** gồm 17 chương: 8 chương vật lý nền tảng và 9 chương phương pháp (VT, UT, MT, ET, vi ba, RT, PT, AE, nhiệt ảnh), cấu trúc theo NDE-Ed.org.
 
 👉 **Chơi tại: https://hvflaw.hlvsuckhoe.com/**
 
@@ -20,8 +20,9 @@ Game mô phỏng kiểm tra không phá hủy (NDT) chạy trên trình duyệt.
 | `js/core.js` | Trạng thái, lưu (localStorage), HUD, sổ tay, vòng lặp nhiệm vụ, chấm điểm |
 | `js/labs.js` | Phòng thí nghiệm: mao dẫn, từ thông rò, Snell, bức xạ |
 | `js/academy_data.js` | Nội dung Học viện: bài học, câu hỏi, chương nên học trước mỗi hợp đồng |
+| `js/academy_deep.js` | Phần Đào sâu (mức Bậc II), ví dụ tính có lời giải, câu hỏi nâng cao, bảng thuật ngữ Việt – Anh |
 | `js/academy_sims.js` | 13 mô phỏng của Học viện (nguyên tử, độ sâu thấm, từ trễ, bước sóng, trở kháng âm, suy giảm, ứng suất – biến dạng, mặt phẳng trở kháng, vi ba, định vị AE, nhiệt ảnh, VT, quy trình PT) |
-| `js/scene3d.js` | 8 mô hình 3D tương tác (UT, MT, PT, RT, ET, AE, nhiệt ảnh, nguyên tử) dựng bằng Three.js r128 tự host trong `js/vendor/` |
+| `js/scene3d.js` | 13 mô hình 3D tương tác (UT kèm A-scan, MT, từ hóa tròn/dọc, PT, RT, ET, AE, nhiệt ảnh, nguyên tử, kiểu sóng, mạng tinh thể, VT, vi ba) dựng bằng Three.js r128 tự host trong `js/vendor/` |
 | `js/about.js` | Trang Giới thiệu: miễn trừ trách nhiệm, cảm ơn, mời cà phê (QR trong `assets/`), chia sẻ |
 | `js/academy.js` | Giao diện Học viện, tiến độ, mở khóa thẻ công thức |
 | `js/surface.js` | Khung soi bề mặt dùng chung cho PT, MT, RT (thước đo, phân loại, biên bản) |

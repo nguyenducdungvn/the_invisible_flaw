@@ -25,7 +25,7 @@
   /* ================= CẢNH ================= */
   const SCENES = {
     ut: { title: 'Siêu âm đầu dò góc 60° trên mối hàn V dày 25 mm', cam: [11, 8, 13], target: [3, 1, 0],
-      note: 'Kéo vị trí đầu dò: chùm sóng ngang (vàng) đi chân 1 xuống đáy, phản xạ, đi chân 2 lên. Không ngấu ở mặt vát phía đầu dò được “bắt” rõ nhất ở chân 2, khi chùm gần vuông góc mặt vát.',
+      note: 'Kéo vị trí đầu dò: chùm sóng ngang (vàng) đi chân 1 xuống đáy, phản xạ, đi chân 2 lên. Màn hình A-scan bên dưới chạy theo: ở y ≈ 44 mm thấy gờ chân mối hàn (SP 50 mm, độ sâu = T), ở y ≈ 84 mm thấy không ngấu (SP 84 mm). Không ngấu ở mặt vát phía đầu dò được “bắt” rõ nhất ở chân 2, khi chùm gần vuông góc mặt vát.',
       build(S, ui) {
         const THREE = T3(), T = 2.5, tan = Math.tan(Math.PI / 3), bev = Math.tan(Math.PI / 6), gap = 0.1, L = 20;
         const plateM = mat(COL.steel, { transparent: true, opacity: 0.28, depthWrite: false });
@@ -42,13 +42,26 @@
         S.add(Object.assign(label('Đầu dò 60°'), {}), label('Mũ mối hàn'), label('Không ngấu thành vát', { border: 'rgba(255,93,93,.9)' }));
         const [lp, lc, lf] = S.children.slice(-3); lc.position.set(0, T + 1.3, -L / 2 + 1); lf.position.set(fx - 1.5, fy - 1.2, 0);
         let xp = 8.4, pts = [];
+        // A-scan đồng bộ: tiếng vọng gờ chân (chân 1, SP 50 mm) và không ngấu (chân 2, SP 84 mm)
+        const ac = h('canvas', { class: 'screen', style: 'margin-top:8px' }); ui.extra.append(ac);
+        const echoes = () => { const x = xp * 10, sig = 3.5;
+          return [{ sp: 50, a: 62 * Math.exp(-((x - 25 * tan - 1) ** 2) / (2 * 4 * 4)), n: 'gờ chân' }, { sp: (50 - 8) / 0.5, a: 92 * Math.exp(-((x - (fx * 10 + 42 * tan)) ** 2) / (2 * sig * sig)), n: 'không ngấu (chân 2)' },
+            { sp: 8 / 0.5, a: 16 * Math.exp(-((x - (fx * 10 + 8 * tan)) ** 2) / (2 * sig * sig)), n: 'không ngấu (chân 1, yếu)' }]; };
+        const asc = () => { const { ctx, W, H } = root.Game.fitCanvas(ac, window.innerWidth < 600 ? 120 : 140); const R = 125, X = mm => 26 + (W - 34) * mm / R, Y = v => H - 16 - (H - 26) * Math.min(1.05, v / 100);
+          ctx.fillStyle = '#061109'; ctx.fillRect(0, 0, W, H); ctx.strokeStyle = '#123821'; for (let i = 0; i <= 10; i++) { ctx.beginPath(); ctx.moveTo(X(i * 12.5), 6); ctx.lineTo(X(i * 12.5), H - 16); ctx.stroke(); }
+          ctx.fillStyle = '#3ddc97'; ctx.font = '10px "Roboto Mono"'; for (let i = 0; i <= 125; i += 25) ctx.fillText(i, X(i) - 6, H - 4);
+          const E = echoes(); ctx.strokeStyle = '#7dff9b'; ctx.lineWidth = 1.2; ctx.beginPath();
+          for (let k = 0; k <= W - 34; k++) { const mm = R * k / (W - 34); let v = mm < 3 ? 100 : 2 + Math.random() * 3; for (const e of E) v += e.a * Math.exp(-((mm - e.sp) ** 2) / 1.2) * (0.6 + 0.4 * Math.cos((mm - e.sp) * 6)); k ? ctx.lineTo(X(mm), Y(Math.abs(v))) : ctx.moveTo(X(mm), Y(v)); } ctx.stroke();
+          ctx.font = '11px "Be Vietnam Pro"'; ctx.fillStyle = '#e8eef2'; for (const e of E) if (e.a > 12) ctx.fillText(`${e.n} · SP ${fmt(e.sp, 0)} mm`, Math.min(X(e.sp) + 4, W - 170), Y(e.a) - 4);
+          ctx.fillStyle = '#9fb0bc'; ctx.fillText('A-scan · SP (mm)', W - 110, 14); };
+        let lastA = 0;
         const setProbe = v => { xp = v; probe.position.set(xp, T, 0); lp.position.set(xp + 1, T + 2.2, 0);
           pts = [[xp, T, 0], [xp - T * tan, 0, 0], [xp - 2 * T * tan, T, 0]]; if (beam) S.remove(beam); beam = line(pts, COL.hi, { opacity: 0.9 }); S.add(beam);
-          const hit = Math.abs((xp - 2 * T * tan + (T - fy) * tan) - fx) < 0.18 || Math.abs((xp - fy * 0 - (T - fy) * tan) - fx) < 0.18; S.userData.hit = Math.abs(xp - (fx + (2 * T - d) * tan)) < 0.2;
-          ui.read.textContent = `Điểm ra chùm cách tâm mối hàn ${fmt(xp * 10, 1)} mm · bước nhảy ${fmt(P.skipDistance(25, 60), 1)} mm` + (S.userData.hit ? ' · CHÙM TRÚNG KHÔNG NGẤU Ở CHÂN 2!' : ''); };
+          S.userData.hit = Math.abs(xp - (fx + (2 * T - d) * tan)) < 0.2;
+          ui.read.textContent = `Điểm ra chùm cách tâm mối hàn ${fmt(xp * 10, 1)} mm · bước nhảy ${fmt(P.skipDistance(25, 60), 1)} mm` + (S.userData.hit ? ' · CHÙM TRÚNG KHÔNG NGẤU Ở CHÂN 2!' : ''); asc(); };
         ui.slider('Vị trí đầu dò (mm tới tâm)', 25, 110, 0.5, xp * 10, v => setProbe(v / 10)); setProbe(xp);
-        return t => { const L1 = Math.hypot(T * tan, T), u = (t * 0.6) % 1; let p; if (u < 0.5) { const k = u / 0.5; p = [xp - T * tan * k, T - T * k]; } else { const k = (u - 0.5) / 0.5; p = [xp - T * tan - T * tan * k, T * k]; }
-          pulse.position.set(p[0], p[1], 0); glow.material.opacity = S.userData.hit ? 0.35 + 0.3 * Math.sin(t * 8) : 0; };
+        return t => { const u = (t * 0.6) % 1; let p; if (u < 0.5) { const k = u / 0.5; p = [xp - T * tan * k, T - T * k]; } else { const k = (u - 0.5) / 0.5; p = [xp - T * tan - T * tan * k, T * k]; }
+          pulse.position.set(p[0], p[1], 0); glow.material.opacity = S.userData.hit ? 0.35 + 0.3 * Math.sin(t * 8) : 0; if (t - lastA > 0.12) { lastA = t; asc(); } };
       } },
 
     mt: { title: 'Ách từ AC trên mối hàn: đường sức và chỉ thị hạt từ', cam: [16, 14, 18], target: [0, 1, 0],
@@ -185,7 +198,104 @@
         [['Fe-56 (bền)', 26, 30], ['Co-60 (gamma)', 27, 33], ['Se-75 (gamma)', 34, 41], ['Ir-192 (gamma)', 77, 115]].forEach(([n, z, nn]) => ui.button(n, () => make(z, nn, n.split(' ')[0])));
         make(26, 30, 'Fe-56');
         return t => { nuc.rotation.y = t * 0.3; for (const o of els) { const a = o.a0 + t * o.w; const v = new THREE.Vector3(Math.cos(a) * o.rad, 0, Math.sin(a) * o.rad); v.applyEuler(new THREE.Euler(o.ring.rotation.x - Math.PI / 2, o.ring.rotation.y, 0)); o.e.position.copy(v); } };
+      } },
+
+    wavemodes: { title: 'Các kiểu dao động của sóng siêu âm', cam: [0, 1.5, 13], target: [0, -1.8, 0],
+      note: 'Mỗi chấm là một phần tử vật liệu. Sóng dọc: dao động cùng phương truyền (nén – giãn). Sóng ngang: dao động vuông góc. Sóng Rayleigh: quỹ đạo elip, tắt dần trong khoảng một bước sóng dưới bề mặt. Biên độ phóng đại để dễ thấy.',
+      build(S, ui) {
+        const THREE = T3(); const NX = 40, NY = 10, dx = 0.5, N = NX * NY; const g = new THREE.BufferGeometry(), pos = new Float32Array(N * 3); g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        const col = new Float32Array(N * 3); g.setAttribute('color', new THREE.BufferAttribute(col, 3)); const pts = new THREE.Points(g, new THREE.PointsMaterial({ size: 0.3, vertexColors: true })); S.add(pts);
+        const arrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(-10, 0.9, 0), 4, 0xffc531, 0.8, 0.5); S.add(arrow);
+        const la = label('Hướng truyền sóng', { scale: 0.7 }); la.position.set(-4.5, 0.9, 0); S.add(la);
+        let mode = 'L'; const lam = 5;
+        const NAMES = { L: 'Sóng dọc (L): thép ≈ 5920 m/s, đi được trong rắn, lỏng, khí', S: 'Sóng ngang (S): thép ≈ 3240 m/s, chỉ đi trong chất rắn', R: 'Sóng Rayleigh (mặt): ≈ 0,92 vS, tắt dần trong khoảng 1 bước sóng dưới bề mặt' };
+        const setM = m => { mode = m; ui.read.textContent = NAMES[m] + ' · bước sóng trong cảnh = 5 đơn vị'; };
+        [['L', 'Sóng dọc'], ['S', 'Sóng ngang'], ['R', 'Sóng Rayleigh']].forEach(([k, n]) => ui.button(n, () => setM(k))); setM('L');
+        return t => { const k = 2 * Math.PI / lam, w = 3; for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) { const n = j * NX + i, x0 = -10 + i * dx, y0 = -j * dx; const ph = k * x0 - w * t;
+            let ux = 0, uy = 0, amp = 0.35;
+            if (mode === 'L') ux = amp * Math.sin(ph); else if (mode === 'S') uy = amp * Math.sin(ph); else { const dec = Math.exp(-(j * dx) / (lam * 0.35)); ux = amp * dec * Math.cos(ph); uy = amp * dec * 1.4 * Math.sin(ph); }
+            pos[n * 3] = x0 + ux; pos[n * 3 + 1] = y0 + uy; pos[n * 3 + 2] = 0; const c = 0.5 + 0.5 * Math.sin(ph); col[n * 3] = 0.26 + 0.7 * c; col[n * 3 + 1] = 0.6 + 0.3 * c; col[n * 3 + 2] = 0.95 - 0.6 * c; }
+          g.attributes.position.needsUpdate = true; g.attributes.color.needsUpdate = true; };
+      } },
+
+    lattice: { title: 'Mạng tinh thể: ferit (BCC) và austenit (FCC)', cam: [5.2, 4.2, 6.2], target: [1.2, 1.3, 1.2],
+      note: 'Ferit lập phương tâm khối (BCC) nhiễm từ: dùng được MT. Austenit lập phương tâm mặt (FCC) gần như không nhiễm từ, hạt thô trong mối hàn làm siêu âm bị lệch và tán xạ. Hình vẽ 2×2×2 ô cơ sở.',
+      build(S, ui) {
+        const THREE = T3(); const grp = new THREE.Group(); S.add(grp); const sm = mat(0x9aa6af, { metalness: 0.6 }), cm = mat(COL.hi, { metalness: 0.4 }), fm = mat(COL.cy, { metalness: 0.4 });
+        let lab = null;
+        const make = type => { grp.clear(); const a = 1.2, nC = 2, seen = new Set(); const add = (x, y, z, m, r) => { const key = [x, y, z].map(v => v.toFixed(2)).join(); if (seen.has(key)) return; seen.add(key); const s = new THREE.Mesh(new THREE.SphereGeometry(r, 18, 14), m); s.position.set(x, y, z); grp.add(s); };
+          for (let i = 0; i <= nC; i++) for (let j = 0; j <= nC; j++) for (let k = 0; k <= nC; k++) add(i * a, j * a, k * a, sm, 0.18);
+          for (let i = 0; i < nC; i++) for (let j = 0; j < nC; j++) for (let k = 0; k < nC; k++) { const o = [i * a, j * a, k * a];
+            if (type === 'bcc') add(o[0] + a / 2, o[1] + a / 2, o[2] + a / 2, cm, 0.2);
+            else [[a / 2, a / 2, 0], [a / 2, 0, a / 2], [0, a / 2, a / 2], [a / 2, a / 2, a], [a / 2, a, a / 2], [a, a / 2, a / 2]].forEach(d => add(o[0] + d[0], o[1] + d[1], o[2] + d[2], fm, 0.2)); }
+          const e = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(a * nC, a * nC, a * nC)), new THREE.LineBasicMaterial({ color: 0x6c7f8c })); e.position.set(a, a, a); grp.add(e);
+          for (let i = 0; i <= nC; i++) for (let j = 0; j <= nC; j++) { grp.add(line([[i * a, j * a, 0], [i * a, j * a, a * nC]], 0x3a4a56)); grp.add(line([[i * a, 0, j * a], [i * a, a * nC, j * a]], 0x3a4a56)); grp.add(line([[0, i * a, j * a], [a * nC, i * a, j * a]], 0x3a4a56)); }
+          if (lab) S.remove(lab); lab = label(type === 'bcc' ? 'Ferit BCC · sắt từ · MT dùng được' : 'Austenit FCC · gần như không nhiễm từ · MT không dùng được', { border: type === 'bcc' ? 'rgba(255,197,49,.9)' : 'rgba(67,198,240,.9)', scale: 0.45 }); lab.position.set(1.2, 3.3, 1.2); S.add(lab);
+          ui.read.textContent = type === 'bcc' ? 'BCC: 1 nguyên tử ở tâm mỗi ô (vàng). Thép cacbon, thép hợp kim thấp ở nhiệt độ thường.' : 'FCC: 1 nguyên tử ở tâm mỗi mặt (xanh). Inox 304, 316; niken; nhôm; đồng.'; };
+        ui.button('Ferit (BCC)', () => make('bcc')); ui.button('Austenit (FCC)', () => make('fcc')); make('bcc');
+        return t => { grp.rotation.y = t * 0.25; };
+      } },
+
+    mtfield: { title: 'Từ hóa tròn (dòng qua chi tiết) và từ hóa dọc (cuộn dây)', cam: [10, 7, 13], target: [0, 0, 0],
+      note: 'Thanh có hai vết nứt: một dọc trục, một vòng quanh chu vi. Dòng chạy qua thanh tạo từ trường tròn: vết nứt dọc hiện chỉ thị. Đặt thanh trong cuộn dây tạo từ trường dọc: vết nứt vòng hiện chỉ thị. Cần cả hai cách để không bỏ sót.',
+      build(S, ui) {
+        const THREE = T3(); const bar = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 12, 40), mat(COL.steel)); bar.rotation.z = Math.PI / 2; S.add(bar);
+        const cl = box(3, 0.04, 0.05, new THREE.MeshBasicMaterial({ color: 0x111111 })); cl.position.set(-2.5, 1.0, 0); S.add(cl);
+        const cc = new THREE.Mesh(new THREE.TorusGeometry(1.005, 0.025, 6, 60, Math.PI * 1.2), new THREE.MeshBasicMaterial({ color: 0x111111 })); cc.rotation.y = Math.PI / 2; cc.rotation.z = Math.PI * 0.4; cc.position.x = 3; S.add(cc);
+        const circ = new THREE.Group(); for (let i = -5; i <= 5; i++) { const r = new THREE.Mesh(new THREE.TorusGeometry(1.15, 0.03, 6, 48), new THREE.MeshBasicMaterial({ color: COL.cy, transparent: true })); r.rotation.y = Math.PI / 2; r.position.x = i; circ.add(r); } S.add(circ);
+        const longi = new THREE.Group(); for (let k = 0; k < 10; k++) { const a = k / 10 * 6.283; longi.add(line([[-6.5, Math.cos(a) * 1.12, Math.sin(a) * 1.12], [6.5, Math.cos(a) * 1.12, Math.sin(a) * 1.12]], COL.cy)); } S.add(longi);
+        const coil = new THREE.Group(); for (let i = 0; i < 14; i++) { const t = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.07, 8, 40), mat(0xc97a2a, { metalness: 0.7 })); t.rotation.y = Math.PI / 2; t.position.x = -1.3 + i * 0.2; coil.add(t); } S.add(coil);
+        const clamps = new THREE.Group(); [-6.4, 6.4].forEach(x => { const c = box(0.6, 2.6, 2.6, mat(0xb08a3a, { metalness: 0.7 })); c.position.x = x; clamps.add(c); }); S.add(clamps);
+        const mkP = (n, fn) => { const g = new THREE.BufferGeometry(), p = new Float32Array(n * 3); for (let i = 0; i < n; i++) fn(p, i); g.setAttribute('position', new THREE.BufferAttribute(p, 3)); const m = new THREE.Points(g, new THREE.PointsMaterial({ color: 0x050505, size: 0.12, transparent: true })); S.add(m); return m; };
+        const pL = mkP(220, (p, i) => { p[i * 3] = -4 + Math.random() * 3; p[i * 3 + 1] = 1.02 + Math.random() * 0.05; p[i * 3 + 2] = (Math.random() - 0.5) * 0.18; });
+        const pC = mkP(220, (p, i) => { const a = Math.PI * 0.4 + Math.random() * Math.PI * 1.2; p[i * 3] = 3 + (Math.random() - 0.5) * 0.18; p[i * 3 + 1] = Math.cos(a) * 1.04; p[i * 3 + 2] = Math.sin(a) * 1.04; });
+        const l1 = label('Vết nứt dọc', { scale: 0.7 }), l2 = label('Vết nứt vòng', { scale: 0.7 }); l1.position.set(-3.5, 2.3, 0); l2.position.set(4.6, 2.3, 0); S.add(l1, l2);
+        let mode = 'head', fill = 0;
+        const setM = m => { mode = m; fill = 0; circ.visible = clamps.visible = m === 'head'; longi.visible = coil.visible = m === 'coil';
+          ui.read.textContent = m === 'head' ? 'Head shot: dòng chạy dọc thanh → từ trường tròn (xanh) → chỉ thị ở vết nứt DỌC' : 'Cuộn dây: từ trường dọc trục (xanh) → chỉ thị ở vết nứt VÒNG'; };
+        ui.button('Dòng qua chi tiết (head shot)', () => setM('head')); ui.button('Cuộn dây (coil shot)', () => setM('coil')); setM('head');
+        return (t, dt) => { fill = Math.min(1, fill + dt * 0.6); pL.material.opacity = mode === 'head' ? fill : 0.05; pC.material.opacity = mode === 'coil' ? fill : 0.05;
+          (mode === 'head' ? circ : longi).children.forEach((c, i) => { if (c.material) c.material.opacity = 0.45 + 0.5 * Math.abs(Math.sin(t * 3 + i)); }); };
+      } },
+
+    vt: { title: 'Điều kiện quan sát trực tiếp (ASME V T-952)', cam: [9, 8, 12], target: [0, 1, 0],
+      note: 'Kéo khoảng cách, góc nhìn và độ rọi. Tia nhìn chuyển xanh khi đạt cả ba điều kiện: mắt ≤ 600 mm, góc ≥ 30° so với bề mặt, ≥ 1000 lx. Đèn càng gần, độ rọi càng lớn (tỉ lệ 1/d²).',
+      build(S, ui) {
+        const THREE = T3(); const plate = box(14, 0.6, 8, mat(COL.steel)); plate.position.y = -0.3; S.add(plate);
+        const bead = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 14, 20), mat(COL.weld)); bead.rotation.z = Math.PI / 2; S.add(bead);
+        const ut = box(0.6, 0.05, 0.12, new THREE.MeshBasicMaterial({ color: 0x331111 })); ut.position.set(0, 0.32, 0.42); S.add(ut);
+        const eye = new THREE.Group(); const ball = new THREE.Mesh(new THREE.SphereGeometry(0.35, 20, 14), mat(0xf0f0f0, { metalness: 0 })); const iris = new THREE.Mesh(new THREE.SphereGeometry(0.16, 14, 10), mat(0x2a6f9e)); iris.position.z = -0.25; eye.add(ball, iris); S.add(eye);
+        const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.3, 14, 10), new THREE.MeshBasicMaterial({ color: 0xfff2b0 })); S.add(lamp); const pl = new THREE.PointLight(0xfff2cc, 1, 30); lamp.add(pl);
+        let ray = null, arc = null, d = 800, ang = 20, lx = 600;
+        const upd = () => { const r = d / 200, a = ang * Math.PI / 180; eye.position.set(0, Math.sin(a) * r, 0.42 + Math.cos(a) * r); eye.lookAt(0, 0.32, 0.42);
+          const okk = d <= 600 && ang >= 30 && lx >= 1000; if (ray) S.remove(ray); ray = line([[eye.position.x, eye.position.y, eye.position.z], [0, 0.32, 0.42]], okk ? COL.ok : COL.bad); S.add(ray);
+          if (arc) S.remove(arc); const ap = []; for (let i = 0; i <= 20; i++) { const b = a * i / 20; ap.push([0, 0.32 + Math.sin(b) * 1.5, 0.42 + Math.cos(b) * 1.5]); } arc = line(ap, COL.hi); S.add(arc);
+          const ld = Math.sqrt(1000 / lx) * 1.0; lamp.position.set(-1.5, 0.32 + ld * 0.8, 0.42 + ld * 0.6); pl.intensity = Math.min(2, lx / 800);
+          const nl = label(`${d} mm · ${ang}° · ${lx} lx`, { border: okk ? 'rgba(61,220,151,.9)' : 'rgba(255,93,93,.9)', scale: 0.55 }); nl.position.set(eye.position.x, eye.position.y + 1.1, eye.position.z); S.userData.nl && S.remove(S.userData.nl); S.add(nl); S.userData.nl = nl;
+          ui.read.textContent = [[d <= 600, `mắt ${d} mm ≤ 600`], [ang >= 30, `góc ${ang}° ≥ 30°`], [lx >= 1000, `độ rọi ${lx} lx ≥ 1000`]].map(([g, t]) => (g ? '✓ ' : '✗ ') + t).join(' · ') + (okk ? ' → ĐẠT quan sát trực tiếp' : ' → chưa đạt'); };
+        ui.slider('Khoảng cách mắt (mm)', 150, 1200, 50, d, v => { d = v; upd(); }); ui.slider('Góc nhìn (°)', 5, 90, 5, ang, v => { ang = v; upd(); }); ui.slider('Độ rọi (lx)', 200, 2000, 50, lx, v => { lx = v; upd(); }); upd();
+        const lu = label('Cháy cạnh nhỏ', { size: 24, scale: 0.7 }); lu.position.set(2.4, 0.9, 1.6); S.add(lu);
+        return () => {};
+      } },
+
+    mw: { title: 'Đầu dò vi ba quét tấm composite có vùng ngấm nước', cam: [11, 9, 13], target: [0, 0.5, 0],
+      note: 'Kéo đầu dò (ống dẫn sóng hở) qua tấm. Ở vùng ngấm nước, hằng số điện môi tăng nên sóng phản xạ (vàng) mạnh lên rõ rệt. Kim loại phía dưới phản xạ toàn phần nên vi ba không “nhìn” được vào trong kim loại.',
+      build(S, ui) {
+        const THREE = T3(); const panel = box(14, 1, 8, mat(0xd8cfa8, { metalness: 0, transparent: true, opacity: 0.55, depthWrite: false })); panel.position.y = 0; S.add(panel);
+        const base = box(14, 0.3, 8, mat(COL.alu, { metalness: 0.8 })); base.position.y = -0.65; S.add(base);
+        const wet = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), new THREE.MeshBasicMaterial({ color: 0x2a7fd6, transparent: true, opacity: 0.55 })); wet.scale.set(2, 0.35, 1.6); wet.position.set(2, 0, 0); S.add(wet);
+        const horn = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.9, 1.4, 4, 1, true), mat(0xb87333, { metalness: 0.8, side: THREE.DoubleSide })); horn.rotation.y = Math.PI / 4; const guide = box(0.45, 1.4, 0.25, mat(0xb87333, { metalness: 0.8 })); guide.position.y = 1.4; const hg = new THREE.Group(); hg.add(horn, guide); S.add(hg);
+        const inc = [], ref = []; for (let i = 0; i < 3; i++) { const a = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.03, 6, 30), new THREE.MeshBasicMaterial({ color: COL.cy, transparent: true })); a.rotation.x = Math.PI / 2; S.add(a); inc.push(a);
+          const b = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.04, 6, 30), new THREE.MeshBasicMaterial({ color: COL.hi, transparent: true })); b.rotation.x = Math.PI / 2; S.add(b); ref.push(b); }
+        const lw = label('Vùng ngấm nước', { scale: 0.7 }), ls = label('Nền kim loại', { scale: 0.7 }); lw.position.set(2, 1.3, -2.4); ls.position.set(-5, -1.3, 4.4); S.add(lw, ls);
+        let x = -4, G = 0; const eDry = 4.5;
+        const upd = () => { hg.position.set(x, 2.1, 0); const wetF = Math.exp(-((x - 2) ** 2) / (2 * 1.2 * 1.2)); const eps = eDry + (40 - eDry) * wetF; G = Math.abs(P.mwGamma(eps));
+          ui.read.textContent = `Vị trí ${fmt(x * 10, 0)} mm · ε ≈ ${fmt(eps, 1)} · |Γ| ≈ ${fmt(G, 2)} · công suất phản xạ ≈ ${fmt(G * G * 100, 0)} % (mô hình minh họa, chỉ tính bề mặt)`; };
+        ui.slider('Vị trí đầu dò', -6, 6, 0.1, x, v => { x = v; upd(); }); upd();
+        return t => { for (let i = 0; i < 3; i++) { const u = (t * 0.8 + i / 3) % 1; inc[i].position.set(x, 1.4 - u * 0.9, 0); inc[i].scale.setScalar(0.6 + u * 0.8); inc[i].material.opacity = 0.8 * (1 - u);
+            ref[i].position.set(x, 0.5 + u * 1.0, 0); ref[i].scale.setScalar(0.7 + u * 1.2); ref[i].material.opacity = Math.min(1, G * 1.6) * (1 - u); } };
       } }
+
   };
 
   /* ================= KHUNG XEM ================= */
@@ -193,27 +303,37 @@
   function mount(el, id, opt = {}) {
     const def = SCENES[id]; if (!def) return;
     const wrap = h('div', { class: 'card v3d' }); const stage = h('div', { class: 'v3d-stage' }); const ctl = h('div', { class: 'v3d-ctl' }); const read = h('div', { class: 'mono', style: 'font-size:.88rem;margin-top:6px' });
-    wrap.append(h('div', { class: 'row' }, h('span', { class: 'chip hi' }, 'Mô hình 3D'), h('h3', { style: 'margin:0' }, def.title)), stage, ctl, read, h('p', { class: 'dim', style: 'font-size:.88rem;margin:6px 0 0' }, def.note, ' Kéo để xoay, cuộn hoặc chụm hai ngón để phóng to.'));
+    const extra = h('div');
+    wrap.append(h('div', { class: 'row' }, h('span', { class: 'chip hi' }, 'Mô hình 3D'), h('h3', { style: 'margin:0' }, def.title)), stage, extra, ctl, read, h('p', { class: 'dim', style: 'font-size:.88rem;margin:6px 0 0' }, def.note, ' Kéo để xoay, cuộn hoặc chụm hai ngón để phóng to.'));
     el.append(wrap);
-    if (!T3() || !webglOK()) { stage.append(h('div', { class: 'callout' }, 'Trình duyệt này không bật được WebGL nên không hiển thị mô hình 3D. Các phần khác vẫn dùng bình thường.')); return; }
-    const THREE = T3(); const H = opt.height || (window.innerWidth < 600 ? 300 : 380);
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); stage.style.height = H + 'px'; stage.append(renderer.domElement);
-    const scene = new THREE.Scene(); const cam = new THREE.PerspectiveCamera(38, 1, 0.1, 500); cam.position.set(...def.cam);
-    scene.add(new THREE.HemisphereLight(0xdfe8f0, 0x1a1f24, 0.9)); const dl = new THREE.DirectionalLight(0xffffff, 0.9); dl.position.set(10, 20, 12); scene.add(dl);
-    const ctr = THREE.OrbitControls ? new THREE.OrbitControls(cam, renderer.domElement) : null; if (ctr) { ctr.target.set(...def.target); ctr.enableDamping = true; ctr.update(); }
-    const ui = { read, slider(lbl, mn, mx, st, v, on) { ctl.append(root.Game.slider(lbl, mn, mx, st, v, '', on)); }, button(lbl, on) { ctl.append(h('button', { class: 'btn sm ghost', style: 'margin:4px 6px 4px 0', onclick: on }, lbl)); } };
-    let update = null; try { update = def.build(scene, ui); } catch (e) { stage.append(h('div', { class: 'callout bad' }, 'Lỗi dựng cảnh 3D: ' + e.message)); console.error(e); }
-    ctl.append(h('button', { class: 'btn sm ghost', style: 'margin:4px 0', onclick: () => { cam.position.set(...def.cam); if (ctr) { ctr.target.set(...def.target); ctr.update(); } } }, 'Đặt lại góc nhìn'));
-    const size = () => { const w = stage.clientWidth || 600; renderer.setSize(w, H); cam.aspect = w / H; cam.updateProjectionMatrix(); };
-    const ro = new ResizeObserver(size); ro.observe(stage); size();
-    let vis = true; const io = new IntersectionObserver(es => { vis = es[0].isIntersecting; }); io.observe(stage);
-    const clock = new THREE.Clock(); let raf = 0;
-    const loop = () => { if (!wrap.isConnected) { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); ctr && ctr.dispose(); scene.traverse(o => { o.geometry && o.geometry.dispose(); }); renderer.dispose(); return; }
-      raf = requestAnimationFrame(loop); if (!vis) return; const dt = Math.min(0.05, clock.getDelta()), t = clock.elapsedTime; try { update && update(t, dt); } catch (e) { /* giữ vòng lặp */ } ctr && ctr.update(); renderer.render(scene, cam); };
-    loop(); return wrap;
+    const H = opt.height || (window.innerWidth < 600 ? 300 : 380); stage.style.height = H + 'px';
+    if (!T3() || !webglOK()) { stage.append(h('div', { class: 'callout' }, 'Trình duyệt này không bật được WebGL nên không hiển thị mô hình 3D. Các phần khác vẫn dùng bình thường.')); return wrap; }
+    const wait = h('div', { class: 'v3d-wait' }, 'Đang mở mô hình 3D…'); stage.append(wait);
+    // Chỉ khởi tạo WebGL khi khung cuộn vào màn hình (tiết kiệm pin và bộ nhớ trên điện thoại)
+    let started = false; const io0 = new IntersectionObserver(es => { if (es[0].isIntersecting && !started) { started = true; io0.disconnect(); start(); } }, { rootMargin: '200px' }); io0.observe(stage);
+    function start() {
+      const THREE = T3(); wait.remove(); const dpr = window.devicePixelRatio || 1;
+      const renderer = new THREE.WebGLRenderer({ antialias: dpr < 1.5, alpha: true, powerPreference: 'low-power' }); renderer.setPixelRatio(Math.min(dpr, window.innerWidth < 600 ? 1.5 : 2)); stage.append(renderer.domElement);
+      const scene = new THREE.Scene(); const cam = new THREE.PerspectiveCamera(38, 1, 0.1, 500); cam.position.set(...def.cam);
+      scene.add(new THREE.HemisphereLight(0xdfe8f0, 0x1a1f24, 0.9)); const dl = new THREE.DirectionalLight(0xffffff, 0.9); dl.position.set(10, 20, 12); scene.add(dl);
+      const ctr = THREE.OrbitControls ? new THREE.OrbitControls(cam, renderer.domElement) : null; if (ctr) { ctr.target.set(...def.target); ctr.enableDamping = true; ctr.update(); }
+      const ui = { read, extra, slider(lbl, mn, mx, st, v, on) { ctl.append(root.Game.slider(lbl, mn, mx, st, v, '', on)); }, button(lbl, on) { ctl.append(h('button', { class: 'btn sm ghost', style: 'margin:4px 6px 4px 0', onclick: on }, lbl)); } };
+      let update = null; try { update = def.build(scene, ui); } catch (e) { stage.append(h('div', { class: 'callout bad' }, 'Lỗi dựng cảnh 3D: ' + e.message)); console.error(e); }
+      ctl.append(h('button', { class: 'btn sm ghost', style: 'margin:4px 0', onclick: () => { cam.position.set(...def.cam); if (ctr) { ctr.target.set(...def.target); ctr.update(); } } }, 'Đặt lại góc nhìn'));
+      const size = () => { const w = stage.clientWidth || 600; renderer.setSize(w, H); cam.aspect = w / H; cam.updateProjectionMatrix(); };
+      const ro = new ResizeObserver(size); ro.observe(stage); size();
+      let vis = true; const io = new IntersectionObserver(es => { vis = es[0].isIntersecting; }); io.observe(stage);
+      const clock = new THREE.Clock(); let raf = 0;
+      const dispose = () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); ctr && ctr.dispose();
+        scene.traverse(o => { o.geometry && o.geometry.dispose(); const ms = o.material ? [].concat(o.material) : []; ms.forEach(m => { m.map && m.map.dispose(); m.dispose(); }); }); renderer.dispose(); };
+      const loop = () => { if (!wrap.isConnected) return dispose();
+        raf = requestAnimationFrame(loop); if (!vis || document.hidden) { clock.getDelta(); return; } const dt = Math.min(0.05, clock.getDelta()), t = clock.elapsedTime; try { update && update(t, dt); } catch (e) { /* giữ vòng lặp */ } ctr && ctr.update(); renderer.render(scene, cam); };
+      loop();
+    }
+    return wrap;
   }
   // chương Học viện → cảnh 3D
-  const FOR_CHAPTER = { atom: 'atom', elec: 'et', mag: 'mt', waves: 'ut', sound: 'ut', xray: 'rt', cap: 'pt', ut: 'ut', mt: 'mt', et: 'et', rt: 'rt', pt: 'pt', ae: 'ae', ir: 'ir' };
+  const FOR_CHAPTER = { atom: 'atom', elec: 'et', mag: 'mtfield', waves: 'wavemodes', sound: 'ut', xray: 'rt', mat: 'lattice', cap: 'pt', vt: 'vt', ut: 'ut', mt: 'mt', et: 'et', mw: 'mw', rt: 'rt', pt: 'pt', ae: 'ae', ir: 'ir' };
   const FOR_METHOD = { PT: 'pt', MT: 'mt', UT: 'ut', RT: 'rt' };
   root.View3D = { mount, SCENES, FOR_CHAPTER, FOR_METHOD };
 })(this);

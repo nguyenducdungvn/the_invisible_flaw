@@ -117,7 +117,7 @@
           lure: 'Tắt máy là hết bức xạ',
           why: 'Máy phát tia X có thể dùng, nhưng hiện trường không có nguồn điện ổn định và máy không đi vào được giá ống. Hồ sơ kỹ thuật chỉ định Ir-192.' },
         { id: 'RTG', label: 'Nguồn gamma Ir-192', cost: 14, time: 130, ok: true,
-          why: 'Đúng theo đặc tính kỹ thuật: Ir-192 phù hợp thép dày khoảng 10–60 mm, cơ động ở hiện trường.' }
+          why: 'Đúng theo đặc tính kỹ thuật: Ir-192 dùng cho thép dày khoảng 10–90 mm (ISO 5579), cơ động ở hiện trường.' }
       ],
       lab: 'radiation', criteria: 'ASME8-UW51',
       source: { A0: 1850, days: 90, size: 3.0, limit: 20, shield: 16, E1m: 220 },

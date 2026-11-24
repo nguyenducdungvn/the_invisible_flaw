@@ -118,7 +118,7 @@
       };
       el.append(labHead('Bức xạ: khoảng cách, che chắn và thời gian', 'Gấp đôi khoảng cách thì suất liều còn 1/4. Mỗi lớp giảm một nửa (HVL) thì còn 1/2. Đây là hai công cụ chính để vẽ rào an toàn khi chụp hiện trường.', 'Ḣ = Γ·A/d² · I = I₀·0,5^(x/HVL) · A = A₀·0,5^(t/T½)'),
         h('div', { class: 'card' }, cv, slider('Khoảng cách', 1, 40, 0.5, d, 'm', v => { d = v; draw(); }), slider('Chì che chắn', 0, 20, 1, pb, 'mm', v => { pb = v; draw(); }), read,
-          h('p', { class: 'dim', style: 'font-size:.85rem' }, 'Γ(Ir-192) ≈ 0,13 mSv·m²/(h·GBq), HVL chì ≈ 4,8 mm: giá trị tham khảo cho game [CẦN KIỂM CHỨNG theo chứng chỉ nguồn và quy trình an toàn bức xạ của đơn vị].')),
+          h('p', { class: 'dim', style: 'font-size:.85rem' }, 'Γ(Ir-192) ≈ 0,13 mSv·m²/(h·GBq); HVL chì ≈ 5,1 mm, thép ≈ 13 mm (số liệu tham khảo của nhà cung cấp nguồn). Khi làm thật, dùng số trên chứng chỉ nguồn và quy trình an toàn bức xạ của đơn vị.')),
         challenges([
           { q: `Nguồn Ir-192 hoạt độ 800 GBq, không che chắn. Suất liều ở 10 m là bao nhiêu µSv/h? (Γ = 0,13 mSv·m²/(h·GBq))`, num: P.doseRate(800, 10) * 1000, rel: 0.05, unit: 'µSv/h', e: `0,13 × 800 / 10² = 1,04 mSv/h = ${fmt(P.doseRate(800, 10) * 1000, 0)} µSv/h.` },
           { q: 'Nguồn Ir-192 có 1000 GBq. Sau 147,7 ngày (hai chu kỳ bán rã) còn bao nhiêu GBq?', num: P.decay(1000, 147.66), rel: 0.03, unit: 'GBq', e: 'Hai chu kỳ bán rã: 1000 → 500 → 250 GBq. Nguồn yếu đi thì thời gian chiếu phải tăng.' }

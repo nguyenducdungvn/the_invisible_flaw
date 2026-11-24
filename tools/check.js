@@ -115,6 +115,18 @@ chk('waves', 0, P.wavelength(5920, 5e6) * 1000); chk('sound', 0, 7850 * 5920 / 1
 chk('xray', 1, P.hvlFromMu(0.0693)); chk('xray', 2, 37); chk('xray', 3, P.geomUnsharpness(3, 12, 600)); chk('mat', 0, P.hooke(200000, 0.001));
 chk('ut', 0, P.nearField(10, 5, 5920)); chk('et', 0, P.phaseLagDeg(1, 1)); chk('mw', 0, 3e8 / 10e9 * 1000); chk('rt', 0, Math.pow(10, -2) * 100); chk('rt', 3, P.inverseSquare(1, 1, 0.5));
 chk('ae', 0, P.aeLocate(2, 3000, -0.4e-3)); chk('ir', 0, P.thermalDepth(10, 4e-7) * 1000); chk('ir', 2, P.thermalTime(2, 1) / P.thermalTime(1, 1));
-near(P.filmDensityFromT(0.01), 2, 1e-9, 'D = 2 ↔ 1 % truyền qua'); near(P.mwGamma(1), 0, 1e-12, 'ε = 1 không phản xạ');
+near(P.filmDensityFromT(0.01), 2, 1e-9, 'D = 2 ↔ 1 % truyền qua');
+// Phần Đào sâu
+const { DEEP, GLOSSARY } = require(path.join(__dirname, '../js/academy_deep.js'));
+ok(ACADEMY.every(c => DEEP[c.id] && DEEP[c.id].deep.length >= 3 && DEEP[c.id].ex.length >= 1 && DEEP[c.id].quiz.length >= 3), 'Mỗi chương có ≥ 3 mục đào sâu, ≥ 1 ví dụ, ≥ 3 câu nâng cao');
+ok(GLOSSARY.length >= 40 && new Set(GLOSSARY.map(g => g[0])).size === GLOSSARY.length, 'Thuật ngữ ≥ 40, không trùng');
+for (const [id, d] of Object.entries(DEEP)) d.quiz.forEach((q, i) => { ok(q.e, `${id} nâng cao #${i}: thiếu giải thích`); if (q.o) ok(q.o.length >= 4 && new Set(q.o).size === q.o.length, `${id} nâng cao #${i}: đáp án`); });
+const D = (id, i, val) => { const q = DEEP[id].quiz[i]; const tol = q.abs != null ? Math.max(q.abs, 1e-9) : Math.abs(val) * (q.rel || 0.05); near(q.num, val, tol, `Đáp số nâng cao ${id}#${i}`); };
+const fFor = (delta, iacs) => 1 / (Math.PI * 4e-7 * Math.PI * iacs / 100 * P.IACS * delta * delta);
+D('atom', 1, 1850 / 37); D('elec', 0, 0.58 * 50); D('elec', 1, fFor(1e-3, 40) / 1000); near(P.skinDepth(fFor(1e-3, 40), 0.4 * P.IACS, 1), 1e-3, 1e-9, 'f tìm được cho δ = 1 mm');
+D('mag', 0, 1000 / (2 * Math.PI * 0.025)); D('waves', 0, P.wavelength(0.92 * 3240, 2e6) * 1000); D('sound', 0, P.dB(80, 40) / 100);
+D('xray', 0, Math.log2(50) * P.IR192.hvlLead); D('xray', 1, 10 * 2 / 5); D('mat', 0, (50 / (1.12 * 200)) ** 2 / Math.PI * 1000);
+D('vt', 0, P.inverseSquare(400, 1, 0.5)); D('ut', 0, P.beamSpreadHalfDeg(5920, 5e6, 0.01)); D('et', 0, fFor(1.2e-3, 25) / 1000); D('mw', 0, 300 / 10 / Math.sqrt(4)); D('rt', 0, P.geomUnsharpness(2, 15, 500)); D('ae', 0, 8 / 10); D('ir', 0, ((330 / 300) ** 4 - 1) * 100);
+const numDeep = Object.values(DEEP).reduce((n, d) => n + d.quiz.filter(q => q.num != null).length, 0); ok(numDeep === 16, `Đã tính lại mọi câu số nâng cao (${numDeep})`); near(P.mwGamma(1), 0, 1e-12, 'ε = 1 không phản xạ');
 
 console.log(`\n${pass} đạt, ${fail} lỗi`); process.exit(fail ? 1 : 0);

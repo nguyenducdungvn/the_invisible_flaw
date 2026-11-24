@@ -141,3 +141,8 @@ table.t th{color:var(--dim);font-weight:600}
 .about .qr{max-width:260px;width:100%;border-radius:12px;background:#fff;padding:6px}
 .about h2{margin-top:6px}
 .about a{overflow-wrap:anywhere;word-break:break-word}
+
+@media(max-width:600px){table.stack thead{display:none}table.stack tr{display:grid;padding:8px 0;border-bottom:1px solid var(--line)}table.stack td{border:0;padding:2px 0}}
+.deep h3{color:var(--cy)}
+
+.v3d-wait{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--dim)}
