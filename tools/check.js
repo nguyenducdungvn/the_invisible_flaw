@@ -7,6 +7,7 @@ const path = require('path');
 const P = require(path.join(__dirname, '../js/physics.js'));
 const { CRITERIA } = require(path.join(__dirname, '../js/criteria.js'));
 const { LEVELS, ATLAS } = require(path.join(__dirname, '../js/levels.js'));
+const LM = require(path.join(__dirname, '../js/levels_more.js')); const ACADEMY_IDS = require(path.join(__dirname, '../js/academy_data.js')).ACADEMY.map(c => c.id); LEVELS.push(...LM.LEVELS_MORE); Object.assign(ATLAS, LM.ATLAS_MORE);
 let fail = 0, pass = 0;
 const ok = (c, m) => { if (c) pass++; else { fail++; console.log('  ✗ ' + m); } };
 const near = (a, b, tol, m) => ok(Math.abs(a - b) <= tol, `${m}: ${a} ≠ ${b} ± ${tol}`);
@@ -33,7 +34,8 @@ ok(P.filmDensity(0.5) >= 1.4 && P.filmDensity(0.5) < 2.0, 'Phơi sáng thiếu m
 near(P.skinDepth(100e3, 3.5e7, 1) * 1000, 0.269, 0.003, 'Độ sâu thấm chuẩn nhôm ~100 kHz');
 
 console.log('2. Dữ liệu màn chơi');
-const LABS = ['capillary', 'magnet', 'snell', 'radiation'];
+Object.assign(CRITERIA, LM.CRITERIA_MORE);
+const LABS = ['capillary', 'magnet', 'snell', 'radiation', 'visual', 'eddy', 'aeloc', 'thermal', 'microwave'];
 for (const l of LEVELS) {
   ok(l.methods.filter(m => m.ok).length === 1, `${l.id}: phải có đúng 1 phương pháp đúng`);
   ok(l.methods.filter(m => !m.ok).every(m => m.why), `${l.id}: phương án sai phải có giải thích`);
@@ -68,22 +70,40 @@ ok(!W51([{ label: 'c', type: 'crack', len: 1 }], 12).accept, 'RT: nứt → lo�
 console.log('4. Đáp án mỗi màn & biên jitter');
 const truthPT = { crack: 'linear', pore: 'rounded' };
 for (const l of LEVELS) {
-  const L = l.weldLen || (l.method === 'RT' ? 180 : 160);
-  for (const i of l.indications || []) { ok(i.x - (i.jitter || 0) - i.len / 2 >= 0 && i.x + (i.jitter || 0) + i.len / 2 <= L, `${l.id}/${i.id}: jitter vượt khỏi chiều dài ${L}`); }
+  const L = l.weldLen || l.length || (l.method === 'RT' ? 180 : 160);
+  for (const i of (l.indications || []).filter(i => i.len != null && i.x != null)) { ok(i.x - (i.jitter || 0) - i.len / 2 >= 0 && i.x + (i.jitter || 0) + i.len / 2 <= L, `${l.id}/${i.id}: jitter vượt khỏi chiều dài ${L}`); }
   for (const r of l.reflectors || []) ok(r.x1 - r.jitter >= 0 && r.x2 + r.jitter <= l.weldLen, `${l.id}/${r.id}: jitter vượt`);
 }
-const exp = { pt1: false, mt1: false, ut1: false, rt1: false };
+const exp = { pt1: false, mt1: false, ut1: false, rt1: false, vt1: false, et1: false, ae1: false, ir1: false, mw1: false };
+const grp = arr => { const gs = {}; for (const i of arr) if (i.group) gs[i.group] = gs[i.group] || []; return arr; };
 const ev = {
   pt1: l => S8(l.indications.filter(i => i.kind !== 'bleed' && i.len > 1.5).map(i => ({ label: i.id, type: truthPT[i.kind], len: i.len, x: i.x }))),
   mt1: l => CRITERIA['ASME8-App6'].evaluate(l.indications.filter(i => i.kind === 'crack').map(i => ({ label: i.id, type: 'linear', len: i.len, x: i.x }))),
   ut1: l => U12(l.reflectors.map(r => ({ label: r.id, type: r.type, len: r.x2 - r.x1, overDAC: r.rel > 0 })), l.T),
-  rt1: l => W51(l.indications.filter(i => i.kind !== 'artifact').map(i => ({ label: i.id, type: i.kind, len: i.len })), l.t)
+  rt1: l => W51(l.indications.filter(i => i.kind !== 'artifact').map(i => ({ label: i.id, type: i.kind, len: i.len })), l.t),
+  vt1: l => { const full = LEVELS.find(x => x.id === 'vt1').indications; let a = l.indications; const gs = new Set(full.filter(i => i.group).map(i => i.group)); for (const g of gs) if (!full.filter(i => i.group === g).every(f => a.some(i => i.id === f.id))) a = a.filter(i => i.group !== g);
+    return CRITERIA['AWS-D11-VT'].evaluate(a.filter(i => i.kind !== 'spatter').map(i => ({ label: i.id, type: i.kind, len: i.len, depth: i.depth, x: i.x }))); },
+  et1: l => CRITERIA['ET-AL-SURF'].evaluate(l.indications.filter(i => i.kind === 'crack').map(i => ({ label: i.id, type: 'crack', depth: i.depth }))),
+  ae1: l => CRITERIA['AE-VESSEL'].evaluate(l.indications.map(i => ({ label: i.id, type: i.kind }))),
+  ir1: l => CRITERIA['IR-CFRP'].evaluate(l.indications.filter(i => i.kind === 'delam').map(i => ({ label: i.id, type: 'delam', len: i.len }))),
+  mw1: l => CRITERIA['MW-HDPE'].evaluate(l.indications.filter(i => i.kind !== 'metal').map(i => ({ label: i.id, type: i.kind, len: i.len })))
 };
 for (const l of LEVELS) { const r = ev[l.id](l); ok(r.accept === exp[l.id], `${l.id}: đáp án ${r.accept}`); console.log(`  ${l.id}: ${r.accept ? 'ĐẠT' : 'LOẠI'} – ${r.why.join(' | ')}`); }
 for (const l of LEVELS) { const c = JSON.parse(JSON.stringify(l)); if (c.indications) c.indications = c.indications.filter(i => !i.optional); if (c.reflectors) c.reflectors = c.reflectors.filter(i => !i.optional); ok(ev[l.id](c).accept, `${l.id}: khi vắng mọi khuyết tật optional, đáp án phải là ĐẠT`); ok((l.indications || l.reflectors).some(i => i.optional), `${l.id}: cần ít nhất một khuyết tật optional`); }
 // Bài học “trên DAC chưa chắc loại”: xỉ trong ut1 phải tự nó đạt
 const ut = LEVELS.find(l => l.id === 'ut1'); ok(U12(ut.reflectors.filter(r => r.type === 'slag').map(r => ({ label: 'B', type: 'slag', len: r.x2 - r.x1, overDAC: true })), 25).accept, 'ut1: xỉ một mình phải đạt (dạy “trên DAC ≠ loại”)');
 
+{ const V = CRITERIA['AWS-D11-VT'].evaluate, u = (len, depth, x = 0) => ({ label: 'u', type: 'undercut', len, depth, x });
+  ok(V([u(40, 1.4)]).accept, 'VT: cháy cạnh 1,4 mm dài 40 mm → đạt (ngoại lệ ≤ 50 mm/300 mm)');
+  ok(!V([u(40, 1.4), u(25, 1.2, 150)]).accept, 'VT: tổng 65 mm sâu > 1 mm → loại'); ok(!V([u(5, 2.2)]).accept, 'VT: cháy cạnh 2,2 mm → loại'); ok(V([u(200, 0.9)]).accept, 'VT: cháy cạnh 0,9 mm bất kể dài → đạt');
+  const pr = (x, d) => ({ label: 'p', type: 'pore', len: d, x }); ok(!V([pr(0, 3), pr(7, 3.5), pr(15, 4)]).accept, 'VT: rỗ 10,5 mm trong 25 mm → loại'); ok(V([pr(0, 3), pr(30, 3.5), pr(60, 4)]).accept, 'VT: rỗ rải rác 10,5 mm/300 mm → đạt');
+  ok(!V([pr(0, 4), pr(40, 4), pr(80, 4), pr(120, 4), pr(160, 4)]).accept, 'VT: tổng rỗ 20 mm > 19 mm trong 300 mm → loại'); ok(!V([{ label: 'c', type: 'crack', len: 1, x: 0 }]).accept, 'VT: nứt → loại');
+  ok(CRITERIA['IR-CFRP'].evaluate([{ label: 'd', type: 'delam', len: 10 }]).accept, 'IR: tách lớp 10 mm → ghi nhận'); ok(CRITERIA['MW-HDPE'].evaluate([{ label: 'v', type: 'void', len: 2.5 }]).accept, 'MW: lỗ rỗng 2,5 mm → ghi nhận');
+  const tau = z => P.thermalTime(z * 1e-3, 4e-7); near(tau(2.5), 15.625, 1e-6, 'IR: tách lớp 2,5 mm hiện ở ≈ 15,6 s (cần ghi ≥ 20 s)');
+  near(P.aeLocate(4, 3050, -0.656e-3), 1.0, 0.01, 'AE: bẻ ruột chì ở 1,0 m cho Δt = −0,656 ms với v = 3050 m/s');
+  near(P.skinDepth(2e5, 0.3 * P.IACS, 1) * 1000, 0.27, 0.01, 'ET: δ nhôm 30 % IACS ở 200 kHz ≈ 0,27 mm');
+  near(300 / 24 / Math.sqrt(2.3), 8.24, 0.01, 'MW: λ trong HDPE ở 24 GHz ≈ 8,2 mm');
+  for (const k of Object.keys(LM.PREREQ_MORE)) ok(LM.PREREQ_MORE[k].every(c => ACADEMY_IDS.includes(c)), `PREREQ ${k}`); }
 console.log('5. Hình học UT');
 const T = 25, tan = Math.tan(60 * P.D2R), fusion = d => 1 + (T - d) * Math.tan(30 * P.D2R);
 const lof = ut.reflectors.find(r => r.type === 'lof'); const ypLeg2 = fusion(lof.depth) + (2 * T - lof.depth) * tan;

@@ -400,6 +400,6 @@
   }
   // chương Học viện → cảnh 3D
   const FOR_CHAPTER = { ut2: 'probe', rs: 'rsmap', atom: 'atom', elec: 'et', mag: 'mtfield', waves: 'wavemodes', sound: 'ut', xray: 'rt', mat: 'lattice', cap: 'pt', vt: 'vt', ut: 'ut', mt: 'mt', et: 'et', mw: 'mw', rt: 'rt', pt: 'pt', ae: 'ae', ir: 'ir' };
-  const FOR_METHOD = { PT: 'pt', MT: 'mt', UT: 'ut', RT: 'rt' };
+  const FOR_METHOD = { PT: 'pt', MT: 'mt', UT: 'ut', RT: 'rt', VT: 'vt', ET: 'et', AE: 'ae', IR: 'ir', MW: 'mw' };
   root.View3D = { mount, SCENES, FOR_CHAPTER, FOR_METHOD };
 })(this);

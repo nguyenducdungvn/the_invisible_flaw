@@ -84,7 +84,7 @@
       const ev = C.evaluate(M.inds.filter(i => cfg.truth(i).relevant).map(i => Object.assign({ label: `Chỉ thị tại x≈${fmt(i.x, 0)}` }, cfg.crit(i))), M.lvl.t || M.lvl.T);
       finish({ proc: M.proc, det: n ? det / n : 1, falseCalls, playerAccept: acc, trueAccept: ev.accept, why: ev.why, atlas, notes: notes.concat(cfg.extraNotes ? cfg.extraNotes(M) : []) });
     };
-    const myEval = C.evaluate(marks.filter(m => cfg.playerRelevant(m)).map(m => ({ label: m.label, type: cfg.playerType(m.cls), len: m.len, x: m.x })), M.lvl.t || M.lvl.T);
+    const myEval = C.evaluate(marks.filter(m => cfg.playerRelevant(m)).map(m => ({ label: m.label, type: cfg.playerType(m.cls), len: m.len, x: m.x, depth: m.depth })), M.lvl.t || M.lvl.T);
     el.append(h('div', { class: 'grid g2' },
       h('div', { class: 'card' }, h('h3', null, 'Biên bản chỉ thị của bạn'),
         marks.length ? h('table', { class: 't' }, h('tr', null, h('th', null, 'Vạch'), h('th', null, 'x'), h('th', null, 'Dài'), h('th', null, 'Phân loại')),

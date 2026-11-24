@@ -199,13 +199,13 @@
     const allDone = L.every(l => S.done[l.id] && S.done[l.id].stars > 0);
     page(h('div', null,
       h('div', { class: 'row' }, h('h2', { style: 'margin:0' }, `Trung tâm Giám định · ${S.name}`), h('span', { class: 'spacer' }),
-        ['PT', 'MT', 'UT', 'RT'].map(m => h('span', { class: 'chip' + (S.certs[m] ? ' ok' : '') }, `${m}: ${certName(m)}`))),
+        [...new Set(L.map(l => l.method))].map(m => h('span', { class: 'chip' + (S.certs[m] ? ' ok' : '') }, `${m}: ${certName(m)}`))),
       h('p', { class: 'dim' }, 'Chứng chỉ tính theo từng phương pháp, giống thực tế (SNT-TC-1A, ISO 9712): có Bậc II UT không có nghĩa là được ký kết quả RT.'),
       (() => { const AC = root.ACADEMY || [], n = AC.filter(c => Game.mastered && Game.mastered(c.id)).length;
         return h('div', { class: 'card contract', onclick: () => Game.academy(), style: 'border-color:#2d5c48' }, h('div', { class: 'row' }, h('span', { class: 'meth', style: 'color:var(--ok)' }, 'HV'),
           h('div', null, h('h3', { style: 'margin:0' }, 'Học viện NDE'), h('div', { class: 'dim', style: 'font-size:.88rem' }, `8 chương vật lý nền tảng · 10 chương phương pháp (VT, UT, UT nâng cao, MT, ET, vi ba, RT, PT, AE, nhiệt ảnh) · An toàn bức xạ · đã thành thạo ${n}/${AC.length}`)),
           h('span', { class: 'spacer' }), h('span', { class: 'btn sm' }, 'Vào học'))); })(),
-      allDone ? h('div', { class: 'callout ok' }, 'Bạn đã hoàn thành cả 4 hợp đồng của bản chơi thử. Cảm ơn bạn đã chơi! Chơi lại để lấy 3 sao: vị trí khuyết tật thay đổi mỗi lần. ', h('a', { href: '#', onclick: e => { e.preventDefault(); Game.about(); } }, 'Thấy hay thì mời tác giả ly cà phê và chia sẻ cho bạn bè.')) : null,
+      allDone ? h('div', { class: 'callout ok' }, `Bạn đã hoàn thành cả ${L.length} hợp đồng. Cảm ơn bạn đã chơi!`+' Chơi lại để lấy 3 sao: vị trí khuyết tật thay đổi mỗi lần. ', h('a', { href: '#', onclick: e => { e.preventDefault(); Game.about(); } }, 'Thấy hay thì mời tác giả ly cà phê và chia sẻ cho bạn bè.')) : null,
       h('div', { class: 'grid g2' }, L.map(l => {
         const ok = unlocked(l), d = S.done[l.id];
         return h('div', { class: 'card contract' + (ok ? '' : ' locked'), onclick: () => ok ? startMission(l.id) : toast('Hoàn thành hợp đồng trước để mở khóa') },
@@ -216,7 +216,7 @@
           h('div', { class: 'row', style: 'font-size:.85rem' }, h('span', { class: 'chip' }, `Hợp đồng ${l.budget} tr₫`), h('span', { class: 'chip' }, `Cho phép dừng máy ${l.downtime} phút`), d ? h('span', { class: 'chip' }, `Điểm cao nhất ${d.score}`) : null));
       })),
       h('div', { class: 'card flat' }, h('h3', null, 'Lộ trình bản đầy đủ (theo GDD)'),
-        h('p', { class: 'dim' }, 'Bản chơi thử gồm 4 hợp đồng PT → MT → UT → RT và Học viện 19 chương. Hợp đồng hiện trường cho ET, AE, nhiệt ảnh và vi ba sẽ dùng chung khung dữ liệu (thêm vào levels.js); hiện các phương pháp này đã có bài học và mô phỏng trong Học viện.'))));
+        h('p', { class: 'dim' }, 'Hiện có 9 hợp đồng PT → MT → UT → RT → VT → ET → AE → nhiệt ảnh → vi ba và Học viện 19 chương. Bước tiếp theo: hợp đồng trùm kết hợp nhiều phương pháp và chế độ Bậc III (soát xét quy trình có lỗi cài sẵn).'))));
   }
 
   /* ---------- vòng lặp nhiệm vụ ---------- */
@@ -266,7 +266,7 @@
 
   function lab() {
     const M = Game.M, id = M.lvl.lab; hud();
-    const have = Object.keys(CARDS).filter(k => CARDS[k].lab === id).every(k => S.cards[k]);
+    const labCards = Object.keys(CARDS).filter(k => CARDS[k].lab === id), have = labCards.length > 0 && labCards.every(k => S.cards[k]);
     const wrap = h('div', null, stepper(1));
     const done = (score) => {
       M.lab = score; Object.keys(CARDS).filter(k => CARDS[k].lab === id).forEach(k => { if (!S.cards[k]) { S.cards[k] = 1; toast(`Mở khóa thẻ công thức: ${CARDS[k].t}`, 'ok'); } }); save();
@@ -316,7 +316,7 @@
             r.notes && r.notes.length ? h('div', { class: 'callout' }, h('b', null, 'Nhận xét của Bậc III: '), h('ul', { style: 'margin:4px 0' }, r.notes.map(n => h('li', null, n)))) : null),
           h('div', { class: 'after' }, after))),
       h('div', { class: 'row' }, h('button', { class: 'btn', onclick: hub }, 'Về trung tâm'), h('button', { class: 'btn ghost', onclick: () => startMission(l.id) }, 'Chơi lại (khuyết tật đổi vị trí)')), Game.coffeeLine ? Game.coffeeLine() : null);
-    page(w); Game.M = null; hud();
+    if (starsN >= 1 && Game.careerLine) w.insertBefore(Game.careerLine(l.method), w.lastChild); page(w); Game.M = null; hud();
   }
 
   const METHODS = {};
